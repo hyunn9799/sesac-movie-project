@@ -250,3 +250,104 @@
     gap: 8px;
   }
 }
+
+/* ===============================================
+  추천 드롭다운 스타일 (여기서부터 추가된 코드)
+===============================================
+*/
+
+/* '영화 추천' 버튼과 드롭다운을 감싸는 래퍼 */
+.recommendationWrapper {
+  position: relative; /* 드롭다운의 기준점이 됨 */
+  flex-shrink: 0;
+}
+
+/* '영화 추천' 트리거 버튼 스타일 */
+.recommendationTriggerButton {
+  /* 다른 인증 버튼과 유사하게 스타일링 */
+  font-size: 14px;
+  color: #e0e0e0;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  font-family: inherit; /* 폰트 상속 */
+}
+
+.recommendationTriggerButton:hover {
+  color: #fff;
+  background-color: #333;
+}
+
+/* 드롭다운 패널 전체 */
+.recommendationDropdown {
+  position: absolute;
+  top: calc(100% + 12px); /* 헤더 하단 패딩만큼 띄우기 */
+  left: 50%;
+  transform: translateX(-50%); /* 버튼 중앙 기준으로 패널 중앙 정렬 */
+  width: 800px; /* 이미지와 유사한 넉넉한 너비 (조정 가능) */
+  max-width: 90vw;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 24px 30px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* 각 추천 그룹 사이의 간격 */
+}
+
+/* "장르별 추천" 등 각 그룹 (제목 + 버튼 리스트) */
+.recommendationGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* 제목과 버튼 리스트 사이의 간격 */
+}
+
+/* "장르별 추천" 등 그룹 제목 */
+.recommendationTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #999; /* 이미지의 회색 텍스트 */
+  margin: 0;
+}
+
+/* 버튼들을 감싸는 리스트 */
+.recommendationButtonList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px; /* 버튼 사이의 간격 */
+}
+
+/* 개별 추천 버튼 공통 스타일 */
+.recommendationItemButton {
+  background-color: #333;
+  color: #e0e0e0;
+  border: none;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.recommendationItemButton:hover {
+  background-color: #555;
+  transform: translateY(-2px);
+}
+
+/* 장르별, 기분별 버튼 (타원형) */
+.genreButton,
+.moodButton {
+  border-radius: 20px;
+}
+
+/* 상황별 버튼 (둥근 사각형) */
+.situationButton {
+  border-radius: 6px;
+}
