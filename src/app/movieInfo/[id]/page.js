@@ -519,7 +519,9 @@ export default async function MovieInfoPage({ params }) {
         <section style={styles.section}>
           <div style={styles.sectionHeader}>
             <h2 style={styles.sectionTitle}>감상 후기</h2>
-            <button style={styles.reviewButton}>작성하기</button>
+            <Link href={`/review/write?movieId=${id}`}> {/* 현재 영화 ID를 query param으로 전달 */}
+              <button style={styles.reviewButton}>작성하기</button>
+            </Link>
           </div>
           <ReviewList reviews={pageReviews} styles={styles} />
         </section>
