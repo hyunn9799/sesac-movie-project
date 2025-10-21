@@ -11,6 +11,7 @@ import {
   layout,
 } from '@/lib/style/styles';
 import { initialReviews } from '@/lib/data/review';
+import ReviewList from './ReviewList.js';
 
 // --- TMDB API 호출 함수들 ---
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
@@ -62,7 +63,7 @@ const renderStars = (rating) => {
   const score = rating / 2;
   const stars = [];
   const fullStars = Math.floor(score);
-  
+
   for (let i = 0; i < fullStars; i++) {
     stars.push(<span key={`full-${i}`} style={{ color: colors.yellow }}>★</span>);
   }
@@ -74,39 +75,33 @@ const renderStars = (rating) => {
 
 // 런타임 변환 함수
 const formatRuntime = (minutes) => {
-    if (!minutes) return '';
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return `${h > 0 ? `${h}시간 ` : ''}${m}분`;
+  if (!minutes) return '';
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${h > 0 ? `${h}시간 ` : ''}${m}분`;
 }
 
 // --- 메인 페이지 컴포넌트 ---
 export default async function MovieInfoPage({ params }) {
-  const { id } = params; 
+  const { id } = params;
 
   const [movie, credits, images, similar, videos] = await Promise.all([
     getMovieDetails(id),
     getMovieCredits(id), // (중요) 여기서 credits 정보를 가져옵니다.
     getMovieImages(id),
     getSimilarMovies(id),
-    getMovieVideos(id), 
+    getMovieVideos(id),
   ]);
 
   // --- API 데이터 가공 ---
-  
+
   // (중요) credits 객체에서 실제 감독과 출연진 정보를 추출합니다.
   const director = credits.crew.find((person) => person.job === 'Director');
   const cast = credits.cast.slice(0, 5); // 주요 출연진 5명
-  
+
   const galleryImages = images.backdrops.slice(0, 4);
   const relatedMovies = similar.results.slice(0, 5);
- 
 
-// (추가) 로고 및 포스터 데이터 추출 (오류 해결)
-const movieLogos = images.logos;
-const moviePosters = images.posters.slice(0, 5);
-
-  
   // 예고편 키(key) 찾기
   const findVideoKey = () => {
     const trailer = videos.results.find(
@@ -118,7 +113,7 @@ const moviePosters = images.posters.slice(0, 5);
       (v) => v.type === 'Teaser' && v.site === 'YouTube'
     );
     if (teaser) return teaser.key;
-    
+
     const anyVideo = videos.results.find((v) => v.site === 'YouTube');
     if (anyVideo) return anyVideo.key;
 
@@ -126,7 +121,8 @@ const moviePosters = images.posters.slice(0, 5);
   };
   const videoKey = findVideoKey();
 
-  const pageReviews = initialReviews.slice(0, 4);
+  // [수정] 리뷰를 10개 표시하도록 변경
+  const pageReviews = initialReviews.slice(0, 5);
 
   // --- 스타일 정의 ---
   const styles = {
@@ -151,14 +147,14 @@ const moviePosters = images.posters.slice(0, 5);
       alignItems: 'flex-start',
     },
     heroContent: {
-      flex: 3,
+      flex: 1.5,
       display: 'flex',
       flexDirection: 'column',
       gap: spacing.lg,
     },
     heroImageWrapper: {
       flex: 1,
-      minWidth: '300px',
+      // minWidth: '500px',
     },
     posterImage: {
       width: '100%',
@@ -224,8 +220,8 @@ const moviePosters = images.posters.slice(0, 5);
       marginBottom: spacing.sm,
     },
     mainContainer: {
-        ...commonStyles.container,
-        paddingTop: 0,
+      ...commonStyles.container,
+      paddingTop: 0,
     },
     section: {
       marginBottom: spacing.xxl,
@@ -236,15 +232,18 @@ const moviePosters = images.posters.slice(0, 5);
       borderBottom: `1px solid ${colors.darkGray}`,
       paddingBottom: spacing.md,
     },
+
     sectionTitle: {
       ...commonStyles.sectionTitle,
       marginBottom: 0,
     },
+
     galleryGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(4, 1fr)',
       gap: spacing.md,
     },
+
     galleryImage: {
       width: '100%',
       height: '160px',
@@ -253,11 +252,13 @@ const moviePosters = images.posters.slice(0, 5);
       cursor: 'pointer',
       transition: 'transform 0.3s ease',
     },
+
     crewGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(2, 1fr)',
       gap: spacing.lg,
     },
+
     crewItem: {
       display: 'flex',
       alignItems: 'center',
@@ -266,6 +267,7 @@ const moviePosters = images.posters.slice(0, 5);
       padding: spacing.md,
       borderRadius: borderRadius.medium,
     },
+
     crewImage: {
       width: '60px',
       height: '60px',
@@ -273,58 +275,62 @@ const moviePosters = images.posters.slice(0, 5);
       objectFit: 'cover',
       backgroundColor: colors.dark,
     },
+
     crewName: {
       fontSize: fontSize.large,
       color: colors.white,
     },
+
     reviewButton: {
       ...commonStyles.button,
       ...commonStyles.buttonPrimary,
     },
+
     reviewList: {
       display: 'flex',
       flexDirection: 'column',
       gap: spacing.lg,
     },
+
     reviewItem: {
       borderBottom: `1px solid ${colors.darkGray}`,
       paddingBottom: spacing.lg,
     },
+
     reviewUser: {
       fontSize: fontSize.medium,
       fontWeight: fontWeight.bold,
       color: colors.white,
       marginBottom: spacing.sm,
     },
+
     reviewContent: {
       fontSize: fontSize.medium,
       color: colors.lightGray,
       lineHeight: 1.5,
+      whiteSpace: 'pre-line',
     },
-    // (추가된 로고/포스터 스타일)
-    logoSection: {
-      textAlign: 'center',
-      marginBottom: spacing.lg,
-      padding: spacing.lg,
-      backgroundColor: colors.darkGray,
-      borderRadius: borderRadius.medium,
+
+    reviewContentClickable: {
+      fontSize: fontSize.medium,
+      color: colors.lightGray,
+      lineHeight: 1.5,
+      cursor: 'pointer', // 마우스 커서를 포인터로
+      whiteSpace: 'pre-line', // 줄바꿈 유지
+      transition: 'color 0.2s',
     },
-    logoImage: {
-      maxWidth: '300px',
-      maxHeight: '150px',
-      filter: 'brightness(0) invert(1)',
-    },
-    posterGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(5, 1fr)',
-      gap: spacing.md,
-    },
-    posterInGallery: {
-      width: '100%',
-      borderRadius: borderRadius.medium,
-      transition: 'transform 0.2s ease',
+
+    readMoreButton: {
+      background: 'none',
+      border: 'none',
+      color: colors.info, // 팀 스타일 가이드의 'info' 색상 사용
       cursor: 'pointer',
+      padding: '4px 0',
+      marginTop: '4px',
+      fontSize: '14px',
+      fontWeight: fontWeight.bold,
     },
+
     relatedGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(5, 1fr)',
@@ -364,10 +370,10 @@ const moviePosters = images.posters.slice(0, 5);
               <div style={styles.infoBox}>
                 <div style={styles.infoBoxTitle}>인기도</div>
                 <div style={styles.infoBoxContent}>{Math.round(movie.popularity)} 점</div>
-                <div style={{...styles.infoBoxTitle, marginTop: spacing.md }}>
-                  누적 수익
+                <div style={{ ...styles.infoBoxTitle, marginTop: spacing.md }}>
+                  총 투표수
                 </div>
-                <div style={styles.infoBoxContent}>${movie.revenue.toLocaleString()}</div>
+                <div style={styles.infoBoxContent}>{movie.vote_count.toLocaleString()} 회</div>
               </div>
               <div style={styles.infoBox}>
                 <div style={styles.infoBoxTitle}>관람객 평점</div>
@@ -378,7 +384,7 @@ const moviePosters = images.posters.slice(0, 5);
               </div>
             </div>
           </div>
-          
+
           {/* ... (오른쪽 예고편/포스터 영역) ... */}
           <div style={styles.heroImageWrapper}>
             {videoKey ? (
@@ -442,7 +448,7 @@ const moviePosters = images.posters.slice(0, 5);
                 />
                 <div>
                   <span style={styles.crewName}>{director.name}</span>
-                  <div style={{color: colors.textSecondary}}>감독</div>
+                  <div style={{ color: colors.textSecondary }}>감독</div>
                 </div>
               </div>
             )}
@@ -456,57 +462,28 @@ const moviePosters = images.posters.slice(0, 5);
                 />
                 <div>
                   <span style={styles.crewName}>{person.name}</span>
-                  <div style={{color: colors.textSecondary}}>{person.character}</div>
+                  <div style={{ color: colors.textSecondary }}>{person.character}</div>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* --- (섹션 4: 감상 후기 - static 데이터 사용) --- */}
+        {/* --- (섹션 4: 감상 후기 - static 데이터 사용, 10개 표시) --- */}
         <section style={styles.section}>
           <div style={styles.sectionHeader}>
             <h2 style={styles.sectionTitle}>감상 후기</h2>
             <button style={styles.reviewButton}>작성하기</button>
           </div>
-          <div style={styles.reviewList}>
-            {pageReviews.map((review) => (
-              <div key={review.id} style={styles.reviewItem}>
-                <div style={styles.reviewUser}>{review.userName}</div>
-                <p style={styles.reviewContent}>{review.content}</p>
-              </div>
-            ))}
-          </div>
-        </section>
 
-        {/* --- (섹션 5: 로고 및 포스터) --- */}
-        <section style={styles.section}>
-          <div style={styles.sectionHeader}>
-            <h2 style={styles.sectionTitle}>로고 및 포스터</h2>
-          </div>
-          {movieLogos && movieLogos.length > 0 && (
-            <div style={styles.logoSection}>
-              <img
-                src={`${IMAGE_BASE_URL}/w500${movieLogos[0].file_path}`}
-                alt={`${movie.title} Logo`}
-                style={styles.logoImage}
-              />
-            </div>
-          )}
-          <div style={styles.posterGrid}>
-            {images.posters.slice(0, 5).map((poster, index) => ( // 5개만 표시
-              <img
-                key={index}
-                src={`${IMAGE_BASE_URL}/w342${poster.file_path}`}
-                alt={`Poster ${index + 1}`}
-                style={styles.posterInGallery}
-              />
-            ))}
-          </div>
+          {/* ⭐ [교체] 기존 map 코드를 Client Component로 대체합니다. */}
+          {/* 서버에서 가져온 pageReviews와 styles 객체를 props로 전달합니다. */}
+          <ReviewList reviews={pageReviews} styles={styles} />
+
         </section>
 
 
-        {/* --- (섹션 6: 관련 영화) --- */}
+        {/* --- (섹션 5: 관련 영화) --- */}
         <section style={styles.section}>
           <div style={styles.sectionHeader}>
             <h2 style={styles.sectionTitle}>관련 영화</h2>
