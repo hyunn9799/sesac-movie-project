@@ -211,8 +211,12 @@ export default function Header() {
       <div className={styles.headerContainer}>
         <div className={styles.logoSection}>
           <Link href="/" className={styles.logo}>
-            <span className={styles.logoMain}>MovieReview</span>
+          
+          <div className={styles.logoTextGroup}>
+            <span className={styles.logoMain}>MovieHub</span>
             <span className={styles.logoSub}>REVIEWS</span>
+            </div>
+            <img src="/Logo.png" alt="MovieHub Logo" className={styles.logoImage}/>
           </Link>
         </div>
 
