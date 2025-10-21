@@ -1,6 +1,6 @@
-// src/app/movieInfo/[id]/page.js
+// [전체 코드]
+
 import React from 'react';
-// 팀의 스타일 가이드와 리뷰 데이터는 그대로 사용합니다.
 import {
   colors,
   spacing,
@@ -11,10 +11,12 @@ import {
   layout,
 } from '@/lib/style/styles';
 import { initialReviews } from '@/lib/data/review';
-import ReviewList from './ReviewList.js';
+import ReviewList from './ReviewList.js'; // 👈 [추가] ReviewList 컴포넌트 임포트
+import CrewList from './CrewList.js';   // 👈 [추가] CrewList 컴포넌트 임포트
 
 // --- TMDB API 호출 함수들 ---
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
+// ❗️ [수정] .env.local 파일 변경에 맞춰 변수 이름 수정
+const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY; 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
 
@@ -28,42 +30,39 @@ async function fetchTMDb(path) {
   return res.json();
 }
 
+// ... (getMovieDetails, getMovieCredits, getMovieImages, getSimilarMovies, getMovieVideos 함수는 기존과 동일) ...
 // 영화 상세 정보
 async function getMovieDetails(id) {
   return fetchTMDb(`/movie/${id}`);
 }
-
-// (중요) 출연진 및 제작진 정보
+// 출연진 및 제작진 정보
 async function getMovieCredits(id) {
   return fetchTMDb(`/movie/${id}/credits`);
 }
-
 // 영화 이미지 (갤러리용)
 async function getMovieImages(id) {
   const url = `${TMDB_BASE_URL}/movie/${id}/images?api_key=${TMDB_API_KEY}`;
   const res = await fetch(url);
   return res.json();
 }
-
 // 관련 영화 목록
 async function getSimilarMovies(id) {
   return fetchTMDb(`/movie/${id}/similar`);
 }
-
 // 영화 비디오 (예고편) 정보
 async function getMovieVideos(id) {
   const url = `${TMDB_BASE_URL}/movie/${id}/videos?api_key=${TMDB_API_KEY}&language=ko-KR,en-US`;
   const res = await fetch(url);
   return res.json();
 }
-// ------------------------------
 
+// ... (renderStars, formatRuntime 함수는 기존과 동일) ...
 // 별점 렌더링 헬퍼 함수
 const renderStars = (rating) => {
   const score = rating / 2;
   const stars = [];
   const fullStars = Math.floor(score);
-
+  
   for (let i = 0; i < fullStars; i++) {
     stars.push(<span key={`full-${i}`} style={{ color: colors.yellow }}>★</span>);
   }
@@ -75,58 +74,52 @@ const renderStars = (rating) => {
 
 // 런타임 변환 함수
 const formatRuntime = (minutes) => {
-  if (!minutes) return '';
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return `${h > 0 ? `${h}시간 ` : ''}${m}분`;
+    if (!minutes) return '';
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${h > 0 ? `${h}시간 ` : ''}${m}분`;
 }
+
 
 // --- 메인 페이지 컴포넌트 ---
 export default async function MovieInfoPage({ params }) {
-  const { id } = params;
+  const { id } = params; 
 
   const [movie, credits, images, similar, videos] = await Promise.all([
     getMovieDetails(id),
-    getMovieCredits(id), // (중요) 여기서 credits 정보를 가져옵니다.
+    getMovieCredits(id),
     getMovieImages(id),
     getSimilarMovies(id),
-    getMovieVideos(id),
+    getMovieVideos(id), 
   ]);
 
   // --- API 데이터 가공 ---
-
-  // (중요) credits 객체에서 실제 감독과 출연진 정보를 추출합니다.
   const director = credits.crew.find((person) => person.job === 'Director');
-  const cast = credits.cast.slice(0, 5); // 주요 출연진 5명
-
+  const cast = credits.cast.slice(0, 5);
   const galleryImages = images.backdrops.slice(0, 4);
   const relatedMovies = similar.results.slice(0, 5);
-
-  // 예고편 키(key) 찾기
+  
+  // 헬퍼 함수들을 API 데이터 가공 이후에 정의합니다.
   const findVideoKey = () => {
     const trailer = videos.results.find(
       (v) => v.type === 'Trailer' && v.site === 'YouTube'
     );
     if (trailer) return trailer.key;
-
     const teaser = videos.results.find(
       (v) => v.type === 'Teaser' && v.site === 'YouTube'
     );
     if (teaser) return teaser.key;
-
     const anyVideo = videos.results.find((v) => v.site === 'YouTube');
     if (anyVideo) return anyVideo.key;
-
     return null;
   };
+  
   const videoKey = findVideoKey();
-
-  // [수정] 리뷰를 10개 표시하도록 변경
   const pageReviews = initialReviews.slice(0, 5);
 
   // --- 스타일 정의 ---
   const styles = {
-    // (모든 스타일은 이전과 동일하게 유지)
+    // ... (heroWrapper, heroContainer, heroContent 등 기존 스타일은 모두 동일) ...
     pageWrapper: {
       backgroundColor: colors.dark,
       color: colors.textPrimary,
@@ -147,14 +140,13 @@ export default async function MovieInfoPage({ params }) {
       alignItems: 'flex-start',
     },
     heroContent: {
-      flex: 1.5,
+      flex: 1, // 1:1 비율로 수정
       display: 'flex',
       flexDirection: 'column',
       gap: spacing.lg,
     },
     heroImageWrapper: {
-      flex: 1,
-      // minWidth: '500px',
+      flex: 1, // 1:1 비율로 수정
     },
     posterImage: {
       width: '100%',
@@ -220,8 +212,8 @@ export default async function MovieInfoPage({ params }) {
       marginBottom: spacing.sm,
     },
     mainContainer: {
-      ...commonStyles.container,
-      paddingTop: 0,
+        ...commonStyles.container,
+        paddingTop: 0,
     },
     section: {
       marginBottom: spacing.xxl,
@@ -232,18 +224,15 @@ export default async function MovieInfoPage({ params }) {
       borderBottom: `1px solid ${colors.darkGray}`,
       paddingBottom: spacing.md,
     },
-
     sectionTitle: {
       ...commonStyles.sectionTitle,
       marginBottom: 0,
     },
-
     galleryGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(4, 1fr)',
       gap: spacing.md,
     },
-
     galleryImage: {
       width: '100%',
       height: '160px',
@@ -252,13 +241,11 @@ export default async function MovieInfoPage({ params }) {
       cursor: 'pointer',
       transition: 'transform 0.3s ease',
     },
-
     crewGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(2, 1fr)',
       gap: spacing.lg,
     },
-
     crewItem: {
       display: 'flex',
       alignItems: 'center',
@@ -266,8 +253,8 @@ export default async function MovieInfoPage({ params }) {
       backgroundColor: colors.darkGray,
       padding: spacing.md,
       borderRadius: borderRadius.medium,
+      transition: 'background-color 0.2s',
     },
-
     crewImage: {
       width: '60px',
       height: '60px',
@@ -275,62 +262,56 @@ export default async function MovieInfoPage({ params }) {
       objectFit: 'cover',
       backgroundColor: colors.dark,
     },
-
     crewName: {
       fontSize: fontSize.large,
       color: colors.white,
     },
-
+    // ... (리뷰 관련 스타일들: reviewButton, reviewList, reviewItem, reviewUser 등) ...
     reviewButton: {
       ...commonStyles.button,
       ...commonStyles.buttonPrimary,
     },
-
     reviewList: {
       display: 'flex',
       flexDirection: 'column',
       gap: spacing.lg,
     },
-
     reviewItem: {
       borderBottom: `1px solid ${colors.darkGray}`,
       paddingBottom: spacing.lg,
     },
-
     reviewUser: {
       fontSize: fontSize.medium,
       fontWeight: fontWeight.bold,
       color: colors.white,
       marginBottom: spacing.sm,
     },
-
-    reviewContent: {
+    reviewContent: { 
       fontSize: fontSize.medium,
       color: colors.lightGray,
       lineHeight: 1.5,
       whiteSpace: 'pre-line',
     },
-
     reviewContentClickable: {
       fontSize: fontSize.medium,
       color: colors.lightGray,
       lineHeight: 1.5,
-      cursor: 'pointer', // 마우스 커서를 포인터로
-      whiteSpace: 'pre-line', // 줄바꿈 유지
+      cursor: 'pointer',
+      whiteSpace: 'pre-line',
       transition: 'color 0.2s',
     },
-
     readMoreButton: {
       background: 'none',
       border: 'none',
-      color: colors.info, // 팀 스타일 가이드의 'info' 색상 사용
+      color: colors.info,
       cursor: 'pointer',
       padding: '4px 0',
       marginTop: '4px',
       fontSize: '14px',
       fontWeight: fontWeight.bold,
     },
-
+    
+    // ... (relatedGrid, relatedCard 등 나머지 스타일들) ...
     relatedGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(5, 1fr)',
@@ -352,6 +333,104 @@ export default async function MovieInfoPage({ params }) {
       fontSize: fontSize.medium,
       padding: `${spacing.sm} 0`,
     },
+
+    // 👈 [추가] 모달(팝업) 관련 스타일 10개
+    modalOverlay: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      zIndex: 1000,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    modalContent: {
+      backgroundColor: colors.darkGray,
+      padding: spacing.xl,
+      borderRadius: borderRadius.medium,
+      width: '90%',
+      maxWidth: '700px',
+      maxHeight: '80vh',
+      overflowY: 'auto',
+      position: 'relative',
+      border: `1px solid ${colors.mediumGray}`,
+    },
+    modalCloseButton: {
+      position: 'absolute',
+      top: spacing.md,
+      right: spacing.md,
+      background: 'none',
+      border: 'none',
+      color: colors.white,
+      fontSize: '30px',
+      cursor: 'pointer',
+      lineHeight: 1,
+    },
+    personHeader: {
+      display: 'flex',
+      gap: spacing.lg,
+      marginBottom: spacing.lg,
+      paddingBottom: spacing.lg,
+      borderBottom: `1px solid ${colors.mediumGray}`,
+    },
+    personImage: {
+      width: '100px',
+      height: '150px',
+      objectFit: 'cover',
+      borderRadius: borderRadius.medium,
+      backgroundColor: colors.dark,
+    },
+    personInfo: {
+      flex: 1,
+    },
+    personName: {
+      fontSize: fontSize.title,
+      fontWeight: fontWeight.bold,
+      color: colors.white,
+      margin: 0,
+      marginBottom: spacing.sm,
+    },
+    personBio: {
+      fontSize: fontSize.medium,
+      color: colors.lightGray,
+      lineHeight: 1.6,
+      margin: 0,
+    },
+    filmographyTitle: {
+      fontSize: fontSize.xlarge,
+      fontWeight: fontWeight.bold,
+      color: colors.white,
+      marginBottom: spacing.md,
+    },
+    filmographyList: {
+      listStyle: 'none',
+      padding: 0,
+      margin: 0,
+    },
+    filmographyItem: {
+      backgroundColor: colors.dark,
+      padding: spacing.md,
+      borderRadius: borderRadius.small,
+      marginBottom: spacing.sm,
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      fontSize: fontSize.medium,
+      color: colors.white,
+    },
+    filmographyYear: {
+      color: colors.textSecondary,
+      fontSize: fontSize.small,
+      flexShrink: 0,
+      marginLeft: spacing.md,
+    },
+    // (텍스트 색상을 위한 임시 스타일 - styles.js에 이미 있다면 무시해도 됨)
+    textPrimary: { color: colors.textPrimary },
+    textLight: { color: colors.textLight },
+    textSecondary: { color: colors.textSecondary },
   };
 
   return (
@@ -370,8 +449,8 @@ export default async function MovieInfoPage({ params }) {
               <div style={styles.infoBox}>
                 <div style={styles.infoBoxTitle}>인기도</div>
                 <div style={styles.infoBoxContent}>{Math.round(movie.popularity)} 점</div>
-                <div style={{ ...styles.infoBoxTitle, marginTop: spacing.md }}>
-                  총 투표수
+                <div style={{...styles.infoBoxTitle, marginTop: spacing.md }}>
+                  총 투표 수
                 </div>
                 <div style={styles.infoBoxContent}>{movie.vote_count.toLocaleString()} 회</div>
               </div>
@@ -384,7 +463,7 @@ export default async function MovieInfoPage({ params }) {
               </div>
             </div>
           </div>
-
+          
           {/* ... (오른쪽 예고편/포스터 영역) ... */}
           <div style={styles.heroImageWrapper}>
             {videoKey ? (
@@ -415,7 +494,7 @@ export default async function MovieInfoPage({ params }) {
       </div>
 
       <main style={styles.mainContainer}>
-        {/* ... (섹션 2: 영화 갤러리) ... */}
+        {/* --- 섹션 2: 영화 갤러리 --- */}
         <section style={styles.section}>
           <div style={styles.sectionHeader}>
             <h2 style={styles.sectionTitle}>영화 갤러리</h2>
@@ -432,58 +511,19 @@ export default async function MovieInfoPage({ params }) {
           </div>
         </section>
 
-        {/* --- (중요) 섹션 3: 감독 출연 (API 데이터 사용) --- */}
-        <section style={styles.section}>
-          <div style={styles.sectionHeader}>
-            <h2 style={styles.sectionTitle}>감독 & 주요 출연진</h2>
-          </div>
-          <div style={styles.crewGrid}>
-            {/* API로 가져온 director 변수 사용 */}
-            {director && (
-              <div style={styles.crewItem}>
-                <img
-                  src={director.profile_path ? `${IMAGE_BASE_URL}/w185${director.profile_path}` : 'https://i.imgur.com/dDD1biL.png'}
-                  alt={director.name}
-                  style={styles.crewImage}
-                />
-                <div>
-                  <span style={styles.crewName}>{director.name}</span>
-                  <div style={{ color: colors.textSecondary }}>감독</div>
-                </div>
-              </div>
-            )}
-            {/* API로 가져온 cast 변수 사용 */}
-            {cast.map((person) => (
-              <div key={person.id} style={styles.crewItem}>
-                <img
-                  src={person.profile_path ? `${IMAGE_BASE_URL}/w185${person.profile_path}` : 'https://i.imgur.com/dDD1biL.png'}
-                  alt={person.name}
-                  style={styles.crewImage}
-                />
-                <div>
-                  <span style={styles.crewName}>{person.name}</span>
-                  <div style={{ color: colors.textSecondary }}>{person.character}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* 👈 [수정] 섹션 3: 감독 출연 (클라이언트 컴포넌트로 교체) */}
+        <CrewList director={director} cast={cast} styles={styles} />
 
-        {/* --- (섹션 4: 감상 후기 - static 데이터 사용, 10개 표시) --- */}
+        {/* --- 섹션 4: 감상 후기 (클라이언트 컴포넌트 사용) --- */}
         <section style={styles.section}>
           <div style={styles.sectionHeader}>
             <h2 style={styles.sectionTitle}>감상 후기</h2>
             <button style={styles.reviewButton}>작성하기</button>
           </div>
-
-          {/* ⭐ [교체] 기존 map 코드를 Client Component로 대체합니다. */}
-          {/* 서버에서 가져온 pageReviews와 styles 객체를 props로 전달합니다. */}
           <ReviewList reviews={pageReviews} styles={styles} />
-
         </section>
 
-
-        {/* --- (섹션 5: 관련 영화) --- */}
+        {/* --- 섹션 5: 관련 영화 --- */}
         <section style={styles.section}>
           <div style={styles.sectionHeader}>
             <h2 style={styles.sectionTitle}>관련 영화</h2>
