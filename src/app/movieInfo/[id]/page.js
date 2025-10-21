@@ -1,6 +1,7 @@
 // [전체 코드]
 
 import React from 'react';
+import Link from 'next/link';
 import {
   colors,
   spacing,
@@ -16,7 +17,7 @@ import CrewList from './CrewList.js';   // 👈 [추가] CrewList 컴포넌트 �
 
 // --- TMDB API 호출 함수들 ---
 // ❗️ [수정] .env.local 파일 변경에 맞춰 변수 이름 수정
-const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY; 
+const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
 
@@ -62,7 +63,7 @@ const renderStars = (rating) => {
   const score = rating / 2;
   const stars = [];
   const fullStars = Math.floor(score);
-  
+
   for (let i = 0; i < fullStars; i++) {
     stars.push(<span key={`full-${i}`} style={{ color: colors.yellow }}>★</span>);
   }
@@ -74,23 +75,23 @@ const renderStars = (rating) => {
 
 // 런타임 변환 함수
 const formatRuntime = (minutes) => {
-    if (!minutes) return '';
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return `${h > 0 ? `${h}시간 ` : ''}${m}분`;
+  if (!minutes) return '';
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${h > 0 ? `${h}시간 ` : ''}${m}분`;
 }
 
 
 // --- 메인 페이지 컴포넌트 ---
 export default async function MovieInfoPage({ params }) {
-  const { id } = params; 
+  const { id } = params;
 
   const [movie, credits, images, similar, videos] = await Promise.all([
     getMovieDetails(id),
     getMovieCredits(id),
     getMovieImages(id),
     getSimilarMovies(id),
-    getMovieVideos(id), 
+    getMovieVideos(id),
   ]);
 
   // --- API 데이터 가공 ---
@@ -98,7 +99,7 @@ export default async function MovieInfoPage({ params }) {
   const cast = credits.cast.slice(0, 5);
   const galleryImages = images.backdrops.slice(0, 4);
   const relatedMovies = similar.results.slice(0, 5);
-  
+
   // 헬퍼 함수들을 API 데이터 가공 이후에 정의합니다.
   const findVideoKey = () => {
     const trailer = videos.results.find(
@@ -113,7 +114,7 @@ export default async function MovieInfoPage({ params }) {
     if (anyVideo) return anyVideo.key;
     return null;
   };
-  
+
   const videoKey = findVideoKey();
   const pageReviews = initialReviews.slice(0, 5);
 
@@ -212,8 +213,8 @@ export default async function MovieInfoPage({ params }) {
       marginBottom: spacing.sm,
     },
     mainContainer: {
-        ...commonStyles.container,
-        paddingTop: 0,
+      ...commonStyles.container,
+      paddingTop: 0,
     },
     section: {
       marginBottom: spacing.xxl,
@@ -286,7 +287,7 @@ export default async function MovieInfoPage({ params }) {
       color: colors.white,
       marginBottom: spacing.sm,
     },
-    reviewContent: { 
+    reviewContent: {
       fontSize: fontSize.medium,
       color: colors.lightGray,
       lineHeight: 1.5,
@@ -310,7 +311,7 @@ export default async function MovieInfoPage({ params }) {
       fontSize: '14px',
       fontWeight: fontWeight.bold,
     },
-    
+
     // ... (relatedGrid, relatedCard 등 나머지 스타일들) ...
     relatedGrid: {
       display: 'grid',
@@ -449,7 +450,7 @@ export default async function MovieInfoPage({ params }) {
               <div style={styles.infoBox}>
                 <div style={styles.infoBoxTitle}>인기도</div>
                 <div style={styles.infoBoxContent}>{Math.round(movie.popularity)} 점</div>
-                <div style={{...styles.infoBoxTitle, marginTop: spacing.md }}>
+                <div style={{ ...styles.infoBoxTitle, marginTop: spacing.md }}>
                   총 투표 수
                 </div>
                 <div style={styles.infoBoxContent}>{movie.vote_count.toLocaleString()} 회</div>
@@ -463,7 +464,7 @@ export default async function MovieInfoPage({ params }) {
               </div>
             </div>
           </div>
-          
+
           {/* ... (오른쪽 예고편/포스터 영역) ... */}
           <div style={styles.heroImageWrapper}>
             {videoKey ? (
@@ -530,16 +531,19 @@ export default async function MovieInfoPage({ params }) {
           </div>
           <div style={styles.relatedGrid}>
             {relatedMovies.map((related) => (
-              <div key={related.id} style={styles.relatedCard}>
-                <img
-                  src={`${IMAGE_BASE_URL}/w500${related.poster_path}`}
-                  alt={related.title}
-                  style={styles.relatedPoster}
-                />
-                <div style={commonStyles.movieInfo}>
-                  <h3 style={styles.relatedTitle}>{related.title}</h3>
+              // ⭐ [수정] Link 컴포넌트로 감싸고 href 추가
+              <Link href={`/movieInfo/${related.id}`} key={related.id} style={{ textDecoration: 'none' }}>
+                <div style={{ ...styles.relatedCard, cursor: 'pointer' }}> {/* cursor 스타일 추가 */}
+                  <img
+                    src={`${IMAGE_BASE_URL}/w500${related.poster_path}`}
+                    alt={related.title}
+                    style={styles.relatedPoster}
+                  />
+                  <div style={commonStyles.movieInfo || { padding: spacing.md }}> {/* 기본값 추가 */}
+                    <h3 style={styles.relatedTitle}>{related.title}</h3>
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
