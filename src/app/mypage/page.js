@@ -4,8 +4,7 @@ import React from 'react';
 import { useState } from 'react';
 import SettingItem from './_component/SettingItem';
 import { useRouter } from 'next/navigation';
-import GenreSelector from './_component/GenreSelector';
-
+import { useGenreStore } from './_component/GenreStoreContext';
 
 
 // 1. 모달 컴포넌트 (page.js에 포함하거나 별도 파일로 분리 가능)
@@ -33,15 +32,11 @@ const arrayToGenreString = (arr) => arr.join(', ');
 
 
 
-
-
 // 3. 마이페이지 컴포넌트 (메인 로직)
 export default function MyPage() {
+    
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
-    const [favGenres, setFavGenres] = useState(['모험', '공포', '코미디']);
-    const [unfavGenres, setUnfavGenres] = useState(['액션', '애니메이션', '다큐멘터리']);
-
-    const [activeGenreEdit, setActiveGenreEdit] = useState(null); // 'fav' 또는 'unfav'
+    const {favGenres,unfavGenres} = useGenreStore();
 
     const router = useRouter();
 
@@ -103,7 +98,7 @@ export default function MyPage() {
                 </div>
 
 
-                <div style={{display:'flex', justifyContent:'space-between',alignItems:'center'}}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h3 >장르</h3>
                     <button style={styles.editButton} onClick={handleProfileEdit}>
                         ✏️ 장르 수정
@@ -116,27 +111,12 @@ export default function MyPage() {
                         isLink={true}
 
                     />
-
-                    <GenreSelector
-                        isVisible={activeGenreEdit === 'fav'}
-                        initialGenres={favGenres}
-                        onSave={(genres) => handleSaveGenres(genres, 'fav')}
-                    />
-
                     <SettingItem
                         label="비선호 장르"
                         value={arrayToGenreString(unfavGenres)}
                         isLink={true}
-
-
-
                     />
 
-                    <GenreSelector
-                        isVisible={activeGenreEdit === 'unfav'}
-                        initialGenres={unfavGenres}
-                        onSave={(genres) => handleSaveGenres(genres, 'unfav')}
-                    />
 
                 </div>
 
@@ -156,7 +136,7 @@ export default function MyPage() {
                         isLink={true}
                         linkText="탈퇴하기"
                         routePath="/mypage/withdraw"
-                        
+
                     />
                 </div>
             </div>

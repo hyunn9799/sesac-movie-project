@@ -4,6 +4,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useGenreStore } from '../_component/GenreStoreContext';
 
 // 장르 목록 및 상수
 const ALL_GENRES = [
@@ -33,15 +34,17 @@ function useOutsideClick(refs, handler) {
 
 export default function ProfileEditPage() {
     const router = useRouter();
-    
+
+    const { favGenres: initialFav, unfavGenres: initialUnfav, updateGenres } = useGenreStore();
+
     // 1. 프로필 상태
-    const [name, setName] = useState("새싹"); 
-    
+    const [name, setName] = useState("새싹");
+
     // 2. 장르 상태
-    const [favGenres, setFavGenres] = useState(['모험', '공포', '코미디']); // 초기값 설정
-    const [unfavGenres, setUnfavGenres] = useState(['액션', '애니메이션', '다큐멘터리']); // 초기값 설정
+    const [favGenres, setFavGenres] = useState(initialFav); // 초기값 설정
+    const [unfavGenres, setUnfavGenres] = useState(initialUnfav); // 초기값 설정
     const [activeGenreEdit, setActiveGenreEdit] = useState(null); // 'fav', 'unfav', or null
-    
+
     // 3. UI/메시지 상태
     const [nameMessage, setNameMessage] = useState('');
     const [genreMessage, setGenreMessage] = useState('');
@@ -94,11 +97,14 @@ export default function ProfileEditPage() {
             setNameMessage(`이름은 최소 ${MIN_LENGTH}자, 최대 ${MAX_LENGTH}자까지 입력해야 합니다.`);
             return;
         }
-        
-        // 💡 실제 저장 로직: API 호출 (이름, 선호/비선호 장르 동시 전송)
+
+        updateGenres(favGenres, unfavGenres);
+
         console.log("Saving data:", { name, favGenres, unfavGenres });
         alert(`프로필 및 장르가 저장되었습니다: 이름(${name}), 선호(${favGenres.join(', ')})`);
-        router.push('/mypage'); 
+
+        // 변경된 데이터를 쿼리 파라미터로 '/mypage'로 이동
+        router.push(`/mypage`);
     };
 
     const handleCancel = () => {
@@ -120,12 +126,12 @@ export default function ProfileEditPage() {
                 <div style={dropdownStyles.message}>
                     최대 {MAX_GENRE_SELECTION}개까지 선택 가능
                 </div>
-                
+
                 <div style={dropdownStyles.select}>
                     {ALL_GENRES.map(genre => {
                         const isSelected = targetList.includes(genre);
                         const isDisabled = otherList.includes(genre);
-                        
+
                         return (
                             <div
                                 key={genre}
@@ -181,10 +187,10 @@ export default function ProfileEditPage() {
                         <div style={styles.genreValueContainer}>
                             <div style={styles.tagList}>
                                 {favGenres.length === 0 ? <span style={styles.emptyTag}>선택 없음</span> :
-                                 favGenres.map(g => <span key={g} style={styles.tag}>{g}</span>)}
+                                    favGenres.map(g => <span key={g} style={styles.tag}>{g}</span>)}
                             </div>
-                            <button 
-                                style={styles.editButton} 
+                            <button
+                                style={styles.editButton}
                                 onClick={() => setActiveGenreEdit(activeGenreEdit === 'fav' ? null : 'fav')}
                             >
                                 {activeGenreEdit === 'fav' ? '닫기' : '수정'}
@@ -197,12 +203,12 @@ export default function ProfileEditPage() {
                     <div style={styles.genreRow}>
                         <div style={styles.genreLabel}>비선호 장르:</div>
                         <div style={styles.genreValueContainer}>
-                             <div style={styles.tagList}>
+                            <div style={styles.tagList}>
                                 {unfavGenres.length === 0 ? <span style={styles.emptyTag}>선택 없음</span> :
-                                 unfavGenres.map(g => <span key={g} style={styles.tag}>{g}</span>)}
+                                    unfavGenres.map(g => <span key={g} style={styles.tag}>{g}</span>)}
                             </div>
-                            <button 
-                                style={styles.editButton} 
+                            <button
+                                style={styles.editButton}
                                 onClick={() => setActiveGenreEdit(activeGenreEdit === 'unfav' ? null : 'unfav')}
                             >
                                 {activeGenreEdit === 'unfav' ? '닫기' : '수정'}
@@ -398,22 +404,22 @@ const styles = {
 // 💡 드롭다운 UI 스타일
 const dropdownStyles = {
     container: {
-        position: 'absolute', 
+        position: 'absolute',
         top: '100%', // 버튼 아래로 내려오게
-        right: '0', 
-        zIndex: 50, 
-        
-        width: '180px', 
-        marginTop: '10px', 
-        padding: '10px', 
+        right: '0',
+        zIndex: 50,
+
+        width: '180px',
+        marginTop: '10px',
+        padding: '10px',
         backgroundColor: '#333',
         borderRadius: '5px',
         border: '1px solid #444',
         boxShadow: '0 4px 8px rgba(0,0,0,0.5)'
     },
     select: {
-        maxHeight: '180px', 
-        overflowY: 'auto', 
+        maxHeight: '180px',
+        overflowY: 'auto',
         backgroundColor: 'transparent',
         padding: '0',
     },
@@ -426,7 +432,7 @@ const dropdownStyles = {
         alignItems: 'center',
     },
     selectedOption: {
-        backgroundColor: '#555', 
+        backgroundColor: '#555',
         color: 'white',
     },
     disabledOption: {
