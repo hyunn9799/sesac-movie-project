@@ -1,0 +1,140 @@
+/* 전체 페이지 배경 */
+.container {
+  background-color: #111;
+  min-height: 100vh;
+  padding: 50px;
+  display: flex;
+  justify-content: center;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+/* 흰색 카드 영역 */
+.noticeBox {
+  background: #fff;
+  color: #000;
+  width: 90%;
+  max-width: 900px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 30px 40px;
+}
+
+/* 제목 */
+.title {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 8px;
+}
+
+.subtitle {
+  color: #555;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+/* 검색창 */
+.searchBox {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.searchBox input {
+  padding: 8px;
+  width: 250px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  color: #000;
+}
+
+.searchBox button {
+  background: #0066ff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* 공지사항 테이블 */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  color: #000;
+  border-radius: 10px; /* ✅ 둥근 모서리 */
+  overflow: hidden; /* ✅ 둥근 모서리 안쪽 잘림 방지 */
+  border: 1px solid #ddd; /* ✅ 외곽선 */
+}
+
+/* ✅ 중앙 정렬 */
+/* 공지사항 테이블 */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  color: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+/* 전체 중앙 정렬 */
+.table th,
+.table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+  vertical-align: middle;
+}
+
+/* ✅ 제목(두 번째 열)만 왼쪽 정렬 */
+.table td:nth-child(2) {
+  text-align: left;
+  padding-left: 20px;
+}
+
+/* 제목 아래 본문(드롭다운 내용) */
+.dropdownRow td {
+  background: #fafafa;
+  padding: 15px 30px;
+  color: #333;
+  border-top: 1px solid #ddd;
+  text-align: left;
+  line-height: 1.6;
+}
+
+
+.row {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.row:hover {
+  background: #f3f3f3;
+}
+
+/* ✅ 하단 버튼 영역 */
+.footerBtns {
+  display: flex;
+  justify-content: flex-start;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.footerBtns button {
+  background: none;
+  color: #000;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.footerBtns button:hover {
+  background: #eee;
+}
