@@ -27,6 +27,9 @@ export default function Footer() {
               <li>
                 <Link href="/mypage">마이페이지</Link>
               </li>
+              <li>
+                <Link href="/notice">공지사항</Link>
+              </li>
             </ul>
           </div>
 
@@ -40,7 +43,7 @@ export default function Footer() {
                 <a href="#terms">이용약관</a>
               </li>
               <li>
-                <a href="#contact">문의하기</a>
+                <Link href="/qna">문의하기</Link>
               </li>
             </ul>
           </div>
