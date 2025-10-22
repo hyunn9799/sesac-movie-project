@@ -33,23 +33,23 @@ export default function ReviewWritePage() {
       alert('리뷰 내용을 입력해주세요.');
       return;
     }
-    
+
     // --- 실제 데이터 저장 로직 ---
     // ... (LocalStorage 또는 추후 API 호출 로직) ...
     const savedReviews = JSON.parse(localStorage.getItem('myReviews') || '[]');
     const newReview = {
-      id: Date.now(), movieId: movieId, userName: '나', rating: 0, 
+      id: Date.now(), movieId: movieId, userName: '나', rating: 0,
       content: reviewText, likes: 0, date: new Date().toISOString().split('T')[0], isVerified: false,
     };
     const updatedReviews = [newReview, ...savedReviews];
     localStorage.setItem('myReviews', JSON.stringify(updatedReviews));
 
     alert(`리뷰가 (로컬에) 등록되었습니다! (영화 ID: ${movieId})\n내용: ${reviewText.substring(0, 50)}...`);
-    
+
     if (movieId) {
       router.push(`/movieInfo/${movieId}`);
     } else {
-      router.push('/'); 
+      router.push('/');
     }
   };
 
@@ -58,7 +58,7 @@ export default function ReviewWritePage() {
     pageWrapper: {
       backgroundColor: colors.dark,
       color: colors.textPrimary || 'white',
-      minHeight: 'calc(100vh - 160px)', 
+      minHeight: 'calc(100vh - 160px)',
       padding: `${spacing.xxl} 0`,
       display: 'flex',
       justifyContent: 'center',
@@ -66,12 +66,12 @@ export default function ReviewWritePage() {
     },
     contentContainer: {
       backgroundColor: colors.white,
-      color: colors.dark, 
+      color: colors.dark,
       borderRadius: borderRadius.medium,
       padding: spacing.xl,
       // 👇 [수정] 감상 후기 작성 컨테이너 크기 고정
-      width: '1340px',
-      height: '500px', 
+      width: '1100px',
+      height: '500px',
       boxShadow: commonStyles.card?.boxShadow || '0 4px 8px rgba(0,0,0,0.1)',
       display: 'flex',          // [추가] Flexbox 레이아웃 사용
       flexDirection: 'column',  // [추가] 세로 방향 정렬
@@ -90,20 +90,20 @@ export default function ReviewWritePage() {
       color: colors.mediumGray,
       marginBottom: spacing.lg,
       padding: spacing.md,
-      backgroundColor: '#f8f9fa', 
+      backgroundColor: '#f8f9fa',
       borderRadius: borderRadius.small,
       flexShrink: 0, // [추가] 안내 텍스트 크기 고정
     },
     textarea: {
       // 👇 [수정] 텍스트 영역 크기 고정 및 Flexbox 활용
-      width: '1250px',
+      width: '1050px',
       flexGrow: 1, // [추가] 남은 공간 모두 차지
       padding: spacing.md,
       fontSize: fontSize.medium,
       border: `1px solid ${colors.lightGray}`,
       borderRadius: borderRadius.small,
       resize: 'none', // [수정] 크기 조절 비활성화
-      marginBottom: spacing.sm, 
+      marginBottom: spacing.sm,
       fontFamily: 'inherit',
       alignSelf: 'center', // [추가] 가로 중앙 정렬
     },
@@ -112,7 +112,7 @@ export default function ReviewWritePage() {
       fontSize: fontSize.small,
       color: colors.mediumGray,
       marginBottom: spacing.lg,
-      width: '1250px', // [추가] textarea와 너비 맞춤
+      width: '1000px', // [추가] textarea와 너비 맞춤
       alignSelf: 'center', // [추가] 가로 중앙 정렬
       flexShrink: 0, // [추가] 글자 수 영역 크기 고정
     },
@@ -123,30 +123,31 @@ export default function ReviewWritePage() {
       flexShrink: 0, // [추가] 버튼 영역 크기 고정
     },
     submitButtonBase: {
-      ...commonStyles.button,      
+      ...commonStyles.button,
       // 👇 [수정] 등록 버튼 크기 고정
-      width: '1200px',
+      width: '1080px',
       height: '50px',
-      fontSize: '18px',     
-      color: '#fff',             
-      border: 'none',            
-      cursor: 'not-allowed',     
-      opacity: 0.7,              
+      fontSize: '18px',
+      color: '#fff',
+      border: 'none',
+      cursor: 'not-allowed',
+      opacity: 0.7,
       transition: 'background-color 0.3s ease, opacity 0.3s ease',
       display: 'flex',        // [추가] Flexbox 사용
       alignItems: 'center',   // [추가] 텍스트 세로 중앙 정렬
       justifyContent: 'center', // [추가] 텍스트 가로 중앙 정렬
       margin: '0 auto',     // [추가] 버튼 자체를 중앙 정렬
+      padding: '0'
     },
   };
 
   const hasText = reviewText.trim() !== '';
 
   const dynamicButtonStyle = {
-    ...styles.submitButtonBase, 
-    backgroundColor: hasText ? '#DB6666' : '#cccccc', 
-    cursor: hasText ? 'pointer' : 'not-allowed', 
-    opacity: hasText ? 1 : 0.7, 
+    ...styles.submitButtonBase,
+    backgroundColor: hasText ? '#DB6666' : '#cccccc',
+    cursor: hasText ? 'pointer' : 'not-allowed',
+    opacity: hasText ? 1 : 0.7,
   };
 
 
@@ -154,14 +155,14 @@ export default function ReviewWritePage() {
     <div style={styles.pageWrapper}>
       <div style={styles.contentContainer}>
         <h1 style={styles.title}>감상 후기 작성</h1>
-        
-        <p style={styles.infoText}>
+
+        {/*<p style={styles.infoText}>
           감상 후기는 최대 {MAX_LENGTH}자까지 등록 가능합니다. 영화와 관련 없는 내용은 임의로 삭제될 수 있습니다.
         </p>
-
+        */}
         <textarea
           style={styles.textarea}
-          placeholder="여기에 영화 감상 후기를 작성해주세요..."
+          placeholder={`감상 후기는 최대 ${MAX_LENGTH}자까지 등록 가능합니다. 영화와 관련 없는 내용은 임의로 삭제될 수 있습니다.`}
           value={reviewText}
           onChange={handleTextChange}
         />
@@ -170,10 +171,10 @@ export default function ReviewWritePage() {
         </div>
 
         <div style={styles.buttonContainer}>
-          <button 
-            style={dynamicButtonStyle} 
+          <button
+            style={dynamicButtonStyle}
             onClick={handleSubmit}
-            disabled={!hasText} 
+            disabled={!hasText}
           >
             등록하기
           </button>
