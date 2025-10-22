@@ -23,19 +23,21 @@ async function fetchMovies(category) {
 
 export default async function MainPage() {
   // 비동기 fetch 결과를 항상 배열로 보장
-  const [popular, nowPlaying, topRated] = await Promise.all([
+  const [popular, nowPlaying, topRated, upcoming] = await Promise.all([
     fetchMovies("popular"),
     fetchMovies("now_playing"),
     fetchMovies("top_rated"),
+    fetchMovies("upcoming"), // ✅ 상영 예정작 추가
   ]);
 
   return (
     <main className="main-container">
-      <h1 className="main-title">🎬 MovieHub - 영화 추천</h1>
+      <h1 className="main-title">🎬 시청하신 영화에 리뷰를 남겨주세요</h1>
 
       <MovieSection title="🔥 인기 영화" movies={popular || []} />
       <MovieSection title="🎥 현재 상영작" movies={nowPlaying || []} />
       <MovieSection title="⭐ 평점 높은 영화" movies={topRated || []} />
+      <MovieSection title="⏳ 상영 예정작" movies={upcoming || []} /> {/* ✅ 추가 */}
     </main>
   );
 }

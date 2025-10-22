@@ -12,7 +12,7 @@ export default function MovieCard({ movie }) {
   return (
     <div
       className="movie-card"
-      onClick={() => router.push(`/movie/${movie.id}`)}
+      onClick={() => router.push(`/movieInfo/${movie.id}`)}
     >
       <div className="movie-image">
         <Image

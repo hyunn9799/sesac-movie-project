@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영화 웹사이트 - 로그인</title>
+    <style>
+        /* CSS는 2번 React 코드의 styles 객체와 유사하게 작성 */
+        body {
+            background-color: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-form-container {
+            width: 340px;
+            padding: 20px;
+            background-color: #1a1a1a;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #333;
+            border-radius: 3px;
+            background-color: #2c2c2c;
+            color: white;
+            font-size: 16px;
+        }
+
+        .error-message {
+            color: #ff3333;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff3333;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-form-container">
+        <h2>로그인</h2>
+        <form id="loginForm">
+            
+            <div class="input-group">
+                <label for="id">아이디</label>
+                <input type="text" id="id" placeholder="이메일 주소를 입력해주세요.">
+            </div>
+
+            <div class="input-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" placeholder="비밀번호를 입력하세요.">
+            </div>
+
+            <p id="errorMessage" class="error-message" style="display: none;"></p>
+
+            <button type="submit">로그인</button>
+
+            <div class="links">
+                <a href="/register">회원가입</a>
+                <a href="/find-id">아이디 / 비밀번호 찾기</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const idInput = document.getElementById('id');
+        const passwordInput = document.getElementById('password');
+        const errorMessage = document.getElementById('errorMessage');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 유효성 검사
+            if (idInput.value === '' || passwordInput.value === '') {
+                errorMessage.textContent = '아이디와 비밀번호를 모두 입력해주세요.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // 에러 메시지 숨김
+            errorMessage.style.display = 'none';
+
+            // 실제 로그인 로직 (API 호출 등)
+            console.log('로그인 시도:', { 
+                id: idInput.value, 
+                password: passwordInput.value 
+            });
+
+            // 성공/실패 처리 로직은 여기에 추가
+            // 예: alert('로그인 성공!'); 
+        });
+    </script>
+</body>
+</html>
