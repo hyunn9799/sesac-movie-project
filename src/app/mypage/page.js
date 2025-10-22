@@ -60,81 +60,83 @@ export default function MyPage() {
     return (
 
         // ❗ 1. 오버레이 레이어를 추가하기 위해 containerStyle을 가장 바깥에 적용
-        <div style={containerStyle}>
+        <>
+            <div style={containerStyle}>
 
-            {/* ❗ 2. 배경 이미지를 더 어둡게 만드는 오버레이 레이어 */}
-            <div style={overlayStyle}></div>
+                {/* ❗ 2. 배경 이미지를 더 어둡게 만드는 오버레이 레이어 */}
+                <div style={overlayStyle}></div>
 
-            {/* ❗ 3. 실제 콘텐츠 박스는 오버레이 위에 오도록 zIndex: 2 적용 */}
-            <div style={styles.contentBox}>
-                <div style={styles.content}>
-                    <div style={styles.profileHeader}>
-                        <h2 style={styles.title}>내 프로필</h2>
-                        <button style={styles.editButton} onClick={handleProfileEdit}>
-                            ✏️ 프로필 수정
-                        </button>
+                {/* ❗ 3. 실제 콘텐츠 박스는 오버레이 위에 오도록 zIndex: 2 적용 */}
+                <div style={styles.contentBox}>
+                    <div style={styles.content}>
+                        <div style={styles.profileHeader}>
+                            <h2 style={styles.title}>내 프로필</h2>
+                            <button style={styles.editButton} onClick={handleProfileEdit}>
+                                ✏️ 프로필 수정
+                            </button>
+                        </div>
+
+                        <ProfileIcon />
+
+                        {/* 계정 Section */}
+                        <h3 style={{ fontSize: '18px' }}>계정</h3>
+                        <div style={styles.sectionBox}>
+                            <SettingItem label="이메일" value={userData.email} />
+                            <SettingItem
+                                label="비밀번호"
+                                value=""
+                                isLink={true}
+                                linkText="비밀번호 변경"
+                                routePath="/mypage/changePwd"
+                            />
+                        </div>
+
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h3 style={{ fontSize: '18px' }}>장르</h3>
+                            {/* 장르 수정 버튼은 프로필 편집 버튼과 동일 경로로 연결 */}
+                            <button style={styles.editButton} onClick={handleProfileEdit}>
+                                ✏️ 장르 수정
+                            </button>
+                        </div>
+                        <div style={styles.sectionBox}>
+                            <SettingItem
+                                label="선호 장르"
+                                value={arrayToGenreString(favGenres)}
+                                isLink={true}
+                            />
+                            <SettingItem
+                                label="비선호 장르"
+                                value={arrayToGenreString(unfavGenres)}
+                                isLink={true}
+                            />
+                        </div>
+
+
+                        {/* 리뷰 관리 Section */}
+                        <h3 style={{ fontSize: '18px' }} >리뷰 관리 / 작성한 리뷰 : {userData.reviewCount}개</h3>
+                        <div style={styles.sectionBox}>
+                            <SettingItem label="작성한 리뷰" value={`${userData.reviewCount}개`} isLink={true} linkText="보기" routePath="/mypage/reviews" />
+                        </div>
+
+                        {/* 회원 탈퇴 Section */}
+                        <h3 style={{ fontSize: '18px' }}>회원 탈퇴</h3>
+                        <div style={styles.sectionBox}>
+                            {/* ❗ 탈퇴하기 링크 대신, 모달을 여는 onClick 이벤트 연결 */}
+                            <SettingItem
+                                label="탈퇴하기"
+                                value=""
+                                isLink={true}
+                                linkText="탈퇴하기"
+                                routePath="/mypage/withdraw"
+                            />
+                        </div>
                     </div>
 
-                    <ProfileIcon />
 
-                    {/* 계정 Section */}
-                    <h3 style={{ fontSize: '18px' }}>계정</h3>
-                    <div style={styles.sectionBox}>
-                        <SettingItem label="이메일" value={userData.email} />
-                        <SettingItem
-                            label="비밀번호"
-                            value=""
-                            isLink={true}
-                            linkText="비밀번호 변경"
-                            routePath="/mypage/changePwd"
-                        />
-                    </div>
-
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h3 style={{ fontSize: '18px' }}>장르</h3>
-                        {/* 장르 수정 버튼은 프로필 편집 버튼과 동일 경로로 연결 */}
-                        <button style={styles.editButton} onClick={handleProfileEdit}>
-                            ✏️ 장르 수정
-                        </button>
-                    </div>
-                    <div style={styles.sectionBox}>
-                        <SettingItem
-                            label="선호 장르"
-                            value={arrayToGenreString(favGenres)}
-                            isLink={true}
-                        />
-                        <SettingItem
-                            label="비선호 장르"
-                            value={arrayToGenreString(unfavGenres)}
-                            isLink={true}
-                        />
-                    </div>
-
-
-                    {/* 리뷰 관리 Section */}
-                    <h3 style={{ fontSize: '18px' }} >리뷰 관리 / 작성한 리뷰 : {userData.reviewCount}개</h3>
-                    <div style={styles.sectionBox}>
-                        <SettingItem label="작성한 리뷰" value={`${userData.reviewCount}개`} isLink={true} linkText="보기" routePath="/mypage/reviews" />
-                    </div>
-
-                    {/* 회원 탈퇴 Section */}
-                    <h3 style={{ fontSize: '18px' }}>회원 탈퇴</h3>
-                    <div style={styles.sectionBox}>
-                        {/* ❗ 탈퇴하기 링크 대신, 모달을 여는 onClick 이벤트 연결 */}
-                        <SettingItem
-                            label="탈퇴하기"
-                            value=""
-                            isLink={true}
-                            linkText="탈퇴하기"
-                            routePath="/mypage/withdraw"
-                        />
-                    </div>
                 </div>
-
-              
             </div>
-        </div>
+        </>
     );
 }
 
