@@ -169,6 +169,9 @@
   background-color: #f3f3f3;
 }
 
+/* 1 
+*/
+
 .activePage {
   background: #0066ff;
   color: rgb(0, 0, 0);
@@ -178,3 +181,4 @@
   padding: 6px 12px;
   box-shadow: 0 0 6px rgba(0, 102, 255, 0.6);
 }
+
