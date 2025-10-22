@@ -1,4 +1,4 @@
-// src/app/mypage/profile-edit/page.js
+// src/app/mypage/profile-edit/
 
 "use client";
 
@@ -12,7 +12,7 @@ const ALL_GENRES = [
     '키즈', '모험', '액션', '로맨스', '공포',
     'SF', '코미디', '애니메이션', '다큐멘터리', '드라마', '판타지', '스릴러', '범죄'
 ];
-const MAX_LENGTH = 20;
+const MAX_LENGTH = 6;
 const MIN_LENGTH = 2;
 const MAX_GENRE_SELECTION = 3;
 
@@ -290,16 +290,17 @@ const styles = {
         position: 'relative', // z-index가 제대로 작동하도록 설정
     },
     content: {
-        maxWidth: '750px', // 너비 확장
+        maxWidth: '650px', // 너비 확장
         width: '100%',
         padding: '20px',
         textAlign: 'center',
         
         // ❗ 내용 영역 배경: 불투명한 배경을 추가하여 가독성 확보
-        backgroundColor: 'rgba(28, 28, 28, 0.9)', 
+        // backgroundColor: 'rgba(28, 28, 28, 0.9)', 
         borderRadius: '12px',
         boxShadow: '0 8px 16px rgba(0,0,0,0.4)', // 그림자 추가
         marginBottom: '80px', // 하단 간격 추가
+        border : '1px solid rgba(28, 28, 28, 0.9)'
     },
     title: {
         fontSize: '30px',
@@ -311,10 +312,11 @@ const styles = {
         alignItems: 'flex-start',
         gap: '40px',
         textAlign: 'left',
-        padding: '30px',
-        backgroundColor: '#383838', // 배경이 겹치지 않도록 살짝 밝은 색으로 조정
+        padding: '50px',
+        // backgroundColor: '#383838', // 배경이 겹치지 않도록 살짝 밝은 색으로 조정
         borderRadius: '8px',
         marginBottom: '30px',
+        border: '1px solid #b69d71'
     },
     profileIcon: {
         width: '80px',
@@ -333,7 +335,7 @@ const styles = {
     },
     label: {
         display: 'block',
-        color: '#aaa',
+        color: 'white',
         marginBottom: '5px',
         fontSize: '14px',
     },
@@ -348,7 +350,7 @@ const styles = {
     },
     hint: {
         fontSize: '12px',
-        color: '#aaa',
+        color: 'white',
         marginTop: '8px',
         marginBottom: '0',
     },
@@ -364,7 +366,7 @@ const styles = {
         marginTop: '50px',
     },
     buttonPrimary: {
-        backgroundColor: '#e74c3c', // 붉은색 강조
+        backgroundColor: '#ff6b6b', // 붉은색 강조
         color: 'white',
         border: 'none',
         padding: '12px 30px',
@@ -384,10 +386,12 @@ const styles = {
     // 💡 장르 섹션 스타일
     genreSection: {
         padding: '30px',
-        backgroundColor: '#383838', // 배경이 겹치지 않도록 살짝 밝은 색으로 조정
+        // backgroundColor: '#383838', // 배경이 겹치지 않도록 살짝 밝은 색으로 조정
         borderRadius: '8px',
         marginBottom: '30px',
         textAlign: 'left',
+        border: '1px solid #b69d71',
+        boxShadow : '0 8px 16px rgba(0, 0, 0, 0.4)',
     },
     genreTitle: {
         fontSize: '20px',
@@ -404,7 +408,7 @@ const styles = {
     },
     genreLabel: {
         width: '100px',
-        color: '#aaa',
+        color: 'white',
         flexShrink: 0,
     },
     genreValueContainer: {
@@ -420,7 +424,7 @@ const styles = {
         flexWrap: 'wrap',
     },
     tag: {
-        backgroundColor: '#34495e',
+        backgroundColor: '#b69d71',
         color: 'white',
         padding: '5px 10px',
         borderRadius: '3px',
@@ -432,8 +436,8 @@ const styles = {
     },
     editButton: {
         backgroundColor: 'transparent',
-        color: '#3498db',
-        border: '1px solid #3498db',
+        color: '#b69d71',
+        border: '1px solid #b69d71',
         padding: '5px 10px',
         cursor: 'pointer',
         borderRadius: '4px',
@@ -481,7 +485,7 @@ const dropdownStyles = {
         borderRadius: '3px',
     },
     selectedOption: {
-        backgroundColor: '#4a69bd', // 짙은 파란색으로 선택됨 강조
+        backgroundColor: '#b69d71', // 짙은 파란색으로 선택됨 강조
         color: 'white',
     },
     disabledOption: {

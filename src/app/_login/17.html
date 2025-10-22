@@ -1,0 +1,137 @@
+from IPython.display import HTML
+
+html_code = """
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>로그아웃 확인</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    html,body {
+      margin:0; padding:0; width:100vw; min-height:200vh;
+      font-family:'Noto Sans KR',sans-serif; background:#111;
+      overflow-x:hidden;
+    }
+    body {width:100vw; min-height:200vh;}
+    .layout {
+      position:relative;
+      width:100vw;
+      min-height:200vh; /* 기존 100vh -> 200vh로! */
+    }
+    .logo-wrap {
+      position:absolute; left:18px; top:18px;
+      display:flex; align-items:center; z-index:10;
+    }
+    .logo-icon {margin-right:10px;}
+    .moviehub-txt {font-weight:700;font-size:22px;color:#ec2b37;letter-spacing:-1.2px;}
+    .action-btns {
+      position:absolute;
+      right:26px;
+      top:18px;
+      display:flex;
+      gap:10px;
+      z-index:10;
+    }
+    .action-btn {
+      padding:6px 18px 5px 18px;
+      font-size:14px;
+      font-weight:700;
+      background:#fff;
+      color:#1a1d25;
+      border-radius:8px;
+      border:none;
+      border:2px solid #ddd;
+      cursor:pointer;
+      outline:none;
+      transition:.12s;
+      box-shadow:none;
+    }
+    .action-btn.logout {
+      color:#ec2b37;
+      border:2px solid #ec2b37;
+      background:#fff;
+    }
+    .action-btn.logout:hover { background: #ec2b37; color:#fff; }
+    .modal-box {
+      position:absolute;
+      top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      background:#e3e3e3;
+      border-radius:6px;
+      width:290px;
+      box-shadow: 0 4px 30px rgba(15,15,15,.18);
+      padding:36px 22px 33px 22px;
+      text-align:center;
+      z-index:20;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    .modal-message {
+      font-size:17px;
+      color:#181821;
+      font-weight:700;
+      margin-bottom:28px;
+      letter-spacing:-0.4px;
+    }
+    .modal-actions {
+      width:100%; display:flex; justify-content:center; gap:13px;
+    }
+    .modal-btn {
+      min-width:50px;
+      font-size:15px;
+      font-weight:700;
+      border:none;
+      border-radius:6px;
+      padding:7px 19px 7px 19px;
+      cursor:pointer;
+      transition:0.13s;
+      background:#ec2b37;
+      color:#fff;
+      box-shadow:none;
+    }
+    .modal-btn.no {
+      background:#181821;
+      color:#fff;
+    }
+    .modal-btn.no:hover {background:#444;}
+    .modal-btn.yes:hover {background:#ed4452;}
+    @media (max-width:600px) {
+      .modal-box { width:94vw; min-width:0; }
+      .logo-wrap, .action-btns { top:8px; left:8px; right:8px; }
+      .modal-message { font-size:15px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="logo-wrap">
+      <span class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle">
+          <rect x="1" y="6" width="27" height="16" rx="3" fill="#ec2b37" stroke="#fff" stroke-width="2"/>
+          <rect x="2.8" y="9.6" width="23" height="2.6" rx="1" fill="#fff"/>
+          <rect x="2.8" y="15" width="18.4" height="2.6" rx="1" fill="#fff"/>
+          <circle cx="24.5" cy="19.5" r="1.5" fill="#fff"/>
+        </svg>
+      </span>
+      <span class="moviehub-txt">MovieHub</span>
+    </div>
+    <div class="action-btns">
+      <button class="action-btn">메인으로</button>
+      <button class="action-btn logout">로그아웃</button>
+    </div>
+    <div class="modal-box">
+      <div class="modal-message">로그아웃 하시겠습니까?</div>
+      <div class="modal-actions">
+        <button class="modal-btn yes">네</button>
+        <button class="modal-btn no">아니오</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+"""
+
+display(HTML(html_code))
