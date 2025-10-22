@@ -119,7 +119,7 @@ export default function WithdrawPage() {
                         />
                     </div>
                     
-                    {/* 액션 버튼 */}
+                   
                     <div style={styles.actions}>
                         <button 
                             type="submit"
