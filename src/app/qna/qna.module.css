@@ -38,30 +38,26 @@
 .searchBox {
   display: flex;
   justify-content: flex-end;
-  align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 20px;
 }
 
 .searchBox input {
-  width: 230px;
-  padding: 8px 12px 8px 35px;
+  padding: 8px;
+  width: 250px;
+  border-radius: 5px;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  background: url("/search-icon.png") no-repeat 8px center;
-  background-size: 16px;
+  background: #f8f8f8;
+  color: #000;
 }
 
 .searchBox button {
-  background-color: #0066ff;
-  color: #fff;
+  background: #0066ff;
+  color: white;
   border: none;
-  border-radius: 8px;
-  padding: 8px 15px;
-  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
 .searchBox button:hover {
@@ -160,23 +156,22 @@
 
 .footerBtns {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 50px;
 }
 
 .footerBtns button {
-  flex: 1;
-  background-color: #fff;
+  background-color: #0066ff;
   border: 1px solid #ccc;
   border-radius: 12px;
-  padding: 8px 12px;
+  padding: 8px 30px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .footerBtns button:hover {
-  background-color: #f3f3f3;
+  background-color: #0050cc;
 }
 
 .activePage {

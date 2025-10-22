@@ -182,3 +182,11 @@
   box-shadow: 0 0 6px rgba(0, 102, 255, 0.6);
 }
 
+
+.highlight {
+  background-color: #fff176; 
+  font-weight: bold;
+  color: #000;
+  border-radius: 3px;
+  padding: 0 2px;
+}

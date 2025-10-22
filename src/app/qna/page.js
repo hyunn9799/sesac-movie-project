@@ -1,31 +1,57 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation"; // ✅ 페이지 이동용
 import styles from "./qna.module.css";
 import { initialQna } from "@/lib/data/qna";
 
 export default function QnaPage() {
+  const router = useRouter(); // ✅ 라우터 사용 선언
+
   const [qnaList] = useState(initialQna);
   const [openId, setOpenId] = useState(null);
+  const [search, setSearch] = useState("");
 
-  // ✅ 페이지네이션 관련 상태
   const [currentPage, setCurrentPage] = useState(1);
-  const qnaPerPage = 10; // 한 페이지당 표시할 QnA 수
+  const qnaPerPage = 10;
   const totalPages = Math.ceil(qnaList.length / qnaPerPage);
 
-  // ✅ 현재 페이지의 QnA 리스트 계산
+  const filteredQna = qnaList.filter(
+    (qna) =>
+      qna.title.toLowerCase().includes(search.toLowerCase()) ||
+      qna.content.toLowerCase().includes(search.toLowerCase())
+  );
+
   const startIndex = (currentPage - 1) * qnaPerPage;
   const endIndex = startIndex + qnaPerPage;
-  const currentQnaList = qnaList.slice(startIndex, endIndex);
+  const currentQnaList = filteredQna.slice(startIndex, endIndex);
 
-  // ✅ 페이지 이동 함수
   const goToPage = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
+      setOpenId(null);
     }
   };
 
-  // ✅ QnA 열기/닫기
   const toggleQna = (id) => setOpenId(openId === id ? null : id);
+
+  const highlightText = (text, keyword) => {
+    if (!keyword) return text;
+    const parts = text.split(new RegExp(`(${keyword})`, "gi"));
+    return parts.map((part, i) =>
+      part.toLowerCase() === keyword.toLowerCase() ? (
+        <mark key={i} className={styles.highlight}>
+          {part}
+        </mark>
+      ) : (
+        part
+      )
+    );
+  };
+
+  // ✅ 등록 버튼 클릭 시 이동
+  const goToRegister = () => {
+    router.push("/qna/write"); // ✅ /qna/write 페이지로 이동
+  };
 
   return (
     <div className={styles.container}>
@@ -37,9 +63,20 @@ export default function QnaPage() {
 
         {/* 검색창 */}
         <div className={styles.searchBox}>
-          <input type="text" placeholder="검색어를 입력하세요" />
+          <input
+            type="text"
+            placeholder="🔍 검색어를 입력하세요"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
           <button>검색</button>
         </div>
+
+        {search && (
+          <p className={styles.searchResult}>
+            🔎 검색어: <strong>{search}</strong>
+          </p>
+        )}
 
         {/* QnA 테이블 */}
         <table className={styles.table}>
@@ -54,18 +91,15 @@ export default function QnaPage() {
           <tbody>
             {currentQnaList.map((qna) => (
               <React.Fragment key={qna.id}>
-                <tr
-                  className={styles.row}
-                  onClick={() => toggleQna(qna.id)}
-                >
+                <tr className={styles.row} onClick={() => toggleQna(qna.id)}>
                   <td>{qna.id}</td>
-                  <td>{qna.title}</td>
+                  <td>{highlightText(qna.title, search)}</td>
                   <td>{qna.date}</td>
                   <td>{qna.views}</td>
                 </tr>
                 {openId === qna.id && (
                   <tr className={styles.dropdownRow}>
-                    <td colSpan="4">{qna.content}</td>
+                    <td colSpan="4">{highlightText(qna.content, search)}</td>
                   </tr>
                 )}
               </React.Fragment>
@@ -104,12 +138,9 @@ export default function QnaPage() {
           </button>
         </div>
 
-        {/* 하단 버튼 */}
+        {/* ✅ 등록 버튼 */}
         <div className={styles.footerBtns}>
-          <button>검색결과 수집에 대한 정책</button>
-          <button>MovieHub 사용문의</button>
-          <button>제휴제안</button>
-          <button>고객센터</button>
+          <button onClick={goToRegister}>등록</button>
         </div>
       </div>
     </div>
