@@ -27,4 +27,4 @@ export default function MovieCard({ movie }) {
       <p className="movie-rating">⭐ {movie.vote_average.toFixed(1)}</p>
     </div>
   );
-}
+};
