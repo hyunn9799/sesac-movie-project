@@ -12,7 +12,7 @@ const ALL_GENRES = [
     '키즈', '모험', '액션', '로맨스', '공포',
     'SF', '코미디', '애니메이션', '다큐멘터리', '드라마', '판타지', '스릴러', '범죄'
 ];
-const MAX_LENGTH = 20;
+const MAX_LENGTH = 6;
 const MIN_LENGTH = 2;
 const MAX_GENRE_SELECTION = 3;
 
@@ -290,7 +290,7 @@ const styles = {
         position: 'relative', // z-index가 제대로 작동하도록 설정
     },
     content: {
-        maxWidth: '750px', // 너비 확장
+        maxWidth: '650px', // 너비 확장
         width: '100%',
         padding: '20px',
         textAlign: 'center',
@@ -311,7 +311,7 @@ const styles = {
         alignItems: 'flex-start',
         gap: '40px',
         textAlign: 'left',
-        padding: '30px',
+        padding: '50px',
         backgroundColor: '#383838', // 배경이 겹치지 않도록 살짝 밝은 색으로 조정
         borderRadius: '8px',
         marginBottom: '30px',
