@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Header from '@/component/Header';
 import Footer from '@/component/Footer';
+import Chatbot from '@/component/Chatbot';
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
         {!isAdminPage && <Header />}
         {children}
         {!isAdminPage && <Footer />}
+        {!isAdminPage && <Chatbot />}
       </body>
     </html>
   );
