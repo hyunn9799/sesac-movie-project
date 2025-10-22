@@ -6,20 +6,19 @@ import Link from 'next/link'
 
 export default function Header() {
   const [query, setQuery] = useState('')
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false) // 기존 추천 드롭다운
-  const [suggestions, setSuggestions] = useState([]) // 자동완성 결과
-  const [recent, setRecent] = useState([]) // 최근 검색어
-  const [saveSearch, setSaveSearch] = useState(true) // 저장 ON/OFF
-  const [showSuggestionBox, setShowSuggestionBox] = useState(false) // 검색 관련 드롭다운 표시 여부
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [suggestions, setSuggestions] = useState([]) 
+  const [recent, setRecent] = useState([])
+  const [saveSearch, setSaveSearch] = useState(true) 
+  const [showSuggestionBox, setShowSuggestionBox] = useState(false)
 
   const router = useRouter()
-  const closeTimer = useRef(null) // 추천 드롭다운 닫기 타이머
-  const suggestionTimer = useRef(null) // 자동완성 디바운스 타이머
-  const wrapperRef = useRef(null) // 검색창 주변 클릭 감지용
+  const closeTimer = useRef(null)
+  const suggestionTimer = useRef(null) 
+  const wrapperRef = useRef(null) 
 
   const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY
 
-  // --- 추천 데이터 (원본 포함: 장르, 기분, 상황) ---
   const moodRecommendations = [
     { label: '슬플 때', genres: '18,10749' },
     { label: '기분전환', genres: '35,10751' },
@@ -51,11 +50,7 @@ export default function Header() {
     { label: '비오는 날', genres: '18,10749' },
     { label: '잠 안 올 때', genres: '35' },
   ]
-  // --- end 추천 데이터 ---
-
-  // -------------------------
-  // 최근 검색어 불러오기 (localStorage)
-  // -------------------------
+  
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('recentSearches')) || []
@@ -65,9 +60,7 @@ export default function Header() {
     }
   }, [])
 
-  // -------------------------
-  // 외부 클릭 시 검색 드롭다운 닫기
-  // -------------------------
+ 
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -78,9 +71,7 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleOutsideClick)
   }, [])
 
-  // -------------------------
-  // 자동완성 요청 (디바운스)
-  // -------------------------
+
   useEffect(() => {
     if (!query || query.trim().length < 2) {
       setSuggestions([])
@@ -125,9 +116,7 @@ export default function Header() {
     }
   }, [query, API_KEY])
 
-  // -------------------------
-  // 검색 실행 (폼 제출)
-  // -------------------------
+ 
   const handleSearch = (e) => {
     e.preventDefault()
     const q = query.trim()
@@ -147,9 +136,7 @@ export default function Header() {
     setShowSuggestionBox(false)
   }
 
-  // -------------------------
-  // 제안 클릭 (제목/사람 선택)
-  // -------------------------
+
   const handleSuggestionClick = (item) => {
     const q = item.title
     router.push(`/search?q=${encodeURIComponent(q)}`)
@@ -166,9 +153,8 @@ export default function Header() {
     setShowSuggestionBox(false)
   }
 
-  // -------------------------
-  // 최근검색 전체삭제
-  // -------------------------
+ 
+  
   const clearRecent = () => {
     try {
       localStorage.removeItem('recentSearches')
@@ -176,12 +162,14 @@ export default function Header() {
     setRecent([])
   }
 
-  // -------------------------
-  // 추천 드롭다운 (기존) 토글 관련
-  // -------------------------
-  const handleRecommendClick = (genres) => {
-    router.push(`/recommendations?genres=${genres}`)
-    setIsDropdownOpen(false)
+
+
+
+  const handleRecommendClick = (genres, label) => {
+    
+    const encodedLabel = encodeURIComponent(label);
+    router.push(`/recommendations?genres=${genres}&label=${encodedLabel}`);
+    setIsDropdownOpen(false);
   }
 
   const handleMouseEnter = () => {
@@ -198,13 +186,14 @@ export default function Header() {
     }, 500)
   }
 
-  // -------------------------
-  // 최근 검색어 항목 클릭 (입력창에 채우기)
-  // -------------------------
+ 
+  
   const handleRecentClick = (item) => {
     setQuery(item)
     setShowSuggestionBox(true)
   }
+
+
 
   return (
     <header className={styles.header}>
@@ -237,7 +226,8 @@ export default function Header() {
                     <button
                       key={item.label}
                       className={`${styles.recommendationItemButton} ${styles.genreButton}`}
-                      onClick={() => handleRecommendClick(item.genres)}
+                      
+                      onClick={() => handleRecommendClick(item.genres, item.label)}
                     >
                       {item.label}
                     </button>
@@ -252,7 +242,8 @@ export default function Header() {
                     <button
                       key={item.label}
                       className={`${styles.recommendationItemButton} ${styles.moodButton}`}
-                      onClick={() => handleRecommendClick(item.genres)}
+                  
+                      onClick={() => handleRecommendClick(item.genres, item.label)}
                     >
                       {item.label}
                     </button>
@@ -267,7 +258,8 @@ export default function Header() {
                     <button
                       key={item.label}
                       className={`${styles.recommendationItemButton} ${styles.situationButton}`}
-                      onClick={() => handleRecommendClick(item.genres)}
+            
+                      onClick={() => handleRecommendClick(item.genres, item.label)}
                     >
                       {item.label}
                     </button>
@@ -278,7 +270,7 @@ export default function Header() {
           )}
         </div>
 
-        {/* 검색 섹션 */}
+        {/* 검색 섹션 (변경 없음 - 생략) */}
         <div className={styles.searchSection} ref={wrapperRef} style={{ position: 'relative' }}>
           <form onSubmit={handleSearch} className={styles.searchContainer} autoComplete="off">
             <input
@@ -304,7 +296,7 @@ export default function Header() {
             </button>
           </form>
 
-          {/* 자동완성 / 최근검색 박스 */}
+          {/* 자동완성 / 최근검색 박스 (변경 없음 - 생략) */}
           {showSuggestionBox && ((query && suggestions.length > 0) || (!query && recent.length > 0)) && (
             <div
               className={styles.suggestionBox}
@@ -408,7 +400,7 @@ export default function Header() {
           )}
         </div>
 
-        {/* 인증 / 링크 섹션 */}
+        {/* 인증 / 링크 섹션 (변경 없음 - 생략) */}
         <div className={styles.authSection}>
           <div className={styles.authButtons}>
             <Link href="/" className={styles.loginButton}>홈</Link>
