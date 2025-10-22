@@ -1,0 +1,141 @@
+%%html
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>로그인 성공</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      height: 100%;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #fdfdfd;
+    }
+    body {
+      min-height: 120vh; /* 세로 더 길게 */
+      position: relative;
+    }
+    .container {
+      display: flex;
+      min-height: 120vh; /* 컨테이너도 세로 늘림 */
+      width: 100vw;
+    }
+    .side {
+      background: #111;
+      width: 22vw;
+      min-width: 180px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      position: relative;
+    }
+    .side.right {
+      align-items: flex-start;
+      justify-content: flex-end;
+    }
+    .center {
+      flex: 1;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding-top: 100px;
+      padding-bottom: 100px; /* 여백 추가로 세로 공간 확보 */
+    }
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      position: absolute;
+      top: 30px;
+      left: 38px;
+    }
+    .logo-icon { margin-right: 10px; display: inline-block; }
+    .moviehub-txt {
+      font-weight: 700;
+      font-size: 27px;
+      color: #ec2b37;
+      letter-spacing: -2px;
+    }
+    .action-btns {
+      position: absolute;
+      top: 30px;
+      right: 38px;
+      display: flex;
+      gap: 10px;
+      z-index: 99;
+    }
+    .action-btn {
+      padding: 9px 18px;
+      font-size: 17px;
+      font-weight: 700;
+      background: #fff;
+      color: #1a1d25;
+      border-radius: 10px;
+      border: 2px solid #ddd;
+      margin-left: 2px;
+      cursor: pointer;
+      outline: none;
+      transition: .12s;
+    }
+    .action-btn.main { color: #111; }
+    .action-btn.logout { background: #fff; color: #ec2b37; border: 2px solid #ec2b37; }
+    .action-btn.logout:hover { background: #ec2b37; color: #fff; }
+    .message-box {
+      background: #111;
+      color: #fff;
+      font-weight: 700;
+      font-size: 2.2rem;
+      border-radius: 25px;
+      padding: 60px 48px; /* 세로 패딩 늘림 */
+      box-shadow: 0 8px 40px rgba(16,16,16,0.15);
+      text-align: center;
+      min-width: 360px;
+      line-height: 1.4;
+      letter-spacing: -1px;
+    }
+    @media (max-width:900px) {
+      .side { display: none; }
+      .center { width: 100vw; padding: 60px 0; }
+      .action-btns { position: static; margin: 24px 0 0 0; }
+      .logo-wrap { position: static; margin: 28px 0; }
+      .message-box {
+        min-width: 200px;
+        width: 80vw;
+        font-size: 1.5rem;
+        padding: 40px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="side left">
+      <div class="logo-wrap">
+        <span class="logo-icon">
+          <svg width="27" height="27" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle">
+            <rect x="1" y="6" width="27" height="16" rx="3" fill="#ec2b37" stroke="#fff" stroke-width="2"/>
+            <rect x="2.8" y="9.6" width="23" height="2.6" rx="1" fill="#fff" />
+            <rect x="2.8" y="15" width="18.4" height="2.6" rx="1" fill="#fff" />
+            <circle cx="24.5" cy="19.5" r="1.5" fill="#fff"/>
+          </svg>
+        </span>
+        <span class="moviehub-txt">MovieHub</span>
+      </div>
+    </div>
+    <div class="center">
+      <div class="action-btns">
+        <button class="action-btn main">메인으로</button>
+        <button class="action-btn logout">로그아웃</button>
+      </div>
+      <div class="message-box">
+        새싹님<br>로그인에<br>성공하였습니다!
+      </div>
+    </div>
+    <div class="side right"></div>
+  </div>
+</body>
+</html>

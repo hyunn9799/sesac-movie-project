@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MovieHub - 인증 및 상태 페이지 (최종)</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 0; background-color: #141414; font-family: "Arial", sans-serif; }
+      a { cursor: pointer; text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      // ========== 스타일 토큰 ==========
+      const colors = {
+        primary: "#E50914", secondary: "#B20710", dark: "#141414", darkGray: "#2F2F2F",
+        mediumGray: "#808080", lightGray: "#E5E5E5", white: "#FFFFFF", yellow: "#F5C518",
+        success: "#4CAF50", warning: "#FF9800", error: "#F44336", info: "#2196F3",
+        textPrimary: "#FFFFFF", textSecondary: "#808080", textLight: "#999999"
+      };
+      const spacing = { xs: "4px", sm: "8px", md: "16px", lg: "24px", xl: "32px", xxl: "48px" };
+      const fontSize = { small: "12px", medium: "14px", large: "16px", xlarge: "20px", xxlarge: "24px", title: "32px" };
+      const fontWeight = { normal: 400, bold: 700 };
+      const borderRadius = { small: "4px", medium: "8px", large: "12px" };
+      const shadow = { header: '0 2px 8px rgba(0,0,0,0.3)' }; 
+
+      // 영화 장르 목록
+      const movieGenres = ['액션', '키즈', '모험', '로맨스', '공포', '가족', '스릴러', '다큐멘터리', '애니메이션','범죄', 'TV드라마', '단편', '드라마', '판타지', 'SF', '코미디' ];
+
+      // ========== 공통 스타일 함수 ==========
+      const getButtonStyle = (backgroundColor, color) => ({
+          backgroundColor: backgroundColor, 
+          color: color, 
+          padding: `${spacing.sm} ${spacing.lg}`, 
+          border: "none", 
+          borderRadius: borderRadius.small, 
+          cursor: "pointer", 
+          fontSize: fontSize.medium, 
+          fontWeight: fontWeight.bold
+      });
+      
+      // ========== 헤더 컴포넌트 ==========
+      function Header({ isLoggedIn, onLoginClick, onRegisterClick, onLogoutAttempt }) {
+        const [searchTerm, setSearchTerm] = useState('');
+        
+        const headerStyle = {
+            backgroundColor: colors.dark,
+            padding: `${spacing.md} ${spacing.xl}`,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            boxShadow: shadow.header,
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 999
+        };
+        
+        const logoStyle = {
+            fontSize: fontSize.xxlarge,
+            color: colors.primary,
+            fontWeight: fontWeight.bold,
+            margin: 0
+        };
+        
+        const searchInputStyle = {
+            padding: spacing.sm,
+            borderRadius: borderRadius.small,
+            border: `1px solid ${colors.mediumGray}`,
+            backgroundColor: colors.darkGray,
+            color: colors.white,
+            width: '250px',
+            fontSize: fontSize.medium,
+        };
+
+        return (
+            <div style={headerStyle}>
+                <h1 style={logoStyle}>🎬 MovieHub</h1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
+                    <input
+                        type="text"
+                        placeholder="영화, 감독, 배우 검색..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={searchInputStyle}
+                    />
+                    
+                    {isLoggedIn ? (
+                        <>
+                            <button style={getButtonStyle(colors.darkGray, colors.white)}>마이페이지</button>
+                            <button onClick={onLogoutAttempt} style={getButtonStyle(colors.primary, colors.white)}>로그아웃</button>
+                        </>
+                    ) : (
+                        <>
+                            <button onClick={onLoginClick} style={getButtonStyle(colors.primary, colors.white)}>로그인</button>
+                            <button onClick={onRegisterClick} style={getButtonStyle(colors.darkGray, colors.white)}>회원가입</button>
+                        </>
+                    )}
+                </div>
+            </div>
+        );
+      }
+      
+      // ========== 모달 (성공/실패 알림) ==========
+      function Modal({ modal, closeModal }) {
+        if (!modal.isVisible) return null;
+        let headerText = "", headerColor = "";
+        if (modal.type === "success") { headerText = "✔"; headerColor = colors.success; }
+        else if (modal.type === "error") { headerText = "❗"; headerColor = colors.error; }
+        else if (modal.type === "warning") { headerText = "⚠"; headerColor = colors.warning; }
+        
+        return (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.7)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
+            <div style={{ backgroundColor: colors.darkGray, padding: spacing.xl, borderRadius: borderRadius.medium, width: "350px", textAlign: "center", color: colors.white }}>
+              <div style={{ fontSize: fontSize.xxlarge, marginBottom: spacing.md, fontWeight: fontWeight.bold, color: headerColor }}>{headerText}</div>
+              <p style={{ whiteSpace: "pre-wrap", margin: 0, fontSize: fontSize.large, lineHeight: 1.6 }}>{modal.message}</p>
+              <button onClick={closeModal} style={getButtonStyle(headerColor, colors.white)}>확인</button>
+            </div>
+          </div>
+        );
+      }
+
+      // ========== 확인 모달 (예/아니오) ==========
+      function ConfirmModal({ modal, onConfirm, onCancel }) {
+        if (!modal.isVisible) return null;
+        return (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.7)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
+            <div style={{ backgroundColor: colors.darkGray, padding: spacing.xl, borderRadius: borderRadius.medium, width: "300px", textAlign: "center", color: colors.white }}>
+              <p style={{ margin: 0, fontSize: fontSize.xlarge, marginBottom: spacing.lg, fontWeight: fontWeight.bold }}>{modal.message}</p>
+              <div style={{ display: "flex", gap: spacing.md, justifyContent: "center" }}>
+                <button onClick={onConfirm} style={getButtonStyle(colors.primary, colors.white)}>{modal.confirmText || '확인'}</button>
+                <button onClick={onCancel} style={getButtonStyle(colors.mediumGray, colors.white)}>{modal.cancelText || '취소'}</button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // ========== 로그인 폼 ==========
+      function LoginForm({ onLoginSuccess, onNavigateRegister }) {
+        const [id, setId] = useState("");
+        const [password, setPassword] = useState("");
+        const [formError, setFormError] = useState("");
+        
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          setFormError("");
+          if (!id || !password) { setFormError("아이디와 비밀번호를 모두 입력해주세요."); return; }
+          
+          if (id === "test" && password === "1234") {
+            onLoginSuccess(id);
+          } else if (id === "test") {
+            setFormError("비밀번호가 잘못되었습니다. 비밀번호를 정확히 입력해 주세요.");
+          } else {
+            setFormError("아이디 또는 비밀번호가 일치하지 않습니다.");
+          }
+        };
+        
+        const inputStyle = { width: "100%", backgroundColor: colors.darkGray, border: `1px solid ${colors.mediumGray}`, color: colors.white, padding: spacing.md, marginBottom: spacing.lg, marginTop: spacing.xs, borderRadius: borderRadius.small };
+        const buttonStyle = { width: "100%", backgroundColor: colors.primary, color: colors.white, fontSize: fontSize.large, padding: spacing.md, border: "none", borderRadius: borderRadius.small, cursor: "pointer" };
+        
+        return (
+          <div>
+            <h2 style={{ textAlign: "center", color: colors.white, marginBottom: spacing.xl, fontSize: fontSize.title }}>로그인</h2>
+            {formError && (
+              <div style={{ backgroundColor: colors.error, color: colors.white, padding: spacing.lg, borderRadius: borderRadius.small, marginBottom: spacing.lg, textAlign: "center" }}>
+                <p style={{ margin: 0, fontSize: fontSize.large, fontWeight: fontWeight.bold }}>❗ {formError}</p>
+              </div>
+            )}
+            <form onSubmit={handleSubmit}>
+              <label style={{ display: "block", fontSize: fontSize.medium, color: colors.textLight }}>아이디</label>
+              <input type="text" value={id} onChange={(e) => setId(e.target.value)} placeholder="아이디를 입력하세요." style={inputStyle} />
+              <label style={{ display: "block", fontSize: fontSize.medium, color: colors.textLight }}>비밀번호</label>
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="비밀번호를 입력하세요." style={inputStyle} />
+              <button type="submit" style={buttonStyle}>로그인</button>
+            </form>
+            <div style={{ marginTop: spacing.xl, textAlign: "center" }}>
+              <a onClick={onNavigateRegister} style={{ color: colors.mediumGray, textDecoration: "none", display: "block", marginBottom: spacing.sm }}>회원가입</a>
+              <a href="#" style={{ color: colors.mediumGray, textDecoration: "none", display: "block" }}>아이디 / 비밀번호 찾기</a>
+            </div>
+          </div>
+        );
+      }
+
+      // ========== 회원가입 폼 (수정됨) ==========
+      function RegisterForm({ onRegisterSuccess, onNavigateLogin }) {
+        const [step, setStep] = useState(1);
+        const [terms, setTerms] = useState({ term1: false, term2: false, term3: false });
+        const [allChecked, setAllChecked] = useState(false);
+        const [formData, setFormData] = useState({ 
+            id: "", 
+            password: "", 
+            passwordConfirm: "", // 👈 비밀번호 확인 추가
+            name: "", 
+            email: "", 
+            phone: "",          // 👈 전화번호 추가
+            likedGenres: [],    // 👈 좋아하는 장르
+            dislikedGenres: []  // 👈 싫어하는 장르 추가
+        });
+        const [formError, setFormError] = useState("");
+        
+        useEffect(() => { setAllChecked(terms.term1 && terms.term2 && terms.term3); }, [terms]);
+        const handleCheckAll = (e) => { const checked = e.target.checked; setTerms({ term1: checked, term2: checked, term3: checked }); };
+        const handleTermCheck = (name) => { setTerms(prev => ({ ...prev, [name]: !prev[name] })); };
+        
+        const handleGenreToggle = (genre, type) => {
+            const field = type === 'like' ? 'likedGenres' : 'dislikedGenres';
+            setFormData(prev => {
+                const genres = prev[field].includes(genre) 
+                    ? prev[field].filter(g => g !== genre) 
+                    : [...prev[field], genre];
+                return { ...prev, [field]: genres };
+            });
+        };
+        
+        const handleNextStep = () => {
+          if (!terms.term1 || !terms.term2) { setFormError("필수 약관에 동의해야 다음 단계로 진행할 수 있습니다."); return; }
+          setFormError("");
+          setStep(2);
+        };
+        
+        const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+        
+        const handleRegisterSubmit = (e) => {
+          e.preventDefault();
+          
+          if (formData.password !== formData.passwordConfirm) {
+              setFormError("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+              return;
+          }
+          if (formData.likedGenres.length === 0) { setFormError("좋아하는 영화 장르를 최소 1개 이상 선택해주세요."); return; }
+          if (formData.dislikedGenres.length === 0) { setFormError("싫어하는 영화 장르를 최소 1개 이상 선택해주세요."); return; }
+          
+          onRegisterSuccess(formData.id, formData.likedGenres);
+        };
+        
+        const inputStyle = { width: "100%", backgroundColor: colors.darkGray, border: `1px solid ${colors.mediumGray}`, color: colors.white, padding: spacing.md, marginBottom: spacing.lg, marginTop: spacing.xs, borderRadius: borderRadius.small };
+        const buttonPrimary = { width: "100%", backgroundColor: colors.primary, color: colors.white, fontSize: fontSize.large, padding: spacing.md, marginBottom: spacing.md, border: "none", borderRadius: borderRadius.small, cursor: "pointer" };
+        const buttonSecondary = { width: "100%", backgroundColor: colors.darkGray, border: `1px solid ${colors.mediumGray}`, color: colors.white, fontSize: fontSize.large, padding: spacing.md, borderRadius: borderRadius.small, cursor: "pointer" };
+        const termBox = { border: `1px solid ${colors.mediumGray}`, padding: spacing.md, borderRadius: borderRadius.small, marginBottom: spacing.sm, backgroundColor: colors.dark };
+        const checkboxStyle = { marginRight: spacing.sm, width: "18px", height: "18px", cursor: "pointer" };
+        
+        return (
+          <div>
+            <h2 style={{ textAlign: "center", color: colors.white, marginBottom: spacing.xl, fontSize: fontSize.title }}>회원가입</h2>
+            
+            {step === 1 && (
+              <div>
+                <p style={{ textAlign: "center", fontSize: fontSize.xlarge, marginBottom: spacing.md, color: colors.white }}>약관 동의</p>
+                <div style={{ marginBottom: spacing.lg, padding: spacing.md, backgroundColor: colors.darkGray, borderRadius: borderRadius.small }}>
+                  <label style={{ display: "flex", alignItems: "center", fontWeight: fontWeight.bold, color: colors.white, cursor: "pointer" }}>
+                    <input type="checkbox" checked={allChecked} onChange={handleCheckAll} style={checkboxStyle} />
+                    <span>전체 약관에 동의합니다.</span>
+                  </label>
+                </div>
+                {[ { key: 'term1', text: '(필수) 이용 약관 동의', required: true }, { key: 'term2', text: '(필수) 개인정보 수집 및 이용 동의', required: true }, { key: 'term3', text: '(선택) 마케팅 정보 수신 동의', required: false } ].map((term) => (
+                  <div key={term.key} style={termBox}>
+                    <label style={{ display: "flex", alignItems: "center", color: colors.white, cursor: "pointer" }}>
+                      <input type="checkbox" checked={terms[term.key]} onChange={() => handleTermCheck(term.key)} style={{ marginRight: spacing.sm, width: "16px", height: "16px", cursor: "pointer" }}/>
+                      <span>{term.text}</span>
+                    </label>
+                  </div>
+                ))}
+                {formError && <p style={{ color: colors.error, textAlign: "center", margin: `${spacing.md} 0` }}>{formError}</p>}
+                <button style={buttonPrimary} onClick={handleNextStep}>다음 단계</button>
+                <button style={buttonSecondary} onClick={onNavigateLogin}>로그인 페이지로 돌아가기</button>
+              </div>
+            )}
+            
+            {step === 2 && (
+              <form onSubmit={handleRegisterSubmit}>
+                <p style={{ textAlign: "center", fontSize: fontSize.xlarge, marginBottom: spacing.md, color: colors.white }}>회원 정보 입력</p>
+                
+                {/* 1. 이메일 입력란 */}
+                <label style={{ display: "block", fontSize: fontSize.medium, color: colors.textLight }}>이메일</label>
+                <input name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="example@moviehub.com" style={inputStyle} />
+
+                {/* 2. 비밀번호 입력란 */}
+                <label style={{ display: "block", fontSize: fontSize.medium, color: colors.textLight }}>비밀번호 (4자 이상)</label>
+                <input name="password" type="password" value={formData.password} onChange={handleInputChange} style={inputStyle} />
+                
+                {/* 3. 비밀번호 확인 입력란 */}
+                <label style={{ display: "block", fontSize: fontSize.medium, color: colors.textLight }}>비밀번호 확인</label>
+                <input name="passwordConfirm" type="password" value={formData.passwordConfirm} onChange={handleInputChange} style={inputStyle} />
+                
+                {/* 4. 이름 입력란 */}
+                <label style={{ display: "block", fontSize: fontSize.medium, color: colors.textLight }}>이름</label>
+                <input name="name" type="text" value={formData.name} onChange={handleInputChange} style={inputStyle} />
+                
+                {/* 5. 전화번호 입력란 */}
+                <label style={{ display: "block", fontSize: fontSize.medium, color: colors.textLight }}>전화번호</label>
+                <input name="phone" type="tel" value={formData.phone} onChange={handleInputChange} placeholder="010-0000-0000" style={inputStyle} />
+
+                {/* 6. 좋아하는 영화 장르 */}
+                <label style={{ display: "block", fontSize: fontSize.medium, color: colors.textLight, marginTop: spacing.md, marginBottom: spacing.sm }}>좋아하는 영화 장르 (필수)</label>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: spacing.sm, marginBottom: spacing.lg }}>
+                  {movieGenres.map(genre => (
+                    <label key={genre} style={{ display: "flex", alignItems: "center", color: colors.white, cursor: "pointer", backgroundColor: colors.darkGray, padding: spacing.sm, borderRadius: borderRadius.small }}>
+                      <input type="checkbox" checked={formData.likedGenres.includes(genre)} onChange={() => handleGenreToggle(genre, 'like')} style={{ marginRight: spacing.sm, width: "16px", height: "16px", cursor: "pointer" }}/>
+                      <span>{genre}</span>
+                    </label>
+                  ))}
+                </div>
+
+                {/* 7. 싫어하는 영화 장르 */}
+                <label style={{ display: "block", fontSize: fontSize.medium, color: colors.textLight, marginTop: spacing.md, marginBottom: spacing.sm }}>싫어하는 영화 장르 (필수)</label>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: spacing.sm, marginBottom: spacing.lg }}>
+                  {movieGenres.map(genre => (
+                    <label key={genre} style={{ display: "flex", alignItems: "center", color: colors.white, cursor: "pointer", backgroundColor: colors.darkGray, padding: spacing.sm, borderRadius: borderRadius.small }}>
+                      <input type="checkbox" checked={formData.dislikedGenres.includes(genre)} onChange={() => handleGenreToggle(genre, 'dislike')} style={{ marginRight: spacing.sm, width: "16px", height: "16px", cursor: "pointer" }}/>
+                      <span>{genre}</span>
+                    </label>
+                  ))}
+                </div>
+
+                {formError && <p style={{ color: colors.error, textAlign: "center", margin: `${spacing.md} 0` }}>{formError}</p>}
+                <button type="submit" style={buttonPrimary}>회원가입 완료</button>
+                <button type="button" style={buttonSecondary} onClick={() => setStep(1)}>이전 단계</button>
+              </form>
+            )}
+          </div>
+        );
+      }
+
+
+      // ========== 로그인 후 메인 화면 (임시) ==========
+      function MainPage({ username, onLogout, onWithdraw }) {
+        return (
+          <div style={{ textAlign: "center", color: colors.white, paddingTop: spacing.xxl }}>
+            <div style={{ backgroundColor: colors.darkGray, padding: spacing.xxl, borderRadius: borderRadius.medium, marginBottom: spacing.xl }}>
+              <p style={{ fontSize: fontSize.xlarge, margin: 0, fontWeight: fontWeight.bold }}>{username}님, 환영합니다! 🎉</p>
+            </div>
+            <button onClick={onLogout} style={getButtonStyle(colors.primary, colors.white)} >로그아웃</button>
+            <button onClick={onWithdraw} style={getButtonStyle(colors.error, colors.white)} >회원 탈퇴</button>
+          </div>
+        );
+      }
+
+
+      // ========== 로그아웃 성공 페이지 ==========
+      function LogoutSuccessPage({ onReturnToLogin }) {
+        return (
+          <div style={{ textAlign: "center", color: colors.white, paddingTop: spacing.xxl }}>
+            <div style={{ backgroundColor: colors.success, padding: spacing.xxl, borderRadius: borderRadius.medium, marginBottom: spacing.xl }}>
+              <p style={{ fontSize: fontSize.xlarge, margin: 0, fontWeight: fontWeight.bold, color: colors.white }}>로그아웃에 성공하였습니다!</p>
+            </div>
+            <button onClick={onReturnToLogin} style={getButtonStyle(colors.primary, colors.white)}>로그인 페이지로 이동</button>
+          </div>
+        );
+      }
+
+
+      // ========== 메인 앱 (인증 상태 관리) ==========
+      function AuthPage() {
+        const [isLoggedIn, setIsLoggedIn] = useState(false);
+        const [page, setPage] = useState("login");
+        const [username, setUsername] = useState("");
+        const [modal, setModal] = useState({ isVisible: false, type: "", message: "" });
+        const [confirmModal, setConfirmModal] = useState({ isVisible: false, message: "", action: "" });
+        
+        const openModal = (type, message) => setModal({ isVisible: true, type, message });
+        const closeModal = () => {
+          if (modal.type === 'success' && page === 'register') { setPage("login"); }
+          setModal({ isVisible: false, type: "", message: "" });
+        };
+
+        const handleLoginSuccess = (id) => {
+          setUsername(id);
+          setIsLoggedIn(true); 
+          openModal("success", `${id}님, 환영합니다!`); 
+          setPage("main");
+        };
+        
+        const handleRegisterSuccess = (id, genres) => {
+          openModal("success", `환영합니다, 김새싹님! 회원가입을 축하합니다. \메인페이지로 이동합니다.`);
+        };
+        
+        const handleLogoutAttempt = () => {
+          setConfirmModal({ isVisible: true, message: "로그아웃 하시겠습니까?", action: "logout" });
+        };
+        
+        const confirmLogout = () => {
+          setConfirmModal({ isVisible: false, message: "", action: "" });
+          setIsLoggedIn(false); 
+          setUsername("");
+          setPage("logoutSuccess"); 
+        };
+        
+        const handleWithdrawAttempt = () => {
+          setConfirmModal({ isVisible: true, message: "회원탈퇴 하시겠습니까?", action: "withdraw", confirmText: '탈퇴', cancelText: '취소' });
+        };
+        
+        const confirmWithdraw = () => {
+          setConfirmModal({ isVisible: false, message: "", action: "" });
+          setIsLoggedIn(false); 
+          setUsername("");
+          openModal("success", "회원 탈퇴가 완료되었습니다.\n그동안 🎬Moviehub를 이용해주셔서 감사합니다.");
+          setPage("login");
+        };
+        
+        const handleConfirm = () => {
+          if (confirmModal.action === "logout") {
+            confirmLogout();
+          } else if (confirmModal.action === "withdraw") {
+            confirmWithdraw();
+          }
+        };
+        
+        const handleCancel = () => setConfirmModal({ isVisible: false, message: "", action: "" });
+        
+        const containerStyle = { 
+            minHeight: "100vh", 
+            backgroundColor: colors.dark, 
+            color: colors.white, 
+            display: "flex", 
+            justifyContent: "center", 
+            alignItems: "center", 
+            padding: spacing.xl,
+            paddingTop: `calc(${spacing.xl} + 60px)`
+        };
+        const boxStyle = { width: "100%", maxWidth: "450px", padding: spacing.xl, backgroundColor: colors.darkGray, borderRadius: borderRadius.medium, boxShadow: "0 8px 16px rgba(0,0,0,0.2)" };
+        
+        return (
+          <>
+            <Header 
+                isLoggedIn={isLoggedIn}
+                onLoginClick={() => setPage("login")}
+                onRegisterClick={() => setPage("register")}
+                onLogoutAttempt={handleLogoutAttempt}
+            />
+
+            <div style={containerStyle}>
+                <div style={boxStyle}>
+                  {page === "login" && <LoginForm onLoginSuccess={handleLoginSuccess} onNavigateRegister={() => setPage("register")} />}
+                  {page === "register" && <RegisterForm onRegisterSuccess={handleRegisterSuccess} onNavigateLogin={() => setPage("login")} />}
+                  {page === "main" && <MainPage username={username} onLogout={handleLogoutAttempt} onWithdraw={handleWithdrawAttempt} />}
+                  {page === "logoutSuccess" && <LogoutSuccessPage onReturnToLogin={() => setPage("login")} />}
+                </div>
+            </div>
+            
+            <Modal modal={modal} closeModal={closeModal} />
+            <ConfirmModal modal={confirmModal} onConfirm={handleConfirm} onCancel={handleCancel} />
+          </>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<AuthPage />);
+    </script>
+  </body>
+</html>
