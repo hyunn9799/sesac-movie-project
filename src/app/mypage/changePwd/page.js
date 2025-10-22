@@ -203,8 +203,8 @@ const CONTAINER_STYLE = {
     minHeight: '100vh',
     display: 'flex', // 자식 요소(콘텐츠)를 중앙에 배치하기 위해 flex 사용
     justifyContent: 'center', // 가로 중앙 정렬
-    alignItems: 'center', // 세로 중앙 정렬
-    padding: '20px',
+    // alignItems: 'center', // 세로 중앙 정렬
+    padding: '50px',
     boxSizing: 'border-box',
     fontFamily: 'Inter, sans-serif',
     // 배경 이미지 설정
@@ -259,9 +259,11 @@ const styles = {
         width: '100%',
         padding: '40px',
         textAlign: 'center',
-        backgroundColor: 'rgba(28, 28, 28, 0.95)', // 더 불투명하게 조정
+        // backgroundColor: 'rgba(28, 28, 28, 0.95)', // 더 불투명하게 조정
         borderRadius: '12px',
         boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+        border: '1px solid black',
+        maxWidth: '650px'
     },
     title: {
         fontSize: '32px',
@@ -283,7 +285,7 @@ const styles = {
         color: 'white',
         marginBottom: '5px',
         fontSize: '14px',
-        opacity: 0.7,
+        // opacity: 0.7,
     },
     labelError: {
         color: '#e74c3c',
