@@ -361,3 +361,68 @@
 .situationButton {
   border-radius: 6px;
 }
+.welcomeText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #eee4e4;
+  padding: 0 12px;
+}
+
+.logoutButton {
+  padding: 8px 16px;
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.logoutButton:hover {
+  background-color: #c53030;
+}
+
+/* ================================
+   자동완성 제어 버튼 스타일 (추가)
+================================ */
+
+.suggestionControlButton {
+  background-color: #3a3a3a;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.suggestionControlButton:hover {
+  background-color: #555;
+  color: #fff;
+}
+
+/* '전체삭제' 버튼은 강조색 적용 */
+.deleteAllButton {
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+}
+
+.deleteAllButton:hover {
+  background-color: #ff6b6b;
+  color: #fff;
+}
+
+/* 개별 '삭제' 버튼 */
+.deleteButton {
+  color: #ccc;
+  border-color: #666;
+  background-color: transparent;
+}
+
+.deleteButton:hover {
+  color: #fff;
+  background-color: #444;
+}
