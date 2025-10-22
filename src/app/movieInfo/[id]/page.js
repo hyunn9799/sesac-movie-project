@@ -84,7 +84,7 @@ const formatRuntime = (minutes) => {
 
 // --- 메인 페이지 컴포넌트 ---
 export default async function MovieInfoPage({ params }) {
-  const { id } = params;
+  const { id } = await params;
 
   const [movie, credits, images, similar, videos] = await Promise.all([
     getMovieDetails(id),
