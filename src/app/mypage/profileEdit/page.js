@@ -1,4 +1,4 @@
-// src/app/mypage/profile-edit/page.js
+// src/app/mypage/profile-edit/
 
 "use client";
 
