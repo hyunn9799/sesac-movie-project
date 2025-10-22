@@ -167,7 +167,7 @@ export default function ReviewWritePage() {
           onChange={handleTextChange}
         />
         <div style={styles.charCount}>
-          {reviewText.length} / {MAX_LENGTH} 자
+          {reviewText.length} / {MAX_LENGTH} 
         </div>
 
         <div style={styles.buttonContainer}>
