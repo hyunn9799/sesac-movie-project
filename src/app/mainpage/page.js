@@ -23,10 +23,11 @@ async function fetchMovies(category) {
 
 export default async function MainPage() {
   // 비동기 fetch 결과를 항상 배열로 보장
-  const [popular, nowPlaying, topRated] = await Promise.all([
+  const [popular, nowPlaying, topRated, upcoming] = await Promise.all([
     fetchMovies("popular"),
     fetchMovies("now_playing"),
     fetchMovies("top_rated"),
+    fetchMovies("upcoming"), // ✅ 상영 예정작 추가
   ]);
 
   return (
@@ -36,6 +37,7 @@ export default async function MainPage() {
       <MovieSection title="🔥 인기 영화" movies={popular || []} />
       <MovieSection title="🎥 현재 상영작" movies={nowPlaying || []} />
       <MovieSection title="⭐ 평점 높은 영화" movies={topRated || []} />
+      <MovieSection title="⏳ 상영 예정작" movies={upcoming || []} /> {/* ✅ 추가 */}
     </main>
   );
 }
