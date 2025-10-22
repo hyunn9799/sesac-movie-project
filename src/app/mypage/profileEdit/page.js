@@ -4,7 +4,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useGenreStore } from '../_component/GenreStoreContext';
+// ❗ useGenreStore 경로를 프로젝트 구조에 맞게 수정해주세요.
+import { useGenreStore } from '../_component/GenreStoreContext'; 
 
 // 장르 목록 및 상수
 const ALL_GENRES = [
@@ -98,12 +99,13 @@ export default function ProfileEditPage() {
             return;
         }
 
+        // 장르 상태 업데이트
         updateGenres(favGenres, unfavGenres);
 
         console.log("Saving data:", { name, favGenres, unfavGenres });
         alert(`프로필 및 장르가 저장되었습니다: 이름(${name}), 선호(${favGenres.join(', ')})`);
 
-        // 변경된 데이터를 쿼리 파라미터로 '/mypage'로 이동
+        // 마이페이지로 이동
         router.push(`/mypage`);
     };
 
@@ -142,7 +144,14 @@ export default function ProfileEditPage() {
                                 }}
                                 onClick={() => !isDisabled && toggleGenre(genre, type)}
                             >
-                                {genre} {isSelected ? '✅' : ''} {isDisabled ? '🚫' : ''}
+                                <span style={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+                                    {genre}
+                                </span>
+                                
+                                {/* 🚀 변경된 부분: 아이콘 및 텍스트 표시 */}
+                                {isSelected && <span style={{ color: '#ecf0f1', fontSize: '1em', marginLeft: '5px', fontWeight: 'bold' }}>✓</span>}
+                                {isDisabled && <span style={{ color: '#aaaaaa', fontSize: '12px' }}> (다른 항목에 있음)</span>}
+                                
                             </div>
                         );
                     })}
@@ -153,107 +162,147 @@ export default function ProfileEditPage() {
 
     /* --- 메인 렌더링 --- */
     return (
-        <div style={styles.container}>
-            <div style={styles.content}>
-                <h1 style={styles.title}>프로필 수정</h1>
+        // ❗ 1. 가장 바깥 컨테이너에 배경 이미지와 오버레이를 위한 스타일 적용
+        <div style={CONTAINER_STYLE}>
+            {/* ❗ 2. 어둡게 만드는 오버레이 레이어 */}
+            <div style={OVERLAY_STYLE}></div>
 
-                {/* 1. 프로필 이름 섹션 */}
-                <div style={styles.profileSection}>
-                    <div style={styles.profileIcon}>🌱</div>
-                    <div style={styles.formGroup}>
-                        <label style={styles.label}>이름</label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={handleNameChange}
-                            style={styles.input}
-                            maxLength={MAX_LENGTH}
-                        />
-                        <p style={styles.hint}>
-                            이름은 최소 {MIN_LENGTH}자, 최대 {MAX_LENGTH}자까지 입력이 가능합니다
-                        </p>
-                        {nameMessage && <p style={styles.errorMessage}>{nameMessage}</p>}
-                    </div>
-                </div>
+            {/* ❗ 3. 실제 콘텐츠는 z-index를 높여 오버레이 위에 표시 */}
+            <div style={styles.container}>
+                <div style={styles.content}>
+                    <h1 style={styles.title}>프로필 수정</h1>
 
-                {/* 2. 장르 선택 섹션 */}
-                <div style={styles.genreSection}>
-                    <h3 style={styles.genreTitle}>장르 설정 (선호/비선호)</h3>
-                    {genreMessage && <div style={styles.genreMessage}>{genreMessage}</div>}
-
-                    {/* 선호 장르 */}
-                    <div style={styles.genreRow}>
-                        <div style={styles.genreLabel}>선호 장르:</div>
-                        <div style={styles.genreValueContainer}>
-                            <div style={styles.tagList}>
-                                {favGenres.length === 0 ? <span style={styles.emptyTag}>선택 없음</span> :
-                                    favGenres.map(g => <span key={g} style={styles.tag}>{g}</span>)}
-                            </div>
-                            <button
-                                style={styles.editButton}
-                                onClick={() => setActiveGenreEdit(activeGenreEdit === 'fav' ? null : 'fav')}
-                            >
-                                {activeGenreEdit === 'fav' ? '닫기' : '수정'}
-                            </button>
-                            <GenreDropdownUI type="fav" listRef={favRef} />
+                    {/* 1. 프로필 이름 섹션 */}
+                    <div style={styles.profileSection}>
+                        <div style={styles.profileIcon}>🌱</div>
+                        <div style={styles.formGroup}>
+                            <label style={styles.label}>이름</label>
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={handleNameChange}
+                                style={styles.input}
+                                maxLength={MAX_LENGTH}
+                            />
+                            <p style={styles.hint}>
+                                이름은 최소 {MIN_LENGTH}자, 최대 {MAX_LENGTH}자까지 입력이 가능합니다
+                            </p>
+                            {nameMessage && <p style={styles.errorMessage}>{nameMessage}</p>}
                         </div>
                     </div>
 
-                    {/* 비선호 장르 */}
-                    <div style={styles.genreRow}>
-                        <div style={styles.genreLabel}>비선호 장르:</div>
-                        <div style={styles.genreValueContainer}>
-                            <div style={styles.tagList}>
-                                {unfavGenres.length === 0 ? <span style={styles.emptyTag}>선택 없음</span> :
-                                    unfavGenres.map(g => <span key={g} style={styles.tag}>{g}</span>)}
+                    {/* 2. 장르 선택 섹션 */}
+                    <div style={styles.genreSection}>
+                        <h3 style={styles.genreTitle}>장르 설정 (선호/비선호)</h3>
+                        {genreMessage && <div style={styles.genreMessage}>{genreMessage}</div>}
+
+                        {/* 선호 장르 */}
+                        <div style={styles.genreRow}>
+                            <div style={styles.genreLabel}>선호 장르:</div>
+                            <div style={styles.genreValueContainer}>
+                                <div style={styles.tagList}>
+                                    {favGenres.length === 0 ? <span style={styles.emptyTag}>선택 없음</span> :
+                                        favGenres.map(g => <span key={g} style={styles.tag}>{g}</span>)}
+                                </div>
+                                <button
+                                    style={styles.editButton}
+                                    onClick={() => setActiveGenreEdit(activeGenreEdit === 'fav' ? null : 'fav')}
+                                >
+                                    {activeGenreEdit === 'fav' ? '닫기' : '수정'}
+                                </button>
+                                <GenreDropdownUI type="fav" listRef={favRef} />
                             </div>
-                            <button
-                                style={styles.editButton}
-                                onClick={() => setActiveGenreEdit(activeGenreEdit === 'unfav' ? null : 'unfav')}
-                            >
-                                {activeGenreEdit === 'unfav' ? '닫기' : '수정'}
-                            </button>
-                            <GenreDropdownUI type="unfav" listRef={unfavRef} />
+                        </div>
+
+                        {/* 비선호 장르 */}
+                        <div style={styles.genreRow}>
+                            <div style={styles.genreLabel}>비선호 장르:</div>
+                            <div style={styles.genreValueContainer}>
+                                <div style={styles.tagList}>
+                                    {unfavGenres.length === 0 ? <span style={styles.emptyTag}>선택 없음</span> :
+                                        unfavGenres.map(g => <span key={g} style={styles.tag}>{g}</span>)}
+                                </div>
+                                <button
+                                    style={styles.editButton}
+                                    onClick={() => setActiveGenreEdit(activeGenreEdit === 'unfav' ? null : 'unfav')}
+                                >
+                                    {activeGenreEdit === 'unfav' ? '닫기' : '수정'}
+                                </button>
+                                <GenreDropdownUI type="unfav" listRef={unfavRef} />
+                            </div>
                         </div>
                     </div>
-                </div>
 
 
-                {/* 3. 액션 버튼 */}
-                <div style={styles.actions}>
-                    <button style={styles.buttonSecondary} onClick={handleCancel}>
-                        취소
-                    </button>
-                    <button style={styles.buttonPrimary} onClick={handleSave}>
-                        변경 저장
-                    </button>
+                    {/* 3. 액션 버튼 */}
+                    <div style={styles.actions}>
+                        <button style={styles.buttonSecondary} onClick={handleCancel}>
+                            취소
+                        </button>
+                        <button style={styles.buttonPrimary} onClick={handleSave}>
+                            변경 저장
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
 
+// 💡 배경 이미지를 위한 최상위 컨테이너 스타일 (새로 추가)
+const CONTAINER_STYLE = {
+    minHeight: '100vh',
+    position: 'relative', // 오버레이의 기준점
+    backgroundColor: '#1c1c1c', // 이미지가 로드되지 않을 때의 색상
+    fontFamily: 'Arial, sans-serif',
+    
+    // 🚀 배경 이미지 설정 (public 폴더의 'movie-edit-bg.jpg'를 가정)
+    backgroundImage: `url('/black_building.jpg')`, 
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundAttachment: 'fixed',
+};
+
+// 💡 배경 이미지를 더 어둡게 만들 오버레이 스타일
+const OVERLAY_STYLE = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.65)', // 65% 투명도의 검정색 (더 어둡게 설정)
+    zIndex: 1, // 배경 위에 위치
+};
+
+
 // 💡 메인 섹션 스타일
 const styles = {
-    // ... (기존 styles 유지)
+    // ❗ 컨테이너 스타일: 오버레이 위에 올라오도록 zIndex 설정
     container: {
-        backgroundColor: '#1c1c1c',
-        minHeight: '100vh',
         color: 'white',
-        fontFamily: 'Arial, sans-serif',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-start',
         paddingTop: '80px',
+        width: '100%',
+        zIndex: 2, // ❗ 오버레이 위에 위치
+        position: 'relative', // z-index가 제대로 작동하도록 설정
     },
     content: {
         maxWidth: '750px', // 너비 확장
         width: '100%',
         padding: '20px',
         textAlign: 'center',
+        
+        // ❗ 내용 영역 배경: 불투명한 배경을 추가하여 가독성 확보
+        backgroundColor: 'rgba(28, 28, 28, 0.9)', 
+        borderRadius: '12px',
+        boxShadow: '0 8px 16px rgba(0,0,0,0.4)', // 그림자 추가
+        marginBottom: '80px', // 하단 간격 추가
     },
     title: {
-        fontSize: '36px',
+        fontSize: '30px',
         marginBottom: '50px',
         color: 'white',
     },
@@ -263,7 +312,7 @@ const styles = {
         gap: '40px',
         textAlign: 'left',
         padding: '30px',
-        backgroundColor: '#2c2c2c',
+        backgroundColor: '#383838', // 배경이 겹치지 않도록 살짝 밝은 색으로 조정
         borderRadius: '8px',
         marginBottom: '30px',
     },
@@ -315,7 +364,7 @@ const styles = {
         marginTop: '50px',
     },
     buttonPrimary: {
-        backgroundColor: '#c0392b',
+        backgroundColor: '#e74c3c', // 붉은색 강조
         color: 'white',
         border: 'none',
         padding: '12px 30px',
@@ -324,7 +373,7 @@ const styles = {
         borderRadius: '4px',
     },
     buttonSecondary: {
-        backgroundColor: '#444',
+        backgroundColor: '#555',
         color: 'white',
         border: 'none',
         padding: '12px 30px',
@@ -335,7 +384,7 @@ const styles = {
     // 💡 장르 섹션 스타일
     genreSection: {
         padding: '30px',
-        backgroundColor: '#2c2c2c',
+        backgroundColor: '#383838', // 배경이 겹치지 않도록 살짝 밝은 색으로 조정
         borderRadius: '8px',
         marginBottom: '30px',
         textAlign: 'left',
@@ -408,14 +457,13 @@ const dropdownStyles = {
         top: '100%', // 버튼 아래로 내려오게
         right: '0',
         zIndex: 50,
-
-        width: '180px',
+        width: '240px', // 드롭다운 너비 확장 (텍스트 수용)
         marginTop: '10px',
         padding: '10px',
-        backgroundColor: '#333',
+        backgroundColor: '#444', 
         borderRadius: '5px',
-        border: '1px solid #444',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.5)'
+        border: '1px solid #555',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.7)'
     },
     select: {
         maxHeight: '180px',
@@ -430,15 +478,17 @@ const dropdownStyles = {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        borderRadius: '3px',
     },
     selectedOption: {
-        backgroundColor: '#555',
+        backgroundColor: '#4a69bd', // 짙은 파란색으로 선택됨 강조
         color: 'white',
     },
     disabledOption: {
-        color: '#777',
+        color: '#aaaaaa', // 비활성화된 항목은 밝은 회색으로
+        backgroundColor: '#383838', // 배경도 살짝 다르게
         cursor: 'not-allowed',
-        opacity: 0.7,
+        opacity: 0.8,
     },
     message: {
         color: '#ccc',
