@@ -68,52 +68,96 @@
   background-color: #0050cc;
 }
 
-/* 테이블 */
+
+/* 공지사항 테이블 */
 .table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 25px;
-  font-size: 0.95rem;
+  background: #fff;
+  color: #000;
+  border-radius: 10px; /* ✅ 둥근 모서리 */
+  overflow: hidden; /* ✅ 둥근 모서리 안쪽 잘림 방지 */
+  border: 1px solid #ddd; /* ✅ 외곽선 */
 }
 
+/* ✅ 중앙 정렬 */
+/* 공지사항 테이블 */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  color: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+/* 전체 중앙 정렬 */
 .table th,
 .table td {
-  border-bottom: 1px solid #ddd;
-  padding: 10px 8px;
-  
-}
-
-.table th {
-  background-color: #f9f9f9;
+  padding: 12px;
   text-align: center;
+  border-bottom: 1px solid #ccc;
+  vertical-align: middle;
 }
 
-.table td:nth-child(1) {
-  width: 8%;
-  text-align: left;
-}
-
+/* ✅ 제목(두 번째 열)만 왼쪽 정렬 */
 .table td:nth-child(2) {
-  width: 55%;
-  text-align: center;
+  text-align: left;
+  padding-left: 20px;
 }
 
-.table td:nth-child(3),
-.table td:nth-child(4) {
-  width: 18%;
-  text-align: center;
-  color: #333;
-}
-
-/* 드롭다운 행 */
+/* 제목 아래 본문(드롭다운 내용) */
 .dropdownRow td {
-  background-color: #fafafa;
-  padding: 15px;
-  font-size: 0.9rem;
-  color: #444;
+  background: #fafafa;
+  padding: 15px 30px;
+  color: #333;
+  border-top: 1px solid #ddd;
+  text-align: left;
+  line-height: 1.6;
 }
+
+
+.row {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.row:hover {
+  background: #f3f3f3;
+}
+
+/* ✅ 페이지네이션 중앙 정렬 */
+.pagination {
+  display: flex;
+  justify-content: center; /* 🔹가운데 정렬 */
+  align-items: center;
+  gap: 8px; 
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.pagination button {
+  background: #f3f3f3;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #ddd;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 
 /* 하단 버튼 */
+
 .footerBtns {
   display: flex;
   justify-content: space-between;
