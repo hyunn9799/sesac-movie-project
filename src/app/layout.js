@@ -12,7 +12,7 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="ko">
-      <body>
+      <body style={{margin:'0'}}>
         {!isAdminPage && <Header />}
         {children}
         {!isAdminPage && <Footer />}
