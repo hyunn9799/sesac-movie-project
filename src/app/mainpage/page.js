@@ -32,7 +32,7 @@ export default async function MainPage() {
 
   return (
     <main className="main-container">
-      <h1 className="main-title">🎬 MovieHub - 영화 추천</h1>
+      <h1 className="main-title">🎬 시청하신 영화에 리뷰를 남겨주세요</h1>
 
       <MovieSection title="🔥 인기 영화" movies={popular || []} />
       <MovieSection title="🎥 현재 상영작" movies={nowPlaying || []} />
