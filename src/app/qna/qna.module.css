@@ -1,0 +1,190 @@
+/* 전체 배경 */
+.container {
+  background-color: #111;
+  min-height: 100vh;
+  padding: 50px;
+  display: flex;
+  justify-content: center;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+/* 흰색 카드 영역 */
+.qnaBox {
+  background: #fff;
+  color: #000;
+  width: 90%;
+  max-width: 900px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 30px 40px;
+}
+
+/* 제목 */
+.title {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 8px;
+}
+
+/* 부제 */
+.subtitle {
+  color: #555;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+/* 검색창 */
+.searchBox {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.searchBox input {
+  width: 230px;
+  padding: 8px 12px 8px 35px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: url("/search-icon.png") no-repeat 8px center;
+  background-size: 16px;
+}
+
+.searchBox button {
+  background-color: #0066ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.searchBox button:hover {
+  background-color: #0050cc;
+}
+
+
+/* 공지사항 테이블 */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  color: #000;
+  border-radius: 10px; /* ✅ 둥근 모서리 */
+  overflow: hidden; /* ✅ 둥근 모서리 안쪽 잘림 방지 */
+  border: 1px solid #ddd; /* ✅ 외곽선 */
+}
+
+/* ✅ 중앙 정렬 */
+/* 공지사항 테이블 */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  color: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+/* 전체 중앙 정렬 */
+.table th,
+.table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+  vertical-align: middle;
+}
+
+/* ✅ 제목(두 번째 열)만 왼쪽 정렬 */
+.table td:nth-child(2) {
+  text-align: left;
+  padding-left: 20px;
+}
+
+/* 제목 아래 본문(드롭다운 내용) */
+.dropdownRow td {
+  background: #fafafa;
+  padding: 15px 30px;
+  color: #333;
+  border-top: 1px solid #ddd;
+  text-align: left;
+  line-height: 1.6;
+}
+
+
+.row {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.row:hover {
+  background: #f3f3f3;
+}
+
+/* ✅ 페이지네이션 중앙 정렬 */
+.pagination {
+  display: flex;
+  justify-content: center; /* 🔹가운데 정렬 */
+  align-items: center;
+  gap: 8px; 
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.pagination button {
+  background: #f3f3f3;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #ddd;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* 하단 버튼 */
+
+.footerBtns {
+  display: flex;
+  justify-content: space-between;
+  gap: 50px;
+}
+
+.footerBtns button {
+  flex: 1;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.footerBtns button:hover {
+  background-color: #f3f3f3;
+}
+
+.activePage {
+  background: #0066ff;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  border: 1px solid #0066ff;
+  border-radius: 6px;
+  padding: 6px 12px;
+  box-shadow: 0 0 6px rgba(0, 102, 255, 0.6);
+}

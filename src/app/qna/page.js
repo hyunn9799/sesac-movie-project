@@ -1,67 +1,71 @@
 "use client";
 import React, { useState } from "react";
-import styles from "./notice.module.css";
-import { initialNotices } from "@/lib/data/notice";
+import styles from "./qna.module.css";
+import { initialQna } from "@/lib/data/qna";
 
-export default function NoticePage() {
-  const [notices] = useState(initialNotices);
-
-  // 페이지 관련
-  const [currentPage, setCurrentPage] = useState(1);
-  const noticesPerPage = 10;
-  const totalPages = Math.ceil(notices.length / noticesPerPage);
-  const startIndex = (currentPage - 1) * noticesPerPage;
-  const endIndex = startIndex + noticesPerPage;
-  const currentNotices = notices.slice(startIndex, endIndex);
-
-  // 공지 펼치기
+export default function QnaPage() {
+  const [qnaList] = useState(initialQna);
   const [openId, setOpenId] = useState(null);
-  const toggleNotice = (id) => setOpenId(openId === id ? null : id);
 
+  // ✅ 페이지네이션 관련 상태
+  const [currentPage, setCurrentPage] = useState(1);
+  const qnaPerPage = 10; // 한 페이지당 표시할 QnA 수
+  const totalPages = Math.ceil(qnaList.length / qnaPerPage);
+
+  // ✅ 현재 페이지의 QnA 리스트 계산
+  const startIndex = (currentPage - 1) * qnaPerPage;
+  const endIndex = startIndex + qnaPerPage;
+  const currentQnaList = qnaList.slice(startIndex, endIndex);
+
+  // ✅ 페이지 이동 함수
   const goToPage = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-      setOpenId(null);
     }
   };
 
+  // ✅ QnA 열기/닫기
+  const toggleQna = (id) => setOpenId(openId === id ? null : id);
+
   return (
     <div className={styles.container}>
-      <div className={styles.noticeBox}>
-        <h2 className={styles.title}>공지사항</h2>
+      <div className={styles.qnaBox}>
+        <h2 className={styles.title}>Q&amp;A</h2>
         <p className={styles.subtitle}>
-          <em>MovieHub</em>의 각종 공지사항(공지, 행사 등)을 제공합니다.
+          <em>MovieHub</em> 이용 시 궁금한 점을 확인할 수 있습니다.
         </p>
 
+        {/* 검색창 */}
         <div className={styles.searchBox}>
           <input type="text" placeholder="검색어를 입력하세요" />
           <button>검색</button>
         </div>
 
+        {/* QnA 테이블 */}
         <table className={styles.table}>
           <thead>
             <tr>
               <th>번호</th>
               <th>제목</th>
               <th>작성일자</th>
+              <th>조회수</th>
             </tr>
           </thead>
           <tbody>
-            {currentNotices.map((notice) => (
-              <React.Fragment key={notice.id}>
+            {currentQnaList.map((qna) => (
+              <React.Fragment key={qna.id}>
                 <tr
                   className={styles.row}
-                  onClick={() => toggleNotice(notice.id)}
+                  onClick={() => toggleQna(qna.id)}
                 >
-                  <td>{notice.id}</td>
-                  <td>
-                    <em>MovieHub</em> {notice.title.replace("MovieHub", "")}
-                  </td>
-                  <td>{notice.date}</td>
+                  <td>{qna.id}</td>
+                  <td>{qna.title}</td>
+                  <td>{qna.date}</td>
+                  <td>{qna.views}</td>
                 </tr>
-                {openId === notice.id && (
+                {openId === qna.id && (
                   <tr className={styles.dropdownRow}>
-                    <td colSpan="3">{notice.content}</td>
+                    <td colSpan="4">{qna.content}</td>
                   </tr>
                 )}
               </React.Fragment>
@@ -83,7 +87,9 @@ export default function NoticePage() {
               key={i + 1}
               onClick={() => goToPage(i + 1)}
               className={
-                currentPage === i + 1 ? styles.activePage : styles.pageButton
+                currentPage === i + 1
+                  ? styles.activePage
+                  : styles.pageButton
               }
             >
               {i + 1}
@@ -98,6 +104,7 @@ export default function NoticePage() {
           </button>
         </div>
 
+        {/* 하단 버튼 */}
         <div className={styles.footerBtns}>
           <button>검색결과 수집에 대한 정책</button>
           <button>MovieHub 사용문의</button>

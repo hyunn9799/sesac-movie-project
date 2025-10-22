@@ -1,0 +1,160 @@
+from IPython.display import HTML
+
+html_code = """
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MovieHub 회원탈퇴 안내</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Gothic-style font */
+    @import url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11@1.0/NanumGothic.css');
+    
+    html, body {
+      margin:0; padding:0;
+      width:100vw; height:100vh;
+      background:#000;
+      font-family:'Nanum Gothic',sans-serif;
+      font-weight:800; /* 전체 글자 두껍게 */
+      overflow-x:hidden;
+    }
+    .container {
+      display:flex;
+      width:100vw; height:100vh;
+    }
+    .side {
+      background:#111;
+      width:24vw; min-width:40px;
+      display:flex; align-items:flex-start; justify-content:flex-start;
+      position:relative;
+    }
+    .side.right {
+      justify-content:flex-end;
+    }
+    .logo-wrap {
+      position:absolute; top:16px; left:18px;
+      display:flex; align-items:center; z-index:10;
+    }
+    .logo-icon { margin-right:8px; }
+    .moviehub-txt {
+      font-weight:900; /* 로고 글자 더 두껍게 */
+      font-size:20px; color:#ec2b37; letter-spacing:-1px;
+    }
+    .center {
+      flex:1; background:#fff; position:relative;
+      display:flex; justify-content:center; align-items:flex-start;
+    }
+    .action-btns {
+      position:absolute; top:16px; right:16px;
+      display:flex; gap:9px; z-index:10;
+    }
+    .action-btn {
+      padding:8px 19px; font-size:15px; font-weight:900; /* 버튼 글자 두껍게 */
+      background:#fff; color:#1a1d25; border:2px solid #ddd;
+      border-radius:11px; cursor:pointer; transition:.14s;
+    }
+    .action-btn.login {
+      color:#ec2b37; border-color:#ec2b37;
+    }
+    .action-btn.login:hover { background:#ec2b37; color:#fff; }
+    .card {
+      margin-top:54px;
+      background:#fff;
+      width:96%; max-width:380px;
+      padding:34px 20px 36px;
+      box-shadow:0 4px 34px rgba(16,16,16,0.08);
+      border-radius:13px;
+    }
+    .card h2, .card h3 {
+      display:flex; align-items:center;
+      font-size:19px; font-weight:900; /* 제목 글자 두껍게 */
+      margin:0 0 9px;
+      letter-spacing:-1px;
+    }
+    .card h2 .moviehub-highlight,
+    .card h3 .moviehub-highlight {
+      color:#ec2b37; margin-left:4px;
+    }
+    .card p {
+      font-size:15px; color:#121212;
+      line-height:1.7; margin:0 0 13px;
+      font-weight:700; /* 본문 살짝 두껍게 */
+    }
+    .card .method-title {
+      font-size:17px; font-weight:900; /* 방법 제목 두껍게 */
+      margin:18px 0 5px;
+    }
+    .card ul {
+      list-style:none; padding:0; margin:5px 0 12px;
+      font-size:14px; line-height:1.8;
+      font-weight:700; /* 리스트 두껍게 */
+    }
+    .card ul li {
+      margin-bottom:2px; padding-left:16px;
+      position:relative;
+    }
+    .card ul li::before {
+      content:"•"; position:absolute; left:0;
+      color:#121212;
+    }
+    .card .notice {
+      font-size:13.6px; color:#333;
+      line-height:1.7; margin-top:14px;
+      font-weight:700; /* 공지문 두껍게 */
+    }
+    @media (max-width:600px) {
+      .side { display:none; }
+      .center { width:100vw; }
+      .action-btns { position:static; margin:12px 0; }
+      .card { width:98vw; max-width:none; padding:20px; margin-top:40px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="side left">
+      <div class="logo-wrap">
+        <span class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="6" width="27" height="16" rx="3" fill="#ec2b37" stroke="#fff" stroke-width="2"/>
+            <rect x="2.8" y="9.6" width="23" height="2.6" rx="1" fill="#fff"/>
+            <rect x="2.8" y="15" width="18.4" height="2.6" rx="1" fill="#fff"/>
+            <circle cx="24.5" cy="19.5" r="1.5" fill="#fff"/>
+          </svg>
+        </span>
+        <span class="moviehub-txt">MovieHub</span>
+      </div>
+    </div>
+    <div class="center">
+      <div class="action-btns">
+        <button class="action-btn">메인으로</button>
+        <button class="action-btn login">로그인</button>
+      </div>
+      <div class="card">
+        <h2>[🎬<span class="moviehub-highlight">MovieHub 회원탈퇴]</span></h2>
+        <p>탈퇴는 아래 방법에 따라 진행해 주세요.<br>
+        무비허브 계정은 언제든지 삭제할 수 있습니다.</p>
+        <h3>[🎬<span class="moviehub-highlight">MovieHub 삭제(탈퇴)방법]</span></h3>
+        <div class="method-title">PC 웹</div>
+        <ul>
+          <li>1. 오른쪽 상단 '마이페이지' 클릭</li>
+          <li>2. '나의 무비허브 계정' 클릭</li>
+          <li>3. 회원 탈퇴의 '탈퇴하기' 클릭</li>
+        </ul>
+        <div class="notice">
+          * 탈퇴는 가장 오른쪽의 '마이페이지' 에서만 가능합니다.<br>
+          * 무비허브에 등록한 이메일로 발송된 탈퇴 메일을 확인하고, 탈퇴를 완료해 주세요.<br>
+          * 탈퇴 확인 이메일이 계정에 등록된 이메일 주소로 발생됩니다.<br>
+          * 가입한 이메일이 유효하지 않거나 무비허브 발신 이메일이 스팸 처리된 경우, 탈퇴 승인 메일을 못 받을 수 있습니다.
+        </div>
+      </div>
+    </div>
+    <div class="side right"></div>
+  </div>
+</body>
+</html>
+"""
+
+display(HTML(html_code))
