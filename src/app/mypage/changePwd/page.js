@@ -1,4 +1,3 @@
-
 'use client'
 // Next.js useRouter 대신 브라우저의 history API를 사용하거나 동작을 시뮬레이션합니다.
 
@@ -195,32 +194,32 @@ export default function ChangePwdPage() {
 
 /* --- 고정 스타일 정의 --- */
 
-// 💡 배경 이미지 URL (로컬 이미지 대신 다크 테마 플레이스홀더 사용)
+// 💡 배경 이미지 URL (원래 코드의 플레이스홀더를 유지)
 const BACKGROUND_IMAGE_URL = '/black_lock.jpg';
 
-// 💡 배경 이미지 및 오버레이 스타일 (CONTAINER_STYLE와 OVERLAY_STYLE을 결합)
+// 💡 배경 이미지 및 오버레이 스타일 (CONTAINER_STYLE 수정)
 const CONTAINER_STYLE = {
     minHeight: '100vh',
-    display: 'flex', // 자식 요소(콘텐츠)를 중앙에 배치하기 위해 flex 사용
-    justifyContent: 'center', // 가로 중앙 정렬
-    // alignItems: 'center', // 세로 중앙 정렬
-    padding: '50px',
+    display: 'flex', 
+    justifyContent: 'center', 
+    padding: '50px 20px',
     boxSizing: 'border-box',
     fontFamily: 'Inter, sans-serif',
-    // 배경 이미지 설정
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${BACKGROUND_IMAGE_URL}')`,
+    // 🚀 배경 이미지 및 오버레이 재적용 (마이페이지의 오버레이 농도와 유사하게 0.6 사용)
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${BACKGROUND_IMAGE_URL}')`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     backgroundAttachment: 'fixed',
 };
 
-// 💡 콘텐츠 중앙 정렬 래퍼 스타일 (모바일 반응성을 위해 최대 너비 지정)
+// 💡 콘텐츠 중앙 정렬 래퍼 스타일 (maxWidth: 600px로 조정)
 const CENTER_CONTENT_STYLE = {
     width: '100%',
-    maxWidth: '500px',
+    maxWidth: '600px', // 마이페이지와 동일한 규격
     zIndex: 10,
     position: 'relative',
+    height: 'fit-content', 
 };
 
 // 💡 메시지 박스 스타일 (Alert 대체)
@@ -254,38 +253,35 @@ const CLOSE_BUTTON_STYLE = {
 
 /* --- 컴포넌트 내부 스타일 정의 --- */
 const styles = {
-    // ❗ content 스타일 조정: 배경 이미지 위에 콘텐츠 영역이 불투명하게 보이도록 함
+    // ❗ content 스타일 조정: 배경색, 패딩, 그림자 조정
     content: {
-        width: '100%',
-        padding: '40px',
+        padding: '50px 40px', 
         textAlign: 'center',
-        // backgroundColor: 'rgba(28, 28, 28, 0.95)', // 더 불투명하게 조정
-        borderRadius: '12px',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
-        border: '1px solid black',
-        maxWidth: '650px'
+        backgroundColor: 'rgba(28, 28, 28, 0.1)', // 🚀 콘텐츠 배경색을 반투명하게 조정하여 배경 이미지가 약간 비치도록 함
+        borderRadius: '8px', 
+        boxShadow: '0 5px 15px rgba(0,0,0,0.5)',
+        border: '1px solid black', 
     },
     title: {
-        fontSize: '32px',
-        marginBottom: '40px',
+        fontSize: '28px', 
+        marginBottom: '35px', 
         color: 'white',
         fontWeight: '700',
     },
     form: {
         display: 'flex',
         flexDirection: 'column',
-        gap: '15px',
+        gap: '20px', 
         textAlign: 'left',
     },
     formGroup: {
-        marginBottom: '10px',
+        marginBottom: '0', 
     },
     label: {
         display: 'block',
         color: 'white',
-        marginBottom: '5px',
-        fontSize: '14px',
-        // opacity: 0.7,
+        marginBottom: '8px', 
+        fontSize: '15px', 
     },
     labelError: {
         color: '#e74c3c',
@@ -293,14 +289,15 @@ const styles = {
     },
     input: {
         width: '100%',
-        padding: '14px',
+        padding: '15px', 
         backgroundColor: '#3c3c3c',
-        border: '1px solid #555',
+        // border: '1px solid transparent', 
         color: 'white',
         borderRadius: '6px',
         fontSize: '16px',
-        boxSizing: 'border-box', // 패딩이 너비에 포함되도록 설정
+        boxSizing: 'border-box', 
         transition: 'border-color 0.2s',
+        boxShadow: '0 5px 15px rgba(0,0,0,0.5)',
     },
     inputError: {
         border: '1px solid #e74c3c',
@@ -308,7 +305,7 @@ const styles = {
     },
     hint: {
         fontSize: '12px',
-        color: '#aaa',
+        color: '#b69d71',
         marginTop: '8px',
         marginBottom: '0',
     },
@@ -321,44 +318,44 @@ const styles = {
     actions: {
         display: 'flex',
         justifyContent: 'flex-start',
-        gap: '15px',
-        marginTop: '30px',
+        gap: '20px', 
+        marginTop: '40px', 
     },
-    buttonPrimary: {
-        backgroundColor: '#c0392b',
-        color: 'white',
+    buttonPrimary: { // 저장 버튼
+        backgroundColor: '#b69d71', // 마이페이지의 골드 색상
+        color: '#1c1c1c', 
         border: 'none',
-        padding: '12px 25px',
+        padding: '14px 30px', 
         fontSize: '16px',
         cursor: 'pointer',
         borderRadius: '6px',
         fontWeight: 'bold',
         transition: 'background-color 0.2s',
         flexGrow: 1,
-        maxWidth: '150px'
+        maxWidth: '180px', 
     },
-    buttonDisabled: {
+    buttonDisabled: { // 비활성화 버튼
         backgroundColor: '#555',
         color: '#ccc',
         border: 'none',
-        padding: '12px 25px',
+        padding: '14px 30px', 
         fontSize: '16px',
         cursor: 'not-allowed',
         borderRadius: '6px',
         fontWeight: 'bold',
         flexGrow: 1,
-        maxWidth: '150px'
+        maxWidth: '180px', 
     },
-    buttonBack: {
+    buttonBack: { // 뒤로가기 버튼
         backgroundColor: '#444',
         color: 'white',
         border: 'none',
-        padding: '12px 25px',
+        padding: '14px 30px', 
         fontSize: '16px',
         cursor: 'pointer',
         borderRadius: '6px',
         transition: 'background-color 0.2s',
         flexGrow: 1,
-        maxWidth: '150px'
+        maxWidth: '180px', 
     },
 };
