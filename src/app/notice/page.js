@@ -6,8 +6,24 @@ import { initialNotices } from "@/lib/data/notice";
 export default function NoticePage() {
   const [notices] = useState(initialNotices);
 
+  // 페이지 관련
+  const [currentPage, setCurrentPage] = useState(1);
+  const noticesPerPage = 10;
+  const totalPages = Math.ceil(notices.length / noticesPerPage);
+  const startIndex = (currentPage - 1) * noticesPerPage;
+  const endIndex = startIndex + noticesPerPage;
+  const currentNotices = notices.slice(startIndex, endIndex);
+
+  // 공지 펼치기
   const [openId, setOpenId] = useState(null);
   const toggleNotice = (id) => setOpenId(openId === id ? null : id);
+
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      setOpenId(null);
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -31,7 +47,7 @@ export default function NoticePage() {
             </tr>
           </thead>
           <tbody>
-            {notices.map((notice) => (
+            {currentNotices.map((notice) => (
               <React.Fragment key={notice.id}>
                 <tr
                   className={styles.row}
@@ -52,6 +68,35 @@ export default function NoticePage() {
             ))}
           </tbody>
         </table>
+
+        {/* 페이지네이션 */}
+        <div className={styles.pagination}>
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            이전
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i + 1}
+              onClick={() => goToPage(i + 1)}
+              className={
+                currentPage === i + 1 ? styles.activePage : styles.pageButton
+              }
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            다음
+          </button>
+        </div>
 
         <div className={styles.footerBtns}>
           <button>아이디/패스워드 분실</button>
