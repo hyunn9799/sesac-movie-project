@@ -1,7 +1,7 @@
 'use client'
 import { createContext, useState, useContext } from 'react';
 
-// 1. Context 생성
+
 const GenreContext = createContext(null);
 
 // 2. Provider 컴포넌트 생성 (실제 상태와 로직을 포함)
