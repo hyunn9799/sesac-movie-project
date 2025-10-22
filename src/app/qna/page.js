@@ -106,9 +106,9 @@ export default function QnaPage() {
 
         {/* 하단 버튼 */}
         <div className={styles.footerBtns}>
-          <button>아이디 / 패스워드 분실</button>
-          <button>사용문의</button>
-          <button>회원탈퇴</button>
+          <button>검색결과 수집에 대한 정책</button>
+          <button>MovieHub 사용문의</button>
+          <button>제휴제안</button>
           <button>고객센터</button>
         </div>
       </div>
