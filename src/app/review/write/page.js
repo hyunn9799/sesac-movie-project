@@ -153,6 +153,8 @@ export default function ReviewWritePage() {
 
 
   return (
+
+
     <div style={styles.pageWrapper}>
       <div style={styles.contentContainer}>
         <h1 style={styles.title}>감상 후기 작성</h1>
