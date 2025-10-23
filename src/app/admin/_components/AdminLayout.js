@@ -1,6 +1,9 @@
 'use client';
-//
+
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useAuth } from '@/app/auth/AuthContext';
 import {
   adminColors,
   adminSizes,
@@ -13,24 +16,39 @@ export default function AdminLayout({
   title = '대시보드',
   currentMenu = 'dashboard',
 }) {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  // Check if user is authenticated as admin on mount
+  useEffect(() => {
+    const adminData = JSON.parse(localStorage.getItem('loggedInAdmin'));
+    if (!adminData) {
+      // If no admin data, redirect to main page
+      router.replace('/');
+    }
+  }, [router, user]);
+
   const navItems = [
     { icon: '📊', label: '대시보드', href: '/admin', key: 'dashboard' },
     { icon: '👥', label: '회원 관리', href: '/admin/users', key: 'users' },
     { icon: '📋', label: '문의 관리', href: '/admin/fqa', key: 'fqa' },
   ];
 
-  //const handleLogout = () => {
-  //  if (confirm('로그아웃 하시겠습니까?')) {
-  //    try {
-  //      localStorage.removeItem('loggedInAdmin');
-  //      localStorage.removeItem('loggedInUser');
-  //    } catch (err) {
-  //      console.error('Logout error:', err);
-  //    }
-  //    window.location.href = '/';
-  //  }
-  //};
-  //
+  const handleLogout = () => {
+    if (confirm('로그아웃 하시겠습니까?')) {
+      try {
+        localStorage.removeItem('loggedInAdmin');
+        localStorage.removeItem('loggedInUser');
+        // Prevent caching of admin page after logout
+        window.history.replaceState(null, '', '/');
+        router.push('/');
+      } catch (err) {
+        console.error('Logout error:', err);
+        router.push('/');
+      }
+    }
+  };
+
   return (
     <div
       style={{
@@ -149,12 +167,7 @@ export default function AdminLayout({
                 adminStyles.button.base,
                 adminStyles.button.secondary
               )}
-              onClick={() => {
-                if (confirm('로그아웃 하시겠습니까?')) {
-                  alert('로그아웃 되었습니다.');
-                  window.location.href = '/';
-                }
-              }}
+              onClick={handleLogout}
             >
               로그아웃
             </button>

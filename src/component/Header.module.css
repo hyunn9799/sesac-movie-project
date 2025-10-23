@@ -1,4 +1,4 @@
-/* Header.module.css */
+/* Header.module.css (unchanged from your provided version) */
 
 .header {
   background-color: #1a1a1a;
@@ -125,14 +125,25 @@
   font-size: 14px;
   color: #e0e0e0;
   text-decoration: none;
-  transition: color 0.3s ease;
-  padding: 8px 12px;
-  border-radius: 4px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.15) 0%, rgba(255, 107, 107, 0.05) 100%);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
 }
 
 .mypageLink:hover {
-  color: #fff;
-  background-color: #333;
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.25) 0%, rgba(255, 107, 107, 0.1) 100%);
+  border-color: rgba(255, 107, 107, 0.5);
+  color: #ffb3b3;
+  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.2);
+  transform: translateY(-2px);
+}
+
+.mypageLink:active {
+  transform: translateY(0);
 }
 
 /* 로그아웃 상태 */
