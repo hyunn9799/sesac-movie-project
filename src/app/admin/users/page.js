@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { initialMembers } from '@/lib/data/memberData';
 import AdminLayout from '@/app/admin/_components/AdminLayout';
 import {
@@ -11,11 +11,24 @@ import {
 } from '@/app/admin/_lib/style/adminTokens';
 
 export default function MemberManagement() {
-  const [members, setMembers] = useState(initialMembers);
+  const [members, setMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('전체');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
+  const [isAddMode, setIsAddMode] = useState(false);
+
+  // 🔥 로컬스토리지에서 회원 데이터 로드
+  useEffect(() => {
+    const storedMembers = localStorage.getItem('members');
+    if (storedMembers) {
+      setMembers(JSON.parse(storedMembers));
+    } else {
+      // 초기 데이터로 초기화
+      localStorage.setItem('members', JSON.stringify(initialMembers));
+      setMembers(initialMembers);
+    }
+  }, []);
 
   // 필터링된 회원 목록
   const filteredMembers = members.filter((member) => {
@@ -30,10 +43,12 @@ export default function MemberManagement() {
     return matchesSearch && matchesStatus;
   });
 
-  // 회원 삭제
+  // 🔥 회원 삭제 - 로컬스토리지 업데이트
   const handleDelete = (id) => {
     if (confirm('정말 이 회원을 삭제하시겠습니까?')) {
-      setMembers(members.filter((member) => member.id !== id));
+      const updatedMembers = members.filter((member) => member.id !== id);
+      setMembers(updatedMembers);
+      localStorage.setItem('members', JSON.stringify(updatedMembers));
       alert('삭제되었습니다.');
     }
   };
@@ -41,28 +56,71 @@ export default function MemberManagement() {
   // 회원 수정 모달 열기
   const handleEdit = (member) => {
     setEditingMember({ ...member });
+    setIsAddMode(false);
     setIsModalOpen(true);
   };
 
-  // 회원 수정 저장
+  // 🔥 회원 추가 모달 열기
+  const handleAdd = () => {
+    setEditingMember({
+      id: 0,
+      name: '',
+      email: '',
+      password: '',
+      phone: '',
+      role: '일반회원',
+      status: '활성',
+      joinDate: new Date().toISOString().split('T')[0],
+      lastLogin: new Date().toISOString().split('T')[0],
+    });
+    setIsAddMode(true);
+    setIsModalOpen(true);
+  };
+
+  // 🔥 회원 추가/수정 저장 - 로컬스토리지 업데이트
   const handleSave = () => {
     if (!editingMember.name || !editingMember.email || !editingMember.phone) {
-      alert('모든 필드를 입력해주세요.');
+      alert('이름, 이메일, 전화번호는 필수입니다.');
       return;
     }
 
-    setMembers(
-      members.map((m) => (m.id === editingMember.id ? editingMember : m))
-    );
+    if (isAddMode && !editingMember.password) {
+      alert('비밀번호를 입력해주세요.');
+      return;
+    }
+
+    let updatedMembers;
+
+    if (isAddMode) {
+      // 새 회원 추가
+      const newId =
+        members.length > 0 ? Math.max(...members.map((m) => m.id)) + 1 : 1;
+      const newMember = {
+        ...editingMember,
+        id: newId,
+      };
+      updatedMembers = [...members, newMember];
+      alert('회원이 추가되었습니다.');
+    } else {
+      // 기존 회원 수정
+      updatedMembers = members.map((m) =>
+        m.id === editingMember.id ? editingMember : m
+      );
+      alert('수정되었습니다.');
+    }
+
+    setMembers(updatedMembers);
+    localStorage.setItem('members', JSON.stringify(updatedMembers));
     setIsModalOpen(false);
     setEditingMember(null);
-    alert('수정되었습니다.');
+    setIsAddMode(false);
   };
 
   // 모달 닫기
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingMember(null);
+    setIsAddMode(false);
   };
 
   // 수정 폼 입력 핸들러
@@ -228,6 +286,7 @@ export default function MemberManagement() {
             <option value="정지">정지</option>
           </select>
           <button
+            onClick={handleAdd}
             style={mergeStyles(
               adminStyles.button.base,
               adminStyles.button.primary
@@ -266,79 +325,73 @@ export default function MemberManagement() {
                 <th style={adminStyles.table.th}>회원 정보</th>
                 <th style={adminStyles.table.th}>연락처</th>
                 <th style={adminStyles.table.th}>가입일</th>
-                <th style={adminStyles.table.th}>마지막 로그인</th>
-                <th style={adminStyles.table.th}>등급</th>
                 <th style={adminStyles.table.th}>상태</th>
-                <th style={{ ...adminStyles.table.th, textAlign: 'center' }}>
-                  관리
-                </th>
+                <th style={adminStyles.table.th}>등급</th>
+                <th style={adminStyles.table.th}>최종 로그인</th>
+                <th style={adminStyles.table.th}>관리</th>
               </tr>
             </thead>
             <tbody>
               {filteredMembers.map((member) => (
-                <tr
-                  key={member.id}
-                  style={{
-                    transition: 'background 0.2s',
-                  }}
-                >
+                <tr key={member.id} style={adminStyles.table.tr}>
                   <td style={adminStyles.table.td}>
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: adminSizes.spacing.md,
-                      }}
-                    >
+                    <div>
                       <div
                         style={{
-                          width: '40px',
-                          height: '40px',
-                          borderRadius: adminSizes.radius.full,
-                          background:
-                            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: adminColors.textWhite,
-                          fontSize: '14px',
                           fontWeight: 600,
+                          color: adminColors.textPrimary,
+                          marginBottom: '4px',
                         }}
                       >
-                        {member.name.charAt(0)}
+                        {member.name}
                       </div>
-                      <div>
-                        <div
-                          style={{
-                            fontSize: '14px',
-                            fontWeight: 600,
-                            color: adminColors.textPrimary,
-                            marginBottom: '2px',
-                          }}
-                        >
-                          {member.name}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: '13px',
-                            color: adminColors.textTertiary,
-                          }}
-                        >
-                          {member.email}
-                        </div>
+                      <div
+                        style={{
+                          fontSize: '13px',
+                          color: adminColors.textTertiary,
+                        }}
+                      >
+                        {member.email}
                       </div>
                     </div>
                   </td>
-                  <td style={adminStyles.table.td}>{member.phone}</td>
-                  <td style={adminStyles.table.td}>{member.joinDate}</td>
-                  <td style={adminStyles.table.td}>{member.lastLogin}</td>
                   <td style={adminStyles.table.td}>
-                    {getRoleBadge(member.role)}
+                    <div
+                      style={{
+                        fontSize: '14px',
+                        color: adminColors.textSecondary,
+                      }}
+                    >
+                      {member.phone}
+                    </div>
+                  </td>
+                  <td style={adminStyles.table.td}>
+                    <div
+                      style={{
+                        fontSize: '14px',
+                        color: adminColors.textSecondary,
+                      }}
+                    >
+                      {member.joinDate}
+                    </div>
                   </td>
                   <td style={adminStyles.table.td}>
                     {getStatusBadge(member.status)}
                   </td>
-                  <td style={{ ...adminStyles.table.td, textAlign: 'center' }}>
+                  <td style={adminStyles.table.td}>
+                    {getRoleBadge(member.role)}
+                  </td>
+                  <td style={adminStyles.table.td}>
+                    <div
+                      style={{
+                        fontSize: '14px',
+                        color: adminColors.textSecondary,
+                      }}
+                    >
+                      {member.lastLogin}
+                    </div>
+                  </td>
+                  <td style={adminStyles.table.td}>
                     <div
                       style={{
                         display: 'flex',
@@ -388,7 +441,7 @@ export default function MemberManagement() {
         )}
       </section>
 
-      {/* 수정 모달 */}
+      {/* 추가/수정 모달 */}
       {isModalOpen && editingMember && (
         <div
           style={{
@@ -434,7 +487,7 @@ export default function MemberManagement() {
                   margin: 0,
                 }}
               >
-                회원 정보 수정
+                {isAddMode ? '회원 추가' : '회원 정보 수정'}
               </h3>
               <button
                 onClick={handleCloseModal}
@@ -468,7 +521,7 @@ export default function MemberManagement() {
                     color: adminColors.textSecondary,
                   }}
                 >
-                  이름
+                  이름 *
                 </label>
                 <input
                   type="text"
@@ -490,7 +543,7 @@ export default function MemberManagement() {
                     color: adminColors.textSecondary,
                   }}
                 >
-                  이메일
+                  이메일 *
                 </label>
                 <input
                   type="email"
@@ -502,6 +555,33 @@ export default function MemberManagement() {
                 />
               </div>
 
+              {isAddMode && (
+                <div style={{ marginBottom: adminSizes.spacing.lg }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      marginBottom: adminSizes.spacing.sm,
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      color: adminColors.textSecondary,
+                    }}
+                  >
+                    비밀번호 *
+                  </label>
+                  <input
+                    type="password"
+                    value={editingMember.password || ''}
+                    onChange={(e) =>
+                      handleInputChange('password', e.target.value)
+                    }
+                    placeholder="6자 이상 입력"
+                    style={mergeStyles(adminStyles.form.input, {
+                      width: '100%',
+                    })}
+                  />
+                </div>
+              )}
+
               <div style={{ marginBottom: adminSizes.spacing.lg }}>
                 <label
                   style={{
@@ -512,12 +592,13 @@ export default function MemberManagement() {
                     color: adminColors.textSecondary,
                   }}
                 >
-                  전화번호
+                  전화번호 *
                 </label>
                 <input
                   type="tel"
                   value={editingMember.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
+                  placeholder="010-0000-0000"
                   style={mergeStyles(adminStyles.form.input, {
                     width: '100%',
                   })}

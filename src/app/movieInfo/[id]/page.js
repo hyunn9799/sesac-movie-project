@@ -1,5 +1,3 @@
-// [전체 코드]
-
 import React from 'react';
 import Link from 'next/link';
 import {
@@ -12,11 +10,11 @@ import {
   layout,
 } from '@/lib/style/styles';
 import { initialReviews } from '@/lib/data/review';
-import ReviewList from './ReviewList.js'; // 👈 [추가] ReviewList 컴포넌트 임포트
-import CrewList from './CrewList.js';   // 👈 [추가] CrewList 컴포넌트 임포트
+import ReviewList from './ReviewList.js';
+import CrewList from './CrewList.js';
+import ReviewButton from '@/component/ReviewButton.js'; // 👈 [추가] ReviewButton 컴포넌트 임포트
 
 // --- TMDB API 호출 함수들 ---
-// ❗️ [수정] .env.local 파일 변경에 맞춰 변수 이름 수정
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
@@ -31,7 +29,6 @@ async function fetchTMDb(path) {
   return res.json();
 }
 
-// ... (getMovieDetails, getMovieCredits, getMovieImages, getSimilarMovies, getMovieVideos 함수는 기존과 동일) ...
 // 영화 상세 정보
 async function getMovieDetails(id) {
   return fetchTMDb(`/movie/${id}`);
@@ -57,7 +54,6 @@ async function getMovieVideos(id) {
   return res.json();
 }
 
-// ... (renderStars, formatRuntime 함수는 기존과 동일) ...
 // 별점 렌더링 헬퍼 함수
 const renderStars = (rating) => {
   const score = rating / 2;
@@ -65,10 +61,18 @@ const renderStars = (rating) => {
   const fullStars = Math.floor(score);
 
   for (let i = 0; i < fullStars; i++) {
-    stars.push(<span key={`full-${i}`} style={{ color: colors.yellow }}>★</span>);
+    stars.push(
+      <span key={`full-${i}`} style={{ color: colors.yellow }}>
+        ★
+      </span>
+    );
   }
   for (let i = stars.length; i < 5; i++) {
-    stars.push(<span key={`empty-${i}`} style={{ color: colors.mediumGray }}>☆</span>);
+    stars.push(
+      <span key={`empty-${i}`} style={{ color: colors.mediumGray }}>
+        ☆
+      </span>
+    );
   }
   return stars;
 };
@@ -79,8 +83,7 @@ const formatRuntime = (minutes) => {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   return `${h > 0 ? `${h}시간 ` : ''}${m}분`;
-}
-
+};
 
 // --- 메인 페이지 컴포넌트 ---
 export default async function MovieInfoPage({ params }) {
@@ -120,7 +123,6 @@ export default async function MovieInfoPage({ params }) {
 
   // --- 스타일 정의 ---
   const styles = {
-    // ... (heroWrapper, heroContainer, heroContent 등 기존 스타일은 모두 동일) ...
     pageWrapper: {
       backgroundColor: colors.dark,
       color: colors.textPrimary,
@@ -141,13 +143,13 @@ export default async function MovieInfoPage({ params }) {
       alignItems: 'flex-start',
     },
     heroContent: {
-      flex: 1, // 1:1 비율로 수정
+      flex: 1,
       display: 'flex',
       flexDirection: 'column',
       gap: spacing.lg,
     },
     heroImageWrapper: {
-      flex: 1, // 1:1 비율로 수정
+      flex: 1,
     },
     posterImage: {
       width: '100%',
@@ -267,7 +269,6 @@ export default async function MovieInfoPage({ params }) {
       fontSize: fontSize.large,
       color: colors.white,
     },
-    // ... (리뷰 관련 스타일들: reviewButton, reviewList, reviewItem, reviewUser 등) ...
     reviewButton: {
       ...commonStyles.button,
       ...commonStyles.buttonPrimary,
@@ -311,8 +312,6 @@ export default async function MovieInfoPage({ params }) {
       fontSize: '14px',
       fontWeight: fontWeight.bold,
     },
-
-    // ... (relatedGrid, relatedCard 등 나머지 스타일들) ...
     relatedGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(5, 1fr)',
@@ -334,8 +333,6 @@ export default async function MovieInfoPage({ params }) {
       fontSize: fontSize.medium,
       padding: `${spacing.sm} 0`,
     },
-
-    // 👈 [추가] 모달(팝업) 관련 스타일 10개
     modalOverlay: {
       position: 'fixed',
       top: 0,
@@ -428,7 +425,6 @@ export default async function MovieInfoPage({ params }) {
       flexShrink: 0,
       marginLeft: spacing.md,
     },
-    // (텍스트 색상을 위한 임시 스타일 - styles.js에 이미 있다면 무시해도 됨)
     textPrimary: { color: colors.textPrimary },
     textLight: { color: colors.textLight },
     textSecondary: { color: colors.textSecondary },
@@ -439,25 +435,32 @@ export default async function MovieInfoPage({ params }) {
       {/* --- 섹션 1: 상단 정보 --- */}
       <div style={styles.heroWrapper}>
         <div style={styles.heroContainer}>
-          {/* ... (왼쪽 텍스트 영역) ... */}
           <div style={styles.heroContent}>
             <h1 style={styles.title}>{movie.title}</h1>
             <div style={styles.metadata}>
-              {`${movie.release_date.split('-')[0]} · ${formatRuntime(movie.runtime)} · ${movie.genres.map(g => g.name).join(', ')}`}
+              {`${movie.release_date.split('-')[0]} · ${formatRuntime(
+                movie.runtime
+              )} · ${movie.genres.map((g) => g.name).join(', ')}`}
             </div>
             <p style={styles.description}>{movie.overview}</p>
             <div style={styles.infoBoxes}>
               <div style={styles.infoBox}>
                 <div style={styles.infoBoxTitle}>인기도</div>
-                <div style={styles.infoBoxContent}>{Math.round(movie.popularity)} 점</div>
+                <div style={styles.infoBoxContent}>
+                  {Math.round(movie.popularity)} 점
+                </div>
                 <div style={{ ...styles.infoBoxTitle, marginTop: spacing.md }}>
                   총 투표 수
                 </div>
-                <div style={styles.infoBoxContent}>{movie.vote_count.toLocaleString()} 회</div>
+                <div style={styles.infoBoxContent}>
+                  {movie.vote_count.toLocaleString()} 회
+                </div>
               </div>
               <div style={styles.infoBox}>
                 <div style={styles.infoBoxTitle}>관람객 평점</div>
-                <div style={styles.ratingStars}>{renderStars(movie.vote_average)}</div>
+                <div style={styles.ratingStars}>
+                  {renderStars(movie.vote_average)}
+                </div>
                 <div style={styles.infoBoxContent}>
                   {movie.vote_average.toFixed(1)} / 10.0
                 </div>
@@ -465,7 +468,6 @@ export default async function MovieInfoPage({ params }) {
             </div>
           </div>
 
-          {/* ... (오른쪽 예고편/포스터 영역) ... */}
           <div style={styles.heroImageWrapper}>
             {videoKey ? (
               <div style={styles.videoWrapper}>
@@ -485,9 +487,7 @@ export default async function MovieInfoPage({ params }) {
                   alt={movie.title}
                   style={styles.posterImage}
                 />
-                <p style={styles.posterCaption}>
-                  *예고편을 찾을 수 없습니다.
-                </p>
+                <p style={styles.posterCaption}>*예고편을 찾을 수 없습니다.</p>
               </>
             )}
           </div>
@@ -512,16 +512,18 @@ export default async function MovieInfoPage({ params }) {
           </div>
         </section>
 
-        {/* 👈 [수정] 섹션 3: 감독 출연 (클라이언트 컴포넌트로 교체) */}
+        {/* --- 섹션 3: 감독 출연 --- */}
         <CrewList director={director} cast={cast} styles={styles} />
 
-        {/* --- 섹션 4: 감상 후기 (클라이언트 컴포넌트 사용) --- */}
+        {/* --- 섹션 4: 감상 후기 --- */}
         <section style={styles.section}>
           <div style={styles.sectionHeader}>
             <h2 style={styles.sectionTitle}>감상 후기</h2>
-            <Link href={`/review/write?movieId=${id}&movieTitle=${movie.title}`}> {/* 현재 영화 ID를 query param으로 전달 */}
-              <button style={styles.reviewButton}>작성하기</button>
-            </Link>
+            <ReviewButton
+              movieId={id}
+              movieTitle={movie.title}
+              styles={styles}
+            />
           </div>
           <ReviewList reviews={pageReviews} styles={styles} />
         </section>
@@ -533,15 +535,20 @@ export default async function MovieInfoPage({ params }) {
           </div>
           <div style={styles.relatedGrid}>
             {relatedMovies.map((related) => (
-              // ⭐ [수정] Link 컴포넌트로 감싸고 href 추가
-              <Link href={`/movieInfo/${related.id}`} key={related.id} style={{ textDecoration: 'none' }}>
-                <div style={{ ...styles.relatedCard, cursor: 'pointer' }}> {/* cursor 스타일 추가 */}
+              <Link
+                href={`/movieInfo/${related.id}`}
+                key={related.id}
+                style={{ textDecoration: 'none' }}
+              >
+                <div style={{ ...styles.relatedCard, cursor: 'pointer' }}>
                   <img
                     src={`${IMAGE_BASE_URL}/w500${related.poster_path}`}
                     alt={related.title}
                     style={styles.relatedPoster}
                   />
-                  <div style={commonStyles.movieInfo || { padding: spacing.md }}> {/* 기본값 추가 */}
+                  <div
+                    style={commonStyles.movieInfo || { padding: spacing.md }}
+                  >
                     <h3 style={styles.relatedTitle}>{related.title}</h3>
                   </div>
                 </div>
