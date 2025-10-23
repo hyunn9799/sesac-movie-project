@@ -17,9 +17,9 @@ import {
 export default function ReviewWritePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const movieId = searchParams.get('movieId'); 
-  // 2. editReviewId 가져오기 추가
-  const editReviewId = searchParams.get('editReviewId'); 
+
+  const movieId = searchParams.get('movieId'); // URL에서 movieId 가져오기
+  const movieTitle = searchParams.get('movieTitle'); // URL에서 movieTitle 가져오기
 
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0); 
@@ -76,41 +76,22 @@ export default function ReviewWritePage() {
       const allReviews = JSON.parse(localStorage.getItem('myReviews') || '[]');
       let updatedReviews;
 
-      if (isEditing) { 
-        updatedReviews = allReviews.map(review => {
-          if (String(review.id) === String(editReviewId)) {
-            return { 
-              ...review, 
-              content: (reviewText || '').trim(), // 안전하게 trim
-              rating: rating, 
-              date: new Date().toISOString().split('T')[0],
-             };
-          }
-          return review;
-        });
-        alert('리뷰가 수정되었습니다!');
-      } else { 
-        const newReview = { 
-            id: Date.now(), 
-            movieId: movieId, 
-            userName: loggedInUser, 
-            rating: rating, 
-            content: (reviewText || '').trim(), // 안전하게 trim
-            likes: 0, 
-            date: new Date().toISOString().split('T')[0], 
-            isVerified: false,
-         };
-        updatedReviews = [newReview, ...allReviews];
-        alert('리뷰가 브라우저에 임시 저장되었습니다!');
-      }
-      
-      localStorage.setItem('myReviews', JSON.stringify(updatedReviews));
-      router.push(movieId ? `/movieInfo/${movieId}` : '/mypage/reviews');
+    // --- 실제 데이터 저장 로직 ---
+    // ... (LocalStorage 또는 추후 API 호출 로직) ...
+    const savedReviews = JSON.parse(localStorage.getItem('myReviews') || '[]');
+    const newReview = {
+      id: Date.now(), movieId: movieId, userName: '나', rating: 0, movieTitle:movieTitle,
+      content: reviewText, likes: 0, date: new Date().toISOString().split('T')[0], isVerified: false,
+    };
+    const updatedReviews = [newReview, ...savedReviews];
+    localStorage.setItem('myReviews', JSON.stringify(updatedReviews));
 
-    } catch (error) {
-      console.error("LocalStorage 저장/수정 중 오류 발생:", error);
-      alert("리뷰 저장/수정에 실패했습니다.");
-      setIsSubmitting(false); // 오류 시 상태 해제
+    alert(`리뷰가 (로컬에) 등록되었습니다! (영화 ID: ${movieId})\n내용: ${reviewText.substring(0, 50)}...`);
+
+    if (movieId) {
+      router.push(`/movieInfo/${movieId}`);
+    } else {
+      router.push('/');
     }
     // 중복된 저장 로직 제거됨
   };

@@ -33,6 +33,14 @@
   padding: 10px;
   font-size: 1rem;
   margin-bottom: 15px;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+/* ✅ textarea placeholder 스타일 변경 */
+.writeBox textarea::placeholder {
+  color: #888; /* ✅ 회색톤으로 */
+  font-size: 1rem; /* ✅ 살짝 작게 */
+  font-family: "Noto Sans KR", sans-serif; /* ✅ 폰트 지정 */
 }
 
 .writeBox textarea {
