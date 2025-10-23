@@ -284,7 +284,7 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-start',
-        paddingTop: '80px',
+        paddingTop: '50px',
         width: '100%',
         zIndex: 2, // ❗ 오버레이 위에 위치
         position: 'relative', // z-index가 제대로 작동하도록 설정
@@ -300,7 +300,7 @@ const styles = {
         borderRadius: '12px',
         boxShadow: '0 8px 16px rgba(0,0,0,0.4)', // 그림자 추가
         marginBottom: '80px', // 하단 간격 추가
-        border : '1px solid rgba(28, 28, 28, 0.9)'
+        border : '1px solid black'
     },
     title: {
         fontSize: '30px',
@@ -314,9 +314,11 @@ const styles = {
         textAlign: 'left',
         padding: '50px',
         // backgroundColor: '#383838', // 배경이 겹치지 않도록 살짝 밝은 색으로 조정
-        borderRadius: '8px',
+        // borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #b69d71'
+        // boxShadow: '0 8px 16px rgba(0,0,0,0.4)', // 그림자 추가
+        // border: '1px solid #b69d71'
+        // borderBottom : '1px solid white'
     },
     profileIcon: {
         width: '80px',
@@ -390,14 +392,14 @@ const styles = {
         borderRadius: '8px',
         marginBottom: '30px',
         textAlign: 'left',
-        border: '1px solid #b69d71',
-        boxShadow : '0 8px 16px rgba(0, 0, 0, 0.4)',
+        // border: '1px solid #b69d71',
+        // boxShadow : '0 8px 16px rgba(0, 0, 0, 0.4)',
     },
     genreTitle: {
         fontSize: '20px',
         color: 'white',
         marginBottom: '20px',
-        borderBottom: '1px solid #444',
+        // borderBottom: '1px solid #b69d71',
         paddingBottom: '10px',
     },
     genreRow: {
@@ -424,11 +426,12 @@ const styles = {
         flexWrap: 'wrap',
     },
     tag: {
-        backgroundColor: '#b69d71',
+        // backgroundColor: '#b69d71',
         color: 'white',
         padding: '5px 10px',
         borderRadius: '3px',
         fontSize: '14px',
+        border: '1px solid #b69d71'
     },
     emptyTag: {
         color: '#777',
@@ -436,7 +439,7 @@ const styles = {
     },
     editButton: {
         backgroundColor: 'transparent',
-        color: '#b69d71',
+        color: 'white',
         border: '1px solid #b69d71',
         padding: '5px 10px',
         cursor: 'pointer',
