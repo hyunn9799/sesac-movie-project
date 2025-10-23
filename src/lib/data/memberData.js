@@ -549,4 +549,16 @@ export const initialMembers = [
     role: '프리미엄',
     lastLogin: '2025-10-19',
   },
+   {
+    id: 51,
+    name: '김새싹',
+    email: 'team3@example.com',
+    password: '1234',
+    phone: '010-3110-4545',
+    joinDate: '2024-02-17',
+    status: '활성',
+    role: '프리미엄',
+    lastLogin: '2025-10-20',
+  },
+
 ];
