@@ -53,7 +53,7 @@ export default function Footer() {
                   <Link href="/notice">공지사항</Link>
                 </li>
                   <li>
-                  <Link href="/qna">문의하기</Link>
+                  <Link href="/qna">FAQ</Link>
                 </li>
                 
               </ul>
