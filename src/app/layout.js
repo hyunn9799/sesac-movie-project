@@ -1,10 +1,13 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import Header from '@/component/Header';
+import dynamic from 'next/dynamic';
 import Footer from '@/component/Footer';
 import Chatbot from '@/component/Chatbot';
 import { AuthProvider } from './auth/AuthContext';
+
+// Dynamically import Header with SSR disabled
+const Header = dynamic(() => import('@/component/Header'), { ssr: false });
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
