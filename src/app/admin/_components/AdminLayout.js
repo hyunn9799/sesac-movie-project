@@ -19,18 +19,18 @@ export default function AdminLayout({
     { icon: '📋', label: '문의 관리', href: '/admin/fqa', key: 'fqa' },
   ];
 
-  const handleLogout = () => {
-    if (confirm('로그아웃 하시겠습니까?')) {
-      try {
-        localStorage.removeItem('loggedInAdmin');
-        localStorage.removeItem('loggedInUser');
-      } catch (err) {
-        console.error('Logout error:', err);
-      }
-      window.location.href = '/';
-    }
-  };
-
+  //const handleLogout = () => {
+  //  if (confirm('로그아웃 하시겠습니까?')) {
+  //    try {
+  //      localStorage.removeItem('loggedInAdmin');
+  //      localStorage.removeItem('loggedInUser');
+  //    } catch (err) {
+  //      console.error('Logout error:', err);
+  //    }
+  //    window.location.href = '/';
+  //  }
+  //};
+  //
   return (
     <div
       style={{
