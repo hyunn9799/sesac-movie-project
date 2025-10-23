@@ -8,7 +8,7 @@ import styles from './Footer.module.css' // CSS 모듈 사용 가정
 export default function Footer() {
     const currentYear = new Date().getFullYear()
     
-    // ⭐️ [수정] 초기 상태를 false로 설정하여 렌더링 시 모달이 닫혀 있게 합니다. ⭐️
+    // ⭐️ 초기 상태는 false로 유지합니다. ⭐️
     const [isOpen1, setIsOpen1] = useState(false); 
     const [isOpen2, setIsOpen2] = useState(false);
 
@@ -20,8 +20,11 @@ export default function Footer() {
       setIsOpen2(true)
     }
   
-    const closeModal = () => {
+    // 각 모달별 닫기 함수
+    const closeModal1 = () => {
       setIsOpen1(false);
+    };
+    const closeModal2 = () => {
       setIsOpen2(false);
     };
     
@@ -44,11 +47,12 @@ export default function Footer() {
             <div className={styles.footerColumn}>
               <h4 className={styles.footerSubtitle}>서비스</h4>
               <ul>
+                {/* ⭐️ 누락된 홈/마이페이지 링크를 다시 추가합니다. ⭐️ */}
              
                   <li>
                   <Link href="/notice">공지사항</Link>
                 </li>
-                 <li>
+                  <li>
                   <Link href="/qna">문의하기</Link>
                 </li>
                 
@@ -59,18 +63,23 @@ export default function Footer() {
               <h4 className={styles.footerSubtitle}>정보</h4>
               <ul>
                 <li>
-                  {/* ⭐️ [핵심 수정] 무한 렌더링 방지를 위해 함수를 콜백 형태로 전달합니다. ⭐️ */}
-                  <Link href="#" onClick={(e) => { e.preventDefault(); openPersonalModal(); }}>
+                  {/* ⭐️ [핵심 수정] Link 대신 <a> 태그를 사용하여 이벤트 충돌을 방지합니다. ⭐️ */}
+                  <a 
+                    href="#" 
+                    onClick={(e) => { e.preventDefault(); openPersonalModal(); }}
+                  >
                     개인 정보 처리 방침
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  {/* ⭐️ [핵심 수정] 함수를 콜백 형태로 전달합니다. ⭐️ */}
-                  <Link href="#" onClick={(e) => { e.preventDefault(); openUseModal(); }}>
+                  {/* ⭐️ [핵심 수정] Link 대신 <a> 태그를 사용하여 이벤트 충돌을 방지합니다. ⭐️ */}
+                  <a 
+                    href="#" 
+                    onClick={(e) => { e.preventDefault(); openUseModal(); }}
+                  >
                     자주묻는 질문
-                  </Link>
+                  </a>
                 </li>
-               
               </ul>
             </div>
 
@@ -131,9 +140,9 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* ⭐️ 모달 렌더링 시 closeModal 함수를 prop으로 전달 ⭐️ */}
-        {isOpen1 && <PerSonalModalPage closeModal={closeModal} />}
-        {isOpen2 && <UseModalPage closeModal={closeModal} />}
+        {/* ⭐️ 모달 렌더링 시 해당 닫기 함수를 prop으로 전달 ⭐️ */}
+        {isOpen1 && <PerSonalModalPage closeModal1={closeModal1} />}
+        {isOpen2 && <UseModalPage closeModal2={closeModal2} />}
       </footer>
     )
 }
