@@ -7,7 +7,7 @@ export default function NoticePage() {
   const [notices] = useState(initialNotices);
   const [search, setSearch] = useState("");
 
-  // 페이지 관련
+  // 페이지 관련 (1)
   const [currentPage, setCurrentPage] = useState(1);
   const noticesPerPage = 10;
   const totalPages = Math.ceil(notices.length / noticesPerPage);
