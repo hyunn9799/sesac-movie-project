@@ -4,7 +4,7 @@ export default function RootLayout({ children }) {
   return (
     <>
 
-      <GenreProvider> {/* Provider로 감싸기 */}
+      <GenreProvider> 
         {children}
       </GenreProvider>
 
