@@ -22,6 +22,9 @@ export default function ReviewWritePage() {
 
     const [review, setReview] = useState([]);
     const [reviewText, setReviewText] = useState('');
+    const [rating, setRating] = useState();
+    const [hoverRating, setHoverRating] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false); // isEditing 상태 제거
 
 
 
@@ -58,10 +61,19 @@ export default function ReviewWritePage() {
     };
 
     const handleSubmit = () => {
-        if (reviewText.trim() === '') {
-            alert('리뷰 내용을 입력해주세요.');
+        if (isSubmitting) return;
+
+        if (rating === 0) {
+            alert('별점을 선택해주세요.');
             return;
         }
+        if (reviewText.trim() === '') {
+            alert('리뷰 내용을 입력해주세요.');
+
+            return;
+        }
+
+        setIsSubmitting(true);
 
         // --- 실제 데이터 저장 로직 ---
         // ... (LocalStorage 또는 추후 API 호출 로직) ...
@@ -70,7 +82,7 @@ export default function ReviewWritePage() {
         // 특정 id(또는 movieId)에 해당하는 리뷰의 content만 수정
         const updatedReviews = savedReviews.map((review) =>
             review.id === reviewId || review.movieId === movieId
-                ? { ...review, content: reviewText }
+                ? { ...review, content: reviewText, rating: rating }
                 : review
         );
 
@@ -117,6 +129,33 @@ export default function ReviewWritePage() {
             borderBottom: `1px solid ${colors.lightGray}`,
             flexShrink: 0, // [추가] 제목 영역 크기 고정
         },
+         ratingContainer: {
+              marginBottom: spacing.lg,
+              display: 'flex',
+              alignItems: 'center',
+              gap: spacing.md,
+              flexShrink: 0, 
+              alignSelf: 'center', 
+              width: '1050px', 
+            },
+            ratingLabel: {
+              fontSize: fontSize.medium,
+              fontWeight: fontWeight.medium,
+              color: colors.dark,
+            },
+            starsWrapper: {
+              display: 'flex',
+              gap: '2px',
+            },
+            star: {
+              fontSize: '28px', 
+              cursor: 'pointer',
+              color: colors.lightGray, 
+              transition: 'color 0.2s',
+            },
+            filledStar: {
+              color: colors.yellow, 
+            },
         infoText: {
             fontSize: fontSize.medium,
             color: colors.mediumGray,
@@ -189,6 +228,28 @@ export default function ReviewWritePage() {
         <div style={styles.pageWrapper}>
             <div style={styles.contentContainer}>
                 <h1 style={styles.title}>{review?.movieTitle}</h1>
+                <div style={styles.ratingContainer}>
+                    <span style={styles.ratingLabel}>별점 선택:</span>
+                    <div
+                        style={styles.starsWrapper}
+                        onMouseLeave={() => setHoverRating(0)}
+                    >
+                        {[1, 2, 3, 4, 5].map((starIndex) => {
+                            const isFilled = starIndex <= (hoverRating || rating);
+                            return (
+                                <span
+                                    key={starIndex}
+                                    style={{ ...styles.star, ...(isFilled ? styles.filledStar : {}) }}
+                                    onClick={() => setRating(starIndex)}
+                                    onMouseEnter={() => setHoverRating(starIndex)}
+                                >
+                                    ★
+                                </span>
+                            );
+                        })}
+                    </div>
+                    <span style={{ color: colors.mediumGray, fontSize: fontSize.medium }}>({rating} / 5)</span>
+                </div>
 
                 {/*<p style={styles.infoText}>
           감상 후기는 최대 {MAX_LENGTH}자까지 등록 가능합니다. 영화와 관련 없는 내용은 임의로 삭제될 수 있습니다.

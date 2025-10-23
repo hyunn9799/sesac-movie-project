@@ -209,7 +209,7 @@ const ReviewItem = ({ review, onEdit, onDelete }) => {
             <div style={styles.reviewHeader}>
                 <div style={styles.reviewTitleBox}>
                     <h3 style={styles.movieTitle}>{review.movieTitle}</h3>
-                    {/* <RatingDisplay rating={review.rating} /> */}
+                    <RatingDisplay rating={review.rating} />
                 </div>
                 <p style={styles.reviewDate}>작성일: {review.date}</p>
             </div>
