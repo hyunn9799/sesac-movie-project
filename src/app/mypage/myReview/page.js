@@ -205,10 +205,11 @@ const ReviewItem = ({ review, onEdit, onDelete }) => {
   const [isEditHovered, setIsEditHovered] = useState(false);
   const [isDeleteHovered, setIsDeleteHovered] = useState(false);
   const [isCardHovered, setIsCardHovered] = useState(false);
+  const [isEdit, setIsEdit] = useState(true);
 
   const id = review.movieId;
-
   const movieTitle = review.movieTitle;
+  const reviewId = review.id;
 
   const editButtonStyle = {
     ...styles.actionButton,
@@ -224,15 +225,49 @@ const ReviewItem = ({ review, onEdit, onDelete }) => {
   };
 
   return (
-    <div
-      style={cardStyle}
-      onMouseEnter={() => setIsCardHovered(true)}
-      onMouseLeave={() => setIsCardHovered(false)}
-    >
-      <div style={styles.reviewHeader}>
-        <div style={styles.reviewTitleBox}>
-          <h3 style={styles.movieTitle}>{review.movieTitle}</h3>
-          {/* <RatingDisplay rating={review.rating} /> */}
+    <div>
+      <div>
+        <div
+          style={cardStyle}
+          onMouseEnter={() => setIsCardHovered(true)}
+          onMouseLeave={() => setIsCardHovered(false)}
+        >
+          <div style={styles.reviewHeader}>
+            <div style={styles.reviewTitleBox}>
+              <h3 style={styles.movieTitle}>{review.movieTitle}</h3>
+              <RatingDisplay rating={review.rating} />
+            </div>
+            <p style={styles.reviewDate}>작성일: {review.date}</p>
+          </div>
+
+          <p style={styles.reviewContent}>{review.content}</p>
+
+          <div style={styles.reviewActions}>
+            {/* 🧩 [수정] 수정 버튼 클릭 시 onEdit 호출 */}
+            <button
+              style={editButtonStyle}
+              onMouseEnter={() => setIsEditHovered(true)}
+              onMouseLeave={() => setIsEditHovered(false)}
+              // onClick={() => onEdit(review)}
+            >
+              <Link
+                href={`/review/edit?movieId=${id}&movieTitle=${movieTitle}&reviewId=${reviewId}`}
+                style={{ textDecoration: 'none', color: 'white' }}
+              >
+                ✏️ 리뷰 수정
+              </Link>
+            </button>
+
+            {/* 🧩 [수정] 삭제 버튼 클릭 시 onDelete 호출 */}
+            <button
+              style={deleteButtonStyle}
+              onMouseEnter={() => setIsDeleteHovered(true)}
+              onMouseLeave={() => setIsDeleteHovered(false)}
+              onClick={() => onDelete(review.id)}
+            >
+              🗑️ 리뷰 삭제
+            </button>
+          </div>
         </div>
         <p style={styles.reviewDate}>작성일: {review.date}</p>
       </div>
@@ -384,7 +419,33 @@ export default function MyReviewsPage() {
     ...(isBackHovered ? styles.backButtonHover : {}),
   };
 
-  return (
+  // 삭제 확인 모달 띄우기
+  setModalMessage('정말로 이 리뷰를 삭제하시겠습니까?');
+  setModalAction(() => deleteAction);
+  setIsConfirmModal(true);
+  setIsModalOpen(true);
+}
+
+const handleBack = () => {
+  if (typeof window !== 'undefined') {
+    window.history.back();
+  }
+};
+
+// 모달 닫기
+const handleModalClose = () => {
+  setIsModalOpen(false);
+  setModalAction(null);
+  setIsConfirmModal(false);
+};
+
+const backButtonStyle = {
+  ...styles.backButton,
+  ...(isBackHovered ? styles.backButtonHover : {}),
+};
+
+return (
+  <div>
     <div style={styles.pageWrapper}>
       <div style={styles.contentContainer}>
         <div style={styles.header}>
@@ -404,12 +465,12 @@ export default function MyReviewsPage() {
 
         {/* 리뷰 목록 렌더링 */}
         <div style={styles.reviewList}>
-          {reviews && reviews.length > 0 ? (
+          {reviews && reviews?.length > 0 ? (
             reviews.map((review) => (
               <ReviewItem
                 key={review.id}
                 review={review}
-                onEdit={handleEdit} // 수정 핸들러 전달
+                // onEdit={handleEdit} // 수정 핸들러 전달
                 onDelete={handleDelete} // 삭제 핸들러 전달
               />
             ))
@@ -430,8 +491,24 @@ export default function MyReviewsPage() {
         cancelText={isConfirmModal ? '취소' : '닫기'}
       />
     </div>
-  );
-}
+
+    {/* 리뷰 목록 렌더링 */}
+    <div style={styles.reviewList}>
+      {reviews && reviews.length > 0 ? (
+        reviews.map((review) => (
+          <ReviewItem
+            key={review.id}
+            review={review}
+            onEdit={handleEdit} // 수정 핸들러 전달
+            onDelete={handleDelete} // 삭제 핸들러 전달
+          />
+        ))
+      ) : (
+        <p style={styles.noReviewText}>아직 작성된 리뷰가 없습니다. 📝</p>
+      )}
+    </div>
+  </div>
+);
 
 // =========================================================================
 // 🎨 스타일 정의 (기존 스타일 유지)
