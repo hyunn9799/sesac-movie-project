@@ -77,7 +77,7 @@ export default function Footer() {
                     href="#" 
                     onClick={(e) => { e.preventDefault(); openUseModal(); }}
                   >
-                    자주묻는 질문
+                    사이트 이용 약관
                   </a>
                 </li>
               </ul>
