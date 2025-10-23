@@ -14,7 +14,10 @@ import {
 export default function NoticePage() {
   const [notices, setNotices] = useState([]);
   const [search, setSearch] = useState("");
-  const [openId, setOpenId] = useState(null); // ✅ 현재 열려있는 항목 ID
+
+  const [openId, setOpenId] = useState(null); 
+  
+  // ✅ 현재 열려있는 항목 ID
 
   // 페이지 관련
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,26 +28,36 @@ export default function NoticePage() {
   }, []);
 
   const loadNotices = () => {
-    try {
-      let saved = localStorage.getItem("moviehub_notices");
+      try {
+     let saved = localStorage.getItem("moviehub_notices");
       if (!saved) {
-        saved = localStorage.getItem("notices");
+      saved = localStorage.getItem("notices");
       }
 
       if (saved) {
-        setNotices(JSON.parse(saved));
-      } else {
-        setNotices(initialNotices);
-        localStorage.setItem("notices", JSON.stringify(initialNotices));
-      }
+      const parsed = JSON.parse(saved);
 
-    } catch (error) {
-      console.error("공지사항 불러오기 실패:", error);
-      setNotices(initialNotices);
-    }
-  };
+      // ✅ ID 기준 오름차순 정렬
+      parsed.sort((a, b) => a.id - b.id);
+
+      setNotices(parsed);
+
+      } else {
+      // ✅ 초기 데이터도 정렬 후 저장
+      const sorted = [...initialNotices].sort((a, b) => a.id - b.id);
+      setNotices(sorted);
+      localStorage.setItem("notices", JSON.stringify(sorted));
+     }
+
+  } catch (error) {
+    console.error("공지사항 불러오기 실패:", error);
+    const sorted = [...initialNotices].sort((a, b) => a.id - b.id);
+    setNotices(sorted);
+  }
+};
 
   // 검색
+
   const filteredNotices = notices.filter((notice) =>
     notice.title.toLowerCase().includes(search.toLowerCase())
   );
@@ -61,6 +74,7 @@ export default function NoticePage() {
   };
 
   // ✅ 클릭 시 열기/닫기
+
   const toggleNotice = (id) => {
     setOpenId(openId === id ? null : id);
   };
@@ -74,6 +88,8 @@ export default function NoticePage() {
         </p>
 
         {/* 검색창 */}
+
+
         <div style={styles.searchBox}>
           <input
             type="text"
@@ -122,6 +138,7 @@ export default function NoticePage() {
                   </tr>
 
                   {/* ✅ 상세 내용 (열렸을 때만 표시) */}
+
                   {openId === notice.id && (
                     <tr>
                       <td colSpan="3" style={styles.detailCell}>
@@ -295,6 +312,7 @@ const styles = {
     transition: transition.normal,
     minWidth: "40px",
   },
+
   activePageButton: {
     backgroundColor: colors.primary,
     color: colors.white,
@@ -305,6 +323,7 @@ const styles = {
     opacity: 0.5,
     cursor: "not-allowed",
   },
+
   footerBtns: {
     display: "flex",
     justifyContent: "center",
