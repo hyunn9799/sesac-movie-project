@@ -1,6 +1,6 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { initialNotices } from '@/lib/data/notice';
+"use client";
+import React, { useState, useEffect } from "react";
+import { initialNotices } from "@/lib/data/notice";
 import {
   colors,
   spacing,
@@ -9,85 +9,59 @@ import {
   borderRadius,
   shadow,
   transition,
-} from '@/lib/style/styles';
+} from "@/lib/style/styles";
 
 export default function NoticePage() {
   const [notices, setNotices] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
+  const [openId, setOpenId] = useState(null); // ✅ 현재 열려있는 항목 ID
 
   // 페이지 관련
   const [currentPage, setCurrentPage] = useState(1);
   const noticesPerPage = 10;
-  const totalPages = Math.ceil(notices.length / noticesPerPage);
-  const startIndex = (currentPage - 1) * noticesPerPage;
-  const endIndex = startIndex + noticesPerPage;
-  const currentNotices = notices.slice(startIndex, endIndex);
 
-  // 공지 펼치기
-  const [openId, setOpenId] = useState(null);
-  const toggleNotice = (id) => setOpenId(openId === id ? null : id);
-
-  // localStorage에서 공지사항 불러오기
   useEffect(() => {
     loadNotices();
   }, []);
 
-  // localStorage 변경 감지
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      loadNotices();
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
   const loadNotices = () => {
     try {
-      let saved = localStorage.getItem('moviehub_notices');
+      let saved = localStorage.getItem("moviehub_notices");
       if (!saved) {
-        saved = localStorage.getItem('notices');
+        saved = localStorage.getItem("notices");
       }
 
       if (saved) {
-        const loadedNotices = JSON.parse(saved);
-        setNotices(loadedNotices);
+        setNotices(JSON.parse(saved));
       } else {
         setNotices(initialNotices);
-        localStorage.setItem('notices', JSON.stringify(initialNotices));
+        localStorage.setItem("notices", JSON.stringify(initialNotices));
       }
     } catch (error) {
-      console.error('공지사항 불러오기 실패:', error);
+      console.error("공지사항 불러오기 실패:", error);
       setNotices(initialNotices);
     }
   };
 
+  // 검색
+  const filteredNotices = notices.filter((notice) =>
+    notice.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredNotices.length / noticesPerPage);
+  const startIndex = (currentPage - 1) * noticesPerPage;
+  const currentNotices = filteredNotices.slice(
+    startIndex,
+    startIndex + noticesPerPage
+  );
+
   const goToPage = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      setOpenId(null);
-    }
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-  const highlightText = (text, keyword) => {
-    if (!keyword) return text;
-    const parts = text.split(new RegExp(`(${keyword})`, 'gi'));
-    return parts.map((part, i) =>
-      part.toLowerCase() === keyword.toLowerCase() ? (
-        <mark
-          key={i}
-          style={{
-            backgroundColor: colors.yellow,
-            color: colors.dark,
-            padding: '2px 4px',
-            borderRadius: borderRadius.small,
-          }}
-        >
-          {part}
-        </mark>
-      ) : (
-        part
-      )
-    );
+  // ✅ 클릭 시 열기/닫기
+  const toggleNotice = (id) => {
+    setOpenId(openId === id ? null : id);
   };
 
   return (
@@ -95,8 +69,7 @@ export default function NoticePage() {
       <div style={styles.noticeBox}>
         <h2 style={styles.title}>공지사항</h2>
         <p style={styles.subtitle}>
-          <em style={{ color: colors.primary }}>MovieHub</em>의 각종
-          공지사항(공지, 행사 등)을 제공합니다.
+          <em style={{ color: colors.primary }}>MovieHub</em>의 각종 공지사항(공지, 행사 등)을 제공합니다.
         </p>
 
         {/* 검색창 */}
@@ -111,12 +84,7 @@ export default function NoticePage() {
           <button style={styles.searchButton}>검색</button>
         </div>
 
-        {search && (
-          <p style={styles.searchResult}>
-            🔍 검색어: <strong>{search}</strong>
-          </p>
-        )}
-
+        {/* 테이블 */}
         <table style={styles.table}>
           <thead>
             <tr>
@@ -136,33 +104,27 @@ export default function NoticePage() {
               currentNotices.map((notice) => (
                 <React.Fragment key={notice.id}>
                   <tr
-                    style={styles.tableRow}
+                    style={{
+                      ...styles.tableRow,
+                      cursor: "pointer",
+                      backgroundColor:
+                        openId === notice.id ? colors.darkGray : "transparent",
+                    }}
                     onClick={() => toggleNotice(notice.id)}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = colors.darkGray;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }}
                   >
                     <td style={styles.tableCell}>{notice.id}</td>
                     <td style={styles.tableCell}>
-                      {notice.isPinned && (
-                        <span style={{ marginRight: spacing.sm }}>📌</span>
-                      )}
-                      {notice.isNew && <span style={styles.newBadge}>NEW</span>}
-                      <em style={{ color: colors.primary }}>MovieHub</em>{' '}
-                      {highlightText(
-                        notice.title.replace('MovieHub', ''),
-                        search
-                      )}
+                      <em style={{ color: colors.primary }}>MovieHub</em>{" "}
+                      {notice.title}
                     </td>
                     <td style={styles.tableCell}>{notice.date}</td>
                   </tr>
+
+                  {/* ✅ 상세 내용 (열렸을 때만 표시) */}
                   {openId === notice.id && (
-                    <tr style={styles.dropdownRow}>
-                      <td colSpan="3" style={styles.dropdownCell}>
-                        {highlightText(notice.content, search)}
+                    <tr>
+                      <td colSpan="3" style={styles.detailCell}>
+                        {notice.content || "상세 내용이 없습니다."}
                       </td>
                     </tr>
                   )}
@@ -210,6 +172,7 @@ export default function NoticePage() {
           </button>
         </div>
 
+        {/* 하단 버튼 */}
         <div style={styles.footerBtns}>
           <button style={styles.footerButton}>검색결과 수집에 대한 정책</button>
           <button style={styles.footerButton}>MovieHub 사용문의</button>
@@ -221,17 +184,17 @@ export default function NoticePage() {
   );
 }
 
-// 스타일 정의
+// 스타일
 const styles = {
   container: {
-    minHeight: '100vh',
+    minHeight: "100vh",
     backgroundColor: colors.dark,
     padding: spacing.xl,
-    paddingTop: '100px', // 헤더 높이만큼 여백
+    paddingTop: "100px",
   },
   noticeBox: {
-    maxWidth: '1200px',
-    margin: '0 auto',
+    maxWidth: "1200px",
+    margin: "0 auto",
     backgroundColor: colors.darkGray,
     borderRadius: borderRadius.large,
     padding: spacing.xxl,
@@ -241,20 +204,20 @@ const styles = {
     fontSize: fontSize.hero,
     fontWeight: fontWeight.bold,
     color: colors.white,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: spacing.md,
   },
   subtitle: {
     fontSize: fontSize.large,
     color: colors.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: spacing.xxl,
   },
   searchBox: {
-    display: 'flex',
+    display: "flex",
     gap: spacing.md,
     marginBottom: spacing.xl,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   searchInput: {
     padding: spacing.md,
@@ -263,8 +226,8 @@ const styles = {
     borderRadius: borderRadius.medium,
     backgroundColor: colors.dark,
     color: colors.white,
-    width: '400px',
-    outline: 'none',
+    width: "400px",
+    outline: "none",
   },
   searchButton: {
     padding: `${spacing.sm} ${spacing.xl}`,
@@ -272,20 +235,14 @@ const styles = {
     fontWeight: fontWeight.medium,
     backgroundColor: colors.primary,
     color: colors.white,
-    border: 'none',
+    border: "none",
     borderRadius: borderRadius.medium,
-    cursor: 'pointer',
+    cursor: "pointer",
     transition: transition.normal,
   },
-  searchResult: {
-    fontSize: fontSize.medium,
-    color: colors.textSecondary,
-    marginBottom: spacing.lg,
-    textAlign: 'center',
-  },
   table: {
-    width: '100%',
-    borderCollapse: 'collapse',
+    width: "100%",
+    borderCollapse: "collapse",
     marginBottom: spacing.xl,
   },
   tableHeader: {
@@ -294,11 +251,10 @@ const styles = {
     color: colors.textSecondary,
     fontSize: fontSize.medium,
     fontWeight: fontWeight.bold,
-    textAlign: 'left',
+    textAlign: "left",
     borderBottom: `2px solid ${colors.mediumGray}`,
   },
   tableRow: {
-    cursor: 'pointer',
     transition: transition.fast,
   },
   tableCell: {
@@ -307,34 +263,23 @@ const styles = {
     fontSize: fontSize.medium,
     borderBottom: `1px solid ${colors.mediumGray}`,
   },
+  detailCell: {
+    padding: spacing.xl,
+    backgroundColor: colors.dark,
+    color: colors.textSecondary,
+    fontSize: fontSize.medium,
+    lineHeight: 1.6,
+    borderBottom: `1px solid ${colors.mediumGray}`,
+  },
   emptyCell: {
     padding: spacing.xxl,
-    textAlign: 'center',
+    textAlign: "center",
     color: colors.textSecondary,
     fontSize: fontSize.large,
   },
-  newBadge: {
-    backgroundColor: colors.primary,
-    color: colors.white,
-    padding: '4px 8px',
-    borderRadius: borderRadius.small,
-    fontSize: '11px',
-    fontWeight: fontWeight.bold,
-    marginRight: spacing.sm,
-  },
-  dropdownRow: {
-    backgroundColor: colors.dark,
-  },
-  dropdownCell: {
-    padding: spacing.xl,
-    color: colors.textLight,
-    fontSize: fontSize.medium,
-    lineHeight: '1.8',
-    borderBottom: `1px solid ${colors.mediumGray}`,
-  },
   pagination: {
-    display: 'flex',
-    justifyContent: 'center',
+    display: "flex",
+    justifyContent: "center",
     gap: spacing.sm,
     marginBottom: spacing.xl,
   },
@@ -345,9 +290,9 @@ const styles = {
     color: colors.white,
     border: `1px solid ${colors.mediumGray}`,
     borderRadius: borderRadius.small,
-    cursor: 'pointer',
+    cursor: "pointer",
     transition: transition.normal,
-    minWidth: '40px',
+    minWidth: "40px",
   },
   activePageButton: {
     backgroundColor: colors.primary,
@@ -357,22 +302,22 @@ const styles = {
   },
   pageButtonDisabled: {
     opacity: 0.5,
-    cursor: 'not-allowed',
+    cursor: "not-allowed",
   },
   footerBtns: {
-    display: 'flex',
-    justifyContent: 'center',
+    display: "flex",
+    justifyContent: "center",
     gap: spacing.md,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   },
   footerButton: {
     padding: `${spacing.sm} ${spacing.lg}`,
     fontSize: fontSize.medium,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     color: colors.textSecondary,
     border: `1px solid ${colors.mediumGray}`,
     borderRadius: borderRadius.medium,
-    cursor: 'pointer',
+    cursor: "pointer",
     transition: transition.normal,
   },
 };
