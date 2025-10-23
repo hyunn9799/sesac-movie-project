@@ -1,9 +1,10 @@
-'use client'; // 👈 Form handling requires client component
+'use client'; 
 
-import React, { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation'; // For redirection and getting query params
+// 1. useEffect 임포트 추가
+import React, { useState, useEffect } from 'react'; 
+import { useRouter, useSearchParams } from 'next/navigation'; 
 
-// 팀 스타일 가이드 임포트 (경로 확인 필요)
+// 팀 스타일 가이드 임포트
 import {
   colors,
   spacing,
@@ -16,10 +17,37 @@ import {
 export default function ReviewWritePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const movieId = searchParams.get('movieId'); // URL에서 movieId 가져오기
+  const movieId = searchParams.get('movieId'); 
+  // 2. editReviewId 가져오기 추가
+  const editReviewId = searchParams.get('editReviewId'); 
 
   const [reviewText, setReviewText] = useState('');
+  const [rating, setRating] = useState(0); 
+  const [hoverRating, setHoverRating] = useState(0); 
+  // 3. isEditing, isSubmitting 상태 선언 확인 (이미 코드에 있음)
+  const [isEditing, setIsEditing] = useState(false); 
+  const [isSubmitting, setIsSubmitting] = useState(false); 
   const MAX_LENGTH = 1000;
+
+  // 4. useEffect 추가 (수정 시 데이터 로드)
+  useEffect(() => {
+    if (editReviewId && typeof window !== 'undefined') {
+      setIsEditing(true); // 수정 모드임을 먼저 설정
+      try {
+        const allReviews = JSON.parse(localStorage.getItem('myReviews') || '[]');
+        const reviewToEdit = allReviews.find(r => String(r.id) === String(editReviewId));
+        if (reviewToEdit) {
+          setReviewText(String(reviewToEdit.content || '')); // 문자열 보장
+          setRating(reviewToEdit.rating || 0); 
+        } else {
+          // console.warn('수정할 리뷰를 찾을 수 없습니다.'); 
+          // 필요 시 사용자에게 알림
+        }
+      } catch (error) {
+          console.error("수정할 리뷰 로딩 오류:", error);
+      }
+    }
+  }, [editReviewId]); // editReviewId가 변경될 때 실행
 
   const handleTextChange = (event) => {
     const text = event.target.value;
@@ -28,32 +56,66 @@ export default function ReviewWritePage() {
     }
   };
 
+  // 5. handleSubmit 함수 정리 (중복 제거)
   const handleSubmit = () => {
-    if (reviewText.trim() === '') {
-      alert('리뷰 내용을 입력해주세요.');
-      return;
+    if (isSubmitting) return; 
+
+    if (rating === 0) {
+        alert('별점을 선택해주세요.');
+        return;
+    }
+    if ((reviewText || '').trim() === '') { // 안전한 trim() 호출
+        alert('리뷰 내용을 입력해주세요.');
+        return;
     }
 
-    // --- 실제 데이터 저장 로직 ---
-    // ... (LocalStorage 또는 추후 API 호출 로직) ...
-    const savedReviews = JSON.parse(localStorage.getItem('myReviews') || '[]');
-    const newReview = {
-      id: Date.now(), movieId: movieId, userName: '나', rating: 0,
-      content: reviewText, likes: 0, date: new Date().toISOString().split('T')[0], isVerified: false,
-    };
-    const updatedReviews = [newReview, ...savedReviews];
-    localStorage.setItem('myReviews', JSON.stringify(updatedReviews));
+    setIsSubmitting(true);
 
-    alert(`리뷰가 (로컬에) 등록되었습니다! (영화 ID: ${movieId})\n내용: ${reviewText.substring(0, 50)}...`);
+    try {
+      const loggedInUser = localStorage.getItem('loggedInUser') || '나'; 
+      const allReviews = JSON.parse(localStorage.getItem('myReviews') || '[]');
+      let updatedReviews;
 
-    if (movieId) {
-      router.push(`/movieInfo/${movieId}`);
-    } else {
-      router.push('/');
+      if (isEditing) { 
+        updatedReviews = allReviews.map(review => {
+          if (String(review.id) === String(editReviewId)) {
+            return { 
+              ...review, 
+              content: (reviewText || '').trim(), // 안전하게 trim
+              rating: rating, 
+              date: new Date().toISOString().split('T')[0],
+             };
+          }
+          return review;
+        });
+        alert('리뷰가 수정되었습니다!');
+      } else { 
+        const newReview = { 
+            id: Date.now(), 
+            movieId: movieId, 
+            userName: loggedInUser, 
+            rating: rating, 
+            content: (reviewText || '').trim(), // 안전하게 trim
+            likes: 0, 
+            date: new Date().toISOString().split('T')[0], 
+            isVerified: false,
+         };
+        updatedReviews = [newReview, ...allReviews];
+        alert('리뷰가 브라우저에 임시 저장되었습니다!');
+      }
+      
+      localStorage.setItem('myReviews', JSON.stringify(updatedReviews));
+      router.push(movieId ? `/movieInfo/${movieId}` : '/mypage/reviews');
+
+    } catch (error) {
+      console.error("LocalStorage 저장/수정 중 오류 발생:", error);
+      alert("리뷰 저장/수정에 실패했습니다.");
+      setIsSubmitting(false); // 오류 시 상태 해제
     }
+    // 중복된 저장 로직 제거됨
   };
 
-  // --- 스타일 정의 ---
+  // 6. styles 객체 정리 (중복 제거 및 통합)
   const styles = {
     pageWrapper: {
       backgroundColor: colors.dark,
@@ -62,19 +124,18 @@ export default function ReviewWritePage() {
       padding: `${spacing.xxl} 0`,
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center', // [수정] 중앙 정렬 (세로 크기 고정 시)
+      alignItems: 'center',
     },
     contentContainer: {
       backgroundColor: colors.white,
       color: colors.dark,
       borderRadius: borderRadius.medium,
       padding: spacing.xl,
-      // 👇 [수정] 감상 후기 작성 컨테이너 크기 고정
-      width: '1100px',
-      height: '500px',
+      width: '1100px', // 가로 크기
+      height: '500px', // 세로 크기
       boxShadow: commonStyles.card?.boxShadow || '0 4px 8px rgba(0,0,0,0.1)',
-      display: 'flex',          // [추가] Flexbox 레이아웃 사용
-      flexDirection: 'column',  // [추가] 세로 방향 정렬
+      display: 'flex',       
+      flexDirection: 'column', 
     },
     title: {
       fontSize: fontSize.xxlarge,
@@ -83,83 +144,125 @@ export default function ReviewWritePage() {
       marginBottom: spacing.lg,
       paddingBottom: spacing.md,
       borderBottom: `1px solid ${colors.lightGray}`,
-      flexShrink: 0, // [추가] 제목 영역 크기 고정
+      flexShrink: 0,
     },
-    infoText: {
-      fontSize: fontSize.medium,
-      color: colors.mediumGray,
+    // infoText는 placeholder로 대체되었으므로 제거 가능 (필요시 복구)
+    ratingContainer: {
       marginBottom: spacing.lg,
-      padding: spacing.md,
-      backgroundColor: '#f8f9fa',
-      borderRadius: borderRadius.small,
-      flexShrink: 0, // [추가] 안내 텍스트 크기 고정
+      display: 'flex',
+      alignItems: 'center',
+      gap: spacing.md,
+      flexShrink: 0, 
+      alignSelf: 'center', 
+      width: '1050px', 
+    },
+    ratingLabel: {
+      fontSize: fontSize.medium,
+      fontWeight: fontWeight.medium,
+      color: colors.dark,
+    },
+    starsWrapper: {
+      display: 'flex',
+      gap: '2px',
+    },
+    star: {
+      fontSize: '28px', 
+      cursor: 'pointer',
+      color: colors.lightGray, 
+      transition: 'color 0.2s',
+    },
+    filledStar: {
+      color: colors.yellow, 
     },
     textarea: {
-      // 👇 [수정] 텍스트 영역 크기 고정 및 Flexbox 활용
-      width: '1050px',
-      flexGrow: 1, // [추가] 남은 공간 모두 차지
+      width: '1050px', 
+      flexGrow: 1, // 남은 공간 차지
+      height: '300px', // 고정 높이 지정 (flexGrow와 같이 사용 시 주의) -> flexGrow: 1로 대체 가능
       padding: spacing.md,
       fontSize: fontSize.medium,
       border: `1px solid ${colors.lightGray}`,
       borderRadius: borderRadius.small,
-      resize: 'none', // [수정] 크기 조절 비활성화
+      resize: 'none', 
       marginBottom: spacing.sm,
       fontFamily: 'inherit',
-      alignSelf: 'center', // [추가] 가로 중앙 정렬
+      alignSelf: 'center', 
     },
-    charCount: {
+    charCount: { 
       textAlign: 'right',
       fontSize: fontSize.small,
       color: colors.mediumGray,
       marginBottom: spacing.lg,
-      width: '1000px', // [추가] textarea와 너비 맞춤
-      alignSelf: 'center', // [추가] 가로 중앙 정렬
-      flexShrink: 0, // [추가] 글자 수 영역 크기 고정
+      width: '1050px', // textarea 너비와 맞춤
+      alignSelf: 'center', 
+      flexShrink: 0,
     },
-    buttonContainer: {
-      textAlign: 'center', // [수정] 버튼 중앙 정렬
-      marginTop: 'auto', // [추가] 버튼을 맨 아래로 밀기
-      paddingBottom: spacing.lg, // [추가] 하단 여백
-      flexShrink: 0, // [추가] 버튼 영역 크기 고정
+    buttonContainer: { 
+      textAlign: 'center', 
+      marginTop: 'auto', 
+      paddingBottom: spacing.lg,
+      flexShrink: 0,
     },
     submitButtonBase: {
-      ...commonStyles.button,
-      // 👇 [수정] 등록 버튼 크기 고정
-      width: '1080px',
-      height: '50px',
+      ...commonStyles.button, 
+      width: '1080px', 
+      height: '50px',  
       fontSize: '18px',
-      color: '#fff',
+      color: '#fff', 
       border: 'none',
-      cursor: 'not-allowed',
-      opacity: 0.7,
+      cursor: 'not-allowed', 
+      opacity: 0.7, 
       transition: 'background-color 0.3s ease, opacity 0.3s ease',
-      display: 'flex',        // [추가] Flexbox 사용
-      alignItems: 'center',   // [추가] 텍스트 세로 중앙 정렬
-      justifyContent: 'center', // [추가] 텍스트 가로 중앙 정렬
-      margin: '0 auto',     // [추가] 버튼 자체를 중앙 정렬
-      padding: '0'
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      margin: '0 auto', 
+      padding: '0',
+      backgroundColor: '#cccccc', // 비활성 기본 배경색
     },
   };
 
-  const hasText = reviewText.trim() !== '';
+  const hasText = (reviewText || '').trim() !== '';
 
   const dynamicButtonStyle = {
     ...styles.submitButtonBase,
-    backgroundColor: hasText ? '#DB6666' : '#cccccc',
-    cursor: hasText ? 'pointer' : 'not-allowed',
-    opacity: hasText ? 1 : 0.7,
+    backgroundColor: hasText && rating > 0 ? '#DB6666' : '#cccccc', // 활성화 조건 수정
+    cursor: hasText && rating > 0 ? 'pointer' : 'not-allowed',
+    opacity: hasText && rating > 0 ? 1 : 0.7,
   };
 
-
+  // 7. return 문 정리 (중복 제거)
   return (
     <div style={styles.pageWrapper}>
       <div style={styles.contentContainer}>
-        <h1 style={styles.title}>감상 후기 작성</h1>
+        <h1 style={styles.title}>
+          {isEditing ? '감상 후기 수정' : '감상 후기 작성'}
+        </h1>
+        
+        {/* 별점 UI */}
+        <div style={styles.ratingContainer}>
+          <span style={styles.ratingLabel}>별점 선택:</span>
+          <div
+            style={styles.starsWrapper}
+            onMouseLeave={() => setHoverRating(0)} 
+          >
+            {[1, 2, 3, 4, 5].map((starIndex) => {
+              const isFilled = starIndex <= (hoverRating || rating);
+              return (
+                <span
+                  key={starIndex}
+                  style={{ ...styles.star, ...(isFilled ? styles.filledStar : {}) }}
+                  onClick={() => setRating(starIndex)} 
+                  onMouseEnter={() => setHoverRating(starIndex)} 
+                >
+                  ★
+                </span>
+              );
+            })}
+          </div>
+          <span style={{ color: colors.mediumGray, fontSize: fontSize.medium }}>({rating} / 5)</span>
+        </div>
 
-        {/*<p style={styles.infoText}>
-          감상 후기는 최대 {MAX_LENGTH}자까지 등록 가능합니다. 영화와 관련 없는 내용은 임의로 삭제될 수 있습니다.
-        </p>
-        */}
+        {/* 텍스트 영역 */}
         <textarea
           style={styles.textarea}
           placeholder={`감상 후기는 최대 ${MAX_LENGTH}자까지 등록 가능합니다. 영화와 관련 없는 내용은 임의로 삭제될 수 있습니다.`}
@@ -170,16 +273,18 @@ export default function ReviewWritePage() {
           {reviewText.length} / {MAX_LENGTH} 자
         </div>
 
+        {/* 버튼 */}
         <div style={styles.buttonContainer}>
           <button
             style={dynamicButtonStyle}
             onClick={handleSubmit}
-            disabled={!hasText}
+            disabled={!hasText || rating === 0 || isSubmitting} // disabled 조건 확인
           >
-            등록하기
+            {isSubmitting ? (isEditing ? '수정 중...' : '등록 중...') : (isEditing ? '수정하기' : '등록하기')}
           </button>
         </div>
       </div>
     </div>
   );
+  // 중복된 return 문 제거됨
 }
