@@ -1,13 +1,11 @@
-"use client"; // ⬅️ useState 훅을 사용하므로 클라이언트 컴포넌트로 지정
+"use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
-import SettingItem from './_component/SettingItem';
 import { useRouter } from 'next/navigation';
-import { useGenreStore } from './_component/GenreStoreContext';
+import { useGenreStore } from './_component/GenreStoreContext'; 
 
-
-
+// 1. 🎈 ProfileIcon
 const ProfileIcon = () => (
     <div style={styles.profileIcon}>
         🌱
@@ -16,70 +14,181 @@ const ProfileIcon = () => (
 
 const arrayToGenreString = (arr) => arr.join(', ');
 
+// 2. 🎈 HoverButton 컴포넌트
+const HoverButton = ({ onClick, children }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
+    const buttonStyle = {
+        background: isHovered 
+            ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+            : 'rgba(255, 255, 255, 0.1)',
+        color: 'white',
+        border: isHovered ? 'none' : '1px solid rgba(255, 255, 255, 0.2)',
+        padding: '8px 16px',
+        cursor: 'pointer',
+        borderRadius: '20px',
+        transition: 'all 0.3s ease',
+        fontWeight: '600',
+        fontSize: '13px',
+        boxShadow: isHovered ? '0 4px 15px rgba(102, 126, 234, 0.4)' : 'none',
+    };
+
+    return (
+        <button 
+            style={buttonStyle} 
+            onClick={onClick}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            {children}
+        </button>
+    );
+};
 
 
-// 3. 마이페이지 컴포넌트 (메인 로직)
+// 3. 🎈 WithdrawButton
+const WithdrawButton = ({ onClick }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
+    const buttonStyle = {
+        padding: '12px 20px',
+        background: isHovered 
+            ? 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)'
+            : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        color: 'white',
+        border: 'none',
+        borderRadius: '25px',
+        cursor: 'pointer',
+        fontWeight: '600',
+        textAlign: 'center',
+        transition: 'all 0.3s ease',
+        width: '100%',
+        boxSizing: 'border-box',
+        fontSize: '14px',
+        boxShadow: isHovered 
+            ? '0 6px 20px rgba(245, 87, 108, 0.5)'
+            : '0 4px 15px rgba(245, 87, 108, 0.3)',
+        transform: isHovered ? 'translateY(-2px)' : 'none',
+    };
+
+    return (
+        <div style={{ ...styles.sectionItem, border: 'none', padding: '0px' }}>
+            <button
+                style={buttonStyle}
+                onClick={onClick}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                탈퇴하기 😥
+            </button>
+        </div>
+    );
+};
+
+
+// 4. 마이페이지 컴포넌트 (메인 로직)
 export default function MyPage() {
 
+    const [user,setUser] = useState();
+
+    useEffect(()=>{
+        const data = localStorage.getItem("loggedInUser")
+    },[])
+
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
-    // useGenreStore의 반환 구조를 확인하여, 필요한 상태만 가져오거나 스토어의 상태를 직접 사용합니다.
-    // 현재 코드에서는 setFavGenres, setUnfavGenres가 정의되지 않아 주석 처리하고 favGenres, unfavGenres만 유지합니다.
     const { favGenres, unfavGenres } = useGenreStore();
-
+    
     const router = useRouter();
-
 
     const userData = {
         email: "sesac1234@gmail.com",
         reviewCount: 0,
-        // favGenres와 unfavGenres는 useGenreStore에서 가져오므로 여기서는 사용하지 않습니다.
-    };
-
-    const handleWithdraw = () => {
-        // 실제로는 API 호출 후 탈퇴 처리
-        alert('회원 탈퇴 처리 로직 실행');
-        setIsWithdrawModalOpen(false);
     };
 
     const handleProfileEdit = () => {
         router.push('/mypage/profileEdit');
     }
+    
+    const openWithdrawModal = () => {
+        router.push('/mypage/withdraw'); 
+    }
+    
+    // SettingItem 임시 Mock 컴포넌트
+    const SettingItem = ({ label, value, isLink = false, linkText = '', routePath, customAction }) => {
+        const [isHovered, setIsHovered] = useState(false);
+        
+        const itemStyles = {
+            ...settingItemStyles.settingItem,
+            padding: '16px 20px',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+            transition: 'all 0.2s ease',
+            backgroundColor: isHovered ? 'rgba(255, 255, 255, 0.03)' : 'transparent',
+        };
+        const labelStyle = { 
+            ...settingItemStyles.settingLabel, 
+            fontSize: '14px',
+            fontWeight: '500',
+            color: 'rgba(255, 255, 255, 0.7)',
+        };
+        const valueStyle = { 
+            ...settingItemStyles.settingValue, 
+            fontSize: '14px',
+            fontWeight: '600',
+            color: 'rgba(255, 255, 255, 0.95)',
+        };
+        const linkStyle = { 
+            ...settingItemStyles.linkText, 
+            fontSize: '13px',
+            marginLeft: '12px',
+            color: '#667eea',
+            fontWeight: '600',
+        };
 
-    // 이 함수는 현재 useGenreStore의 setter를 사용하지 않으므로 임시로 주석 처리하거나 로직을 수정해야 합니다.
-    // const handleSaveGenres = (genres, type) => {
-    //     if (type === 'fav') {
-    //         setFavGenres(genres); // setFavGenres가 useGenreStore에 있다고 가정
-    //     } else if (type === 'unfav') {
-    //         setUnfavGenres(genres); // setUnfavGenres가 useGenreStore에 있다고 가정
-    //     }
-    //     // 저장 후 드롭다운 닫기
-    //     alert(`${type === 'fav' ? '선호' : '비선호'} 장르가 저장되었습니다: ${genres.join(', ')}`);
-    //     setActiveGenreEdit(null); // setActiveGenreEdit이 정의되지 않아 주석 처리
-    // };
+        const handleClick = () => {
+            if (routePath) router.push(routePath);
+            else if (customAction) customAction();
+        };
+
+        return (
+            <div 
+                style={itemStyles}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                <div style={labelStyle}>{label}</div>
+                <div style={valueStyle}>
+                    {value}
+                    {isLink && (
+                        <span style={linkStyle} onClick={routePath || customAction ? handleClick : undefined}>
+                            {linkText}
+                        </span>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
 
     return (
 
-        // ❗ 1. 오버레이 레이어를 추가하기 위해 containerStyle을 가장 바깥에 적용
         <>
             <div style={containerStyle}>
 
-                {/* ❗ 2. 배경 이미지를 더 어둡게 만드는 오버레이 레이어 */}
                 <div style={overlayStyle}></div>
 
-                {/* ❗ 3. 실제 콘텐츠 박스는 오버레이 위에 오도록 zIndex: 2 적용 */}
                 <div style={styles.contentBox}>
                     <div style={styles.content}>
                         <div style={styles.profileHeader}>
                             <h2 style={styles.title}>내 프로필</h2>
-                            <button style={styles.editButton} onClick={handleProfileEdit}>
+                            <HoverButton onClick={handleProfileEdit}>
                                 ✏️ 프로필 수정
-                            </button>
+                            </HoverButton>
                         </div>
 
                         <ProfileIcon />
 
                         {/* 계정 Section */}
-                        <h3 style={{ fontSize: '18px' }}>계정</h3>
+                        <h3 style={styles.sectionTitle}>계정</h3>
                         <div style={styles.sectionBox}>
                             <SettingItem label="이메일" value={userData.email} />
                             <SettingItem
@@ -92,12 +201,11 @@ export default function MyPage() {
                         </div>
 
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h3 style={{ fontSize: '18px' }}>장르</h3>
-                            {/* 장르 수정 버튼은 프로필 편집 버튼과 동일 경로로 연결 */}
-                            <button style={styles.editButton} onClick={handleProfileEdit}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px' }}>
+                            <h3 style={styles.sectionTitle}>장르</h3>
+                            <HoverButton onClick={handleProfileEdit}>
                                 ✏️ 장르 수정
-                            </button>
+                            </HoverButton>
                         </div>
                         <div style={styles.sectionBox}>
                             <SettingItem
@@ -114,22 +222,15 @@ export default function MyPage() {
 
 
                         {/* 리뷰 관리 Section */}
-                        <h3 style={{ fontSize: '18px' }} >리뷰 관리 / 작성한 리뷰 : {userData.reviewCount}개</h3>
+                        <h3 style={styles.sectionTitle}>리뷰 관리 / 작성한 리뷰 : {userData.reviewCount}개</h3>
                         <div style={styles.sectionBox}>
-                            <SettingItem label="작성한 리뷰" value={`${userData.reviewCount}개`} isLink={true} linkText="보기" routePath="/mypage/reviews" />
+                            <SettingItem label="작성한 리뷰" value={`${userData.reviewCount}개`} isLink={true} linkText="보기" routePath="/mypage/myReview" />
                         </div>
 
                         {/* 회원 탈퇴 Section */}
-                        <h3 style={{ fontSize: '18px' }}>회원 탈퇴</h3>
+                        <h3 style={styles.sectionTitle}>회원 탈퇴</h3>
                         <div style={styles.sectionBox}>
-                            {/* ❗ 탈퇴하기 링크 대신, 모달을 여는 onClick 이벤트 연결 */}
-                            <SettingItem
-                                label="탈퇴하기"
-                                value=""
-                                isLink={true}
-                                linkText="탈퇴하기"
-                                routePath="/mypage/withdraw"
-                            />
+                            <WithdrawButton onClick={openWithdrawModal} />
                         </div>
                     </div>
 
@@ -140,135 +241,116 @@ export default function MyPage() {
     );
 }
 
-// 4. 인라인 스타일 정의 (MyPage 전용)
+// 5. 🎈 인라인 스타일 정의 (MyPage 전용)
 const containerStyle = {
     minHeight: "100vh",
-    backgroundColor: "#1c1c1c", // 이미지가 로드되기 전 대체 색상
+    background: "linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)",
     color: "white",
     display: "flex",
     justifyContent: "center",
     padding: '0px',
     margin: '0px',
-    position: 'relative', // ❗ 오버레이를 위한 relative 설정
-
-    // 🚀 배경 이미지 스타일
-    backgroundImage: `url('/modernTimes.jpg')`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundAttachment: 'fixed',
+    position: 'relative',
 };
 
-// ❗ 배경 이미지를 더 어둡게 만드는 오버레이 스타일
+// 6. 🎈 오버레이 스타일 
 const overlayStyle = {
     position: 'absolute',
     top: 0,
     left: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', // ❗ 검은색 60% 투명도 (더 어둡게 설정)
-    zIndex: 1, // 컨테이너(배경) 위에 위치
+    background: 'radial-gradient(circle at top right, rgba(102, 126, 234, 0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(118, 75, 162, 0.1), transparent 50%)',
+    zIndex: 1,
 };
 
 const styles = {
-    // ❗ 콘텐츠를 담는 최상위 박스: 오버레이 위에 오도록 z-index 설정
     contentBox: {
         zIndex: 2,
-        width: '100%', // 너비를 100%로 설정
-        // 이 컨테이너는 오버레이 위에 올라와서 스크롤을 담당합니다.
+        width: '100%',
     },
-    container: { // 기존 container 스타일은 사용하지 않거나, styles.contentBox로 통합
-        backgroundColor: '#1c1c1c',
-        minHeight: '100vh',
-        color: 'white',
-        fontFamily: 'Arial, sans-serif',
-    },
-    // ... (Header 관련 스타일은 생략) ...
-
-    // ❗ 폼 너비 원상 복구: maxWidth 설정을 제거 (혹은 충분히 넓게)하고 중앙 정렬
     content: {
-        // 기존 width: '40%' 대신, 넓게 보이도록 최대 너비 설정
-        width: 'calc(100% - 40px)', // 좌우 패딩을 제외한 너비
-        maxWidth: '800px', // ❗ 콘텐츠 영역의 최대 너비를 800px로 다시 설정
-        margin: '0 auto', // 중앙 정렬
-        padding: '40px 20px',
-
-        backgroundColor: 'rgba(28, 28, 28, 0.9)', // 내용 박스 배경을 불투명하게 하여 가독성 확보
-        borderRadius: '8px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '40px 50px',
+        borderRadius: '20px',
         marginTop: '50px',
         marginBottom: '50px',
-
-        // 🚀 boxShadow 추가: 부드러운 검은색 그림자
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
-        // 0: X축 오프셋, 4px: Y축 오프셋, 12px: 블러 반경, 
-        // rgba(0, 0, 0, 0.5): 검은색 50% 투명도
+        maxWidth: '650px',
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(20px)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
     },
     profileHeader: {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: '10px'
+        marginBottom: '20px',
+        paddingBottom: '20px',
+        borderBottom: '2px solid rgba(255, 255, 255, 0.1)',
     },
     title: {
-        fontSize: '25px',
-        margin: '0'
+        fontSize: '28px',
+        margin: '0',
+        fontWeight: '700',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
     },
-    editButton: {
-        backgroundColor: 'transparent',
-        color: '#aaa',
-        border: '1px solid #777',
-        padding: '5px 10px',
-        cursor: 'pointer'
+    sectionTitle: {
+        fontSize: '16px',
+        marginTop: '30px',
+        marginBottom: '12px',
+        fontWeight: '600',
+        color: 'rgba(255, 255, 255, 0.9)',
     },
     sectionBox: {
-        backgroundColor: '#2c2c2c',
-        borderRadius: '5px',
-        overflow: 'hidden'
+        borderRadius: '16px',
+        overflow: 'hidden',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        background: 'rgba(255, 255, 255, 0.03)',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
     },
     profileIcon: {
-        width: '100px',
-        height: '100px',
+        width: '90px',
+        height: '90px',
         borderRadius: '50%',
-        backgroundColor: '#444',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         fontSize: '40px',
         color: 'white',
-        border: '1px solid #777',
-        margin: '20px 0'
+        border: '3px solid rgba(255, 255, 255, 0.2)',
+        margin: '20px 0',
+        boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)',
+    },
+    sectionItem: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '16px 0',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
     }
 };
 
-const modalStyles = {
-    backdrop: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0,0,0,0.8)',
+// 7. SettingItem에 사용될 스타일
+const settingItemStyles = {
+    settingItem: {
         display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000
+        justifyContent: 'space-between',
     },
-    content: {
-        backgroundColor: '#1c1c1c',
-        padding: '30px',
-        borderRadius: '8px',
-        maxWidth: '400px',
-        width: '90%',
-        boxShadow: '0 5px 15px rgba(0,0,0,0.5)',
-        border: '1px solid #444'
-    },
-    closeButton: {
-        marginTop: '20px',
-        padding: '8px 15px',
-        cursor: 'pointer',
-        backgroundColor: '#333',
+    settingLabel: {
         color: 'white',
-        border: 'none',
-        borderRadius: '4px'
+    },
+    settingValue: {
+        color: 'white',
+        position: 'relative',
+    },
+    linkText: {
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
     }
 };

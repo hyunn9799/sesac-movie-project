@@ -168,3 +168,25 @@
 .footerBtns button:hover {
   background-color: #f3f3f3;
 }
+
+/* 1 
+*/
+
+.activePage {
+  background: #0066ff;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  border: 1px solid #0066ff;
+  border-radius: 6px;
+  padding: 6px 12px;
+  box-shadow: 0 0 6px rgba(0, 102, 255, 0.6);
+}
+
+
+.highlight {
+  background-color: #fff176; 
+  font-weight: bold;
+  color: #000;
+  border-radius: 3px;
+  padding: 0 2px;
+}

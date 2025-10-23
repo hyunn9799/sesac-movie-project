@@ -8,31 +8,27 @@ import {
   mergeStyles,
 } from "@/app/admin/_lib/style/adminTokens";
 
-/**
- * 관리자 페이지 공통 레이아웃
- * - 사이드바, 헤더, 푸터를 포함
- * - 모든 관리자 페이지에서 재사용
- *
- * @param {ReactNode} children - 페이지 내용
- * @param {string} title - 페이지 제목 (헤더에 표시)
- * @param {string} currentMenu - 현재 활성화된 메뉴 (예: 'dashboard', 'users')
- */
 export default function AdminLayout({
   children,
   title = "대시보드",
   currentMenu = "dashboard",
 }) {
-  /**
-   * 사이드바 네비게이션 메뉴 항목
-   * - icon: 메뉴 아이콘
-   * - label: 메뉴 이름
-   * - href: 링크 경로
-   * - key: 현재 메뉴 구분용 키
-   */
   const navItems = [
     { icon: "📊", label: "대시보드", href: "/admin", key: "dashboard" },
     { icon: "👥", label: "회원 관리", href: "/admin/users", key: "users" },
   ];
+
+  const handleLogout = () => {
+    if (confirm("로그아웃 하시겠습니까?")) {
+      try {
+        localStorage.removeItem('loggedInAdmin');
+        localStorage.removeItem('loggedInUser');
+      } catch (err) {
+        console.error('Logout error:', err);
+      }
+      window.location.href = "/";
+    }
+  };
 
   return (
     <div
@@ -92,7 +88,6 @@ export default function AdminLayout({
                 href={item.href}
                 style={mergeStyles(
                   adminStyles.sidebar.navLink,
-                  // 현재 메뉴면 빨간색 배경 활성화
                   item.key === currentMenu
                     ? adminStyles.sidebar.navLinkActive
                     : {}
@@ -153,12 +148,7 @@ export default function AdminLayout({
                 adminStyles.button.base,
                 adminStyles.button.secondary
               )}
-              onClick={() => {
-                if (confirm("로그아웃 하시겠습니까?")) {
-                  alert("로그아웃 되었습니다.");
-                  window.location.href = "/";
-                }
-              }}
+              onClick={handleLogout}
             >
               로그아웃
             </button>
@@ -167,7 +157,6 @@ export default function AdminLayout({
 
         {/* ========================================
             메인 콘텐츠 (페이지별 내용)
-            - children으로 전달받은 내용 표시
             ======================================== */}
         <main style={{ padding: adminSizes.contentPadding }}>{children}</main>
 

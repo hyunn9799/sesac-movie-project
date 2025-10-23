@@ -5,6 +5,7 @@ import { initialNotices } from "@/lib/data/notice";
 
 export default function NoticePage() {
   const [notices] = useState(initialNotices);
+  const [search, setSearch] = useState("");
 
   // 페이지 관련
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,6 +26,21 @@ export default function NoticePage() {
     }
   };
 
+
+  const highlightText = (text, keyword) => {
+    if (!keyword) return text;
+    const parts = text.split(new RegExp(`(${keyword})`, "gi"));
+    return parts.map((part, i) =>
+      part.toLowerCase() === keyword.toLowerCase() ? (
+        <mark key={i} className={styles.highlight}>
+          {part}
+        </mark>
+      ) : (
+        part
+      )
+    );
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.noticeBox}>
@@ -33,10 +49,22 @@ export default function NoticePage() {
           <em>MovieHub</em>의 각종 공지사항(공지, 행사 등)을 제공합니다.
         </p>
 
+        {/* 검색창 */}
         <div className={styles.searchBox}>
-          <input type="text" placeholder="검색어를 입력하세요" />
+          <input
+            type="text"
+            placeholder="검색어를 입력하세요"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
           <button>검색</button>
         </div>
+
+        {search && (
+          <p className={styles.searchResult}>
+            🔍 검색어: <strong>{search}</strong>
+          </p>
+        )}
 
         <table className={styles.table}>
           <thead>
@@ -55,13 +83,19 @@ export default function NoticePage() {
                 >
                   <td>{notice.id}</td>
                   <td>
-                    <em>MovieHub</em> {notice.title.replace("MovieHub", "")}
+                    <em>MovieHub</em>{" "}
+                    {highlightText(
+                      notice.title.replace("MovieHub", ""),
+                      search
+                    )}
                   </td>
                   <td>{notice.date}</td>
                 </tr>
                 {openId === notice.id && (
                   <tr className={styles.dropdownRow}>
-                    <td colSpan="3">{notice.content}</td>
+                    <td colSpan="3">
+                      {highlightText(notice.content, search)}
+                    </td>
                   </tr>
                 )}
               </React.Fragment>
@@ -99,9 +133,9 @@ export default function NoticePage() {
         </div>
 
         <div className={styles.footerBtns}>
-          <button>아이디/패스워드 분실</button>
-          <button>사용문의</button>
-          <button>회원탈퇴</button>
+          <button>검색결과 수집에 대한 정책</button>
+          <button>MovieHub 사용문의</button>
+          <button>제휴제안</button>
           <button>고객센터</button>
         </div>
       </div>

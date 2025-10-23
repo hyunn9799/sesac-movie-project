@@ -8,12 +8,13 @@ const styles = {
         display: 'flex',
         justifyContent: 'space-between',
         padding: '15px 20px',
-        borderBottom: '1px solid #3c3c3c'
+        borderBottom: '1px solid #b69d71',
+
     },
-    settingLabel: { color: '#aaa' },
+    settingLabel: { color: 'white' },
     settingValue: { color: 'white',position: 'relative' },
     linkText: {
-        color: '#3498db',
+        color: '#b69d71',
         cursor: 'pointer',
         marginLeft: '10px'
     }
