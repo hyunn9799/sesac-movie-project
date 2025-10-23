@@ -2,17 +2,17 @@
 import React, { useState } from "react";
 import "./modal.css";
 
-export default function ModalPage() {
-  const [isOpen, setIsOpen] = useState(true);
+export default function UseModalPage({closeModal2}) {
+  // const [isOpen, setIsOpen] = useState(true);
 
-  const closeModal = () => {
-    setIsOpen(false);
-  };
+  // const closeModal = () => {
+  //   setIsOpen(false);
+  // };
 
   return (
     <>
-      {isOpen && (
-        <div className="overlay" onClick={closeModal}>
+      
+        <div className="overlay" onClick={closeModal2}>
           <div className="modalBox" onClick={(e) => e.stopPropagation()}>
             <h2>MoiveHub 사이트 이용 약관</h2>
             <div className="modalContent">
@@ -126,15 +126,10 @@ export default function ModalPage() {
     ② 약관이 변경될 경우, MovieHub는 홈페이지 또는 공지사항을 통해 사전에 공지합니다.
   </p>
             </div>
-            <button onClick={closeModal}>닫기</button>
+            <button onClick={closeModal2}>닫기</button>
           </div>
         </div>
-      )}
-      {!isOpen && (
-        <div style={{ color: "#fff", textAlign: "center", padding: "60px" }}>
-          <h3>이용약관을 닫았습니다.</h3>
-        </div>
-      )}
+    
     </>
   );
 }

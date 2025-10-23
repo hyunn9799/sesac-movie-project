@@ -1,10 +1,16 @@
 'use client';
+//거의 최최최최최최최종 수정
 import styles from './Header.module.css';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/app/auth/AuthContext';
 
 export default function Header() {
+
+  const {user} = useAuth();
+  console.log('user',user)
+
   const [query, setQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
@@ -12,6 +18,7 @@ export default function Header() {
   const [saveSearch, setSaveSearch] = useState(true);
   const [showSuggestionBox, setShowSuggestionBox] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState(null);
+  const [loggedInAdmin, setLoggedInAdmin] = useState(null);
 
   const router = useRouter();
   const closeTimer = useRef(null);
@@ -63,12 +70,15 @@ export default function Header() {
 
   useEffect(() => {
     try {
-      const user = JSON.parse(localStorage.getItem('loggedInUser'));
-      setLoggedInUser(user);
+      const userData = JSON.parse(localStorage.getItem('loggedInUser'));
+      const adminData = JSON.parse(localStorage.getItem('loggedInAdmin'));
+      setLoggedInUser(userData);
+      setLoggedInAdmin(adminData);
     } catch {
       setLoggedInUser(null);
+      setLoggedInAdmin(null);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
@@ -198,11 +208,17 @@ export default function Header() {
   const handleLogout = () => {
     try {
       localStorage.removeItem('loggedInUser');
+      localStorage.removeItem('loggedInAdmin');
       setLoggedInUser(null);
+      setLoggedInAdmin(null);
       router.push('/');
     } catch (err) {
       console.error('Logout error:', err);
     }
+  };
+
+  const handleAdminPageClick = () => {
+    router.push('/admin');
   };
 
   return (
@@ -289,7 +305,6 @@ export default function Header() {
           )}
         </div>
 
-        {/* 검색 섹션 (변경 없음 - 생략) */}
         {/* 검색 섹션 */}
 <div
   className={styles.searchSection}
@@ -337,7 +352,7 @@ export default function Header() {
           width: '360px',
           maxHeight: '420px',
           overflowY: 'auto',
-          background: '#2a2a2a', // ✅ 어두운 회색 배경으로 변경
+          background: '#2a2a2a',
           color: '#fff',
           borderRadius: '6px',
           boxShadow: '0 6px 18px rgba(0,0,0,0.4)',
@@ -426,7 +441,7 @@ export default function Header() {
                     e.stopPropagation();
                     setSaveSearch((s) => !s);
                   }}
-                  className={styles.suggestionControlButton} // ✅ 새 스타일 클래스
+                  className={styles.suggestionControlButton}
                 >
                   {saveSearch ? '저장 끄기' : '저장 켜기'}
                 </button>
@@ -435,7 +450,7 @@ export default function Header() {
                     e.stopPropagation();
                     clearRecent();
                   }}
-                  className={`${styles.suggestionControlButton} ${styles.deleteAllButton}`} // ✅ 색 강조
+                  className={`${styles.suggestionControlButton} ${styles.deleteAllButton}`}
                 >
                   전체삭제
                 </button>
@@ -486,7 +501,6 @@ export default function Header() {
     )}
 </div>
 
-
         {/* 인증 / 링크 섹션 - 로그인 상태에 따라 표시 */}
         <div className={styles.authSection}>
           <div className={styles.authButtons}>
@@ -497,7 +511,25 @@ export default function Header() {
               마이페이지
             </Link>
 
-            {loggedInUser ? (
+            {loggedInAdmin ? (
+              <>
+                <span className={styles.welcomeText}>
+                  {loggedInAdmin.name}님 환영합니다
+                </span>
+                <button
+                  onClick={handleAdminPageClick}
+                  className={styles.loginButton}
+                >
+                  관리자 페이지로 이동
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className={styles.logoutButton}
+                >
+                  로그아웃
+                </button>
+              </>
+            ) : loggedInUser ? (
               <>
                 <span className={styles.welcomeText}>
                   {loggedInUser.name}님 환영합니다
@@ -511,7 +543,6 @@ export default function Header() {
               </>
             ) : (
               <>
-                
                 <Link href="/login" className={styles.loginButton}>
                   로그인
                 </Link>

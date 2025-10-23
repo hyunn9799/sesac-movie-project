@@ -12,18 +12,25 @@ const REASONS = [
 
 export default function WithdrawPage() {
     const router = useRouter();
+    const [user, setUser] = useState();
+
+    useEffect(() => {
+        const data = JSON.parse(localStorage.getItem("loggedInUser"));
+        console.log(data)
+        setUser(data)
+    }, [])
 
     // 1. 상태 관리
     const [selectedReasons, setSelectedReasons] = useState([]);
     const [otherReason, setOtherReason] = useState('');
     const [password, setPassword] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
-    
+
     // 2. 유효성 검사 (버튼 활성화)
     useEffect(() => {
         // 비밀번호가 입력되었는지 확인
         const isPwdEntered = password.length > 0;
-        
+
         // 사유가 선택되었는지 (체크박스 또는 기타 필드) 확인
         const isReasonSelected = selectedReasons.length > 0 || otherReason.trim().length > 0;
 
@@ -33,16 +40,16 @@ export default function WithdrawPage() {
 
     // 3. 핸들러
     const handleCheckboxChange = (reason) => {
-        setSelectedReasons(prev => 
-            prev.includes(reason) 
-            ? prev.filter(r => r !== reason) 
-            : [...prev, reason]
+        setSelectedReasons(prev =>
+            prev.includes(reason)
+                ? prev.filter(r => r !== reason)
+                : [...prev, reason]
         );
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        
+
         if (!isFormValid) {
             alert("탈퇴 사유(최소 1개)와 비밀번호를 입력해 주세요.");
             return;
@@ -56,9 +63,9 @@ export default function WithdrawPage() {
         // 💡 실제 회원 탈퇴 API 호출 로직
         console.log("Withdrawal initiated. Reasons:", finalReasons, "Password entered.");
         alert("회원 탈퇴가 완료되었습니다. 이용해주셔서 감사합니다.");
-        
+
         // 탈퇴 후 메인/로그인 페이지로 이동
-        router.push('/'); 
+        router.push('/');
     };
 
     const handleBack = () => {
@@ -69,7 +76,7 @@ export default function WithdrawPage() {
     return (
         <div style={styles.container}>
             <div style={styles.overlay}></div>
-            
+
             <div style={styles.content}>
                 <h1 style={styles.title}>😥 회원 탈퇴</h1>
                 <p style={styles.description}>
@@ -78,14 +85,14 @@ export default function WithdrawPage() {
 
                 <div style={styles.formWrapper}>
                     <h3 style={styles.sectionTitle}>탈퇴 사유를 선택해주세요</h3>
-                    
+
                     {/* 체크박스 목록 */}
                     <div style={styles.checkboxList}>
                         {REASONS.map((reason) => (
                             <div key={reason} style={styles.checkboxContainer}>
                                 <label style={styles.checkboxLabel}>
-                                    <input 
-                                        type="checkbox" 
+                                    <input
+                                        type="checkbox"
                                         checked={selectedReasons.includes(reason)}
                                         onChange={() => handleCheckboxChange(reason)}
                                         style={styles.checkboxInput}
@@ -118,10 +125,10 @@ export default function WithdrawPage() {
                             placeholder="비밀번호를 입력해주세요"
                         />
                     </div>
-                    
-                    
+
+
                     <div style={styles.actions}>
-                        <button 
+                        <button
                             type="button"
                             style={isFormValid ? styles.buttonPrimary : styles.buttonDisabled}
                             disabled={!isFormValid}
@@ -129,8 +136,8 @@ export default function WithdrawPage() {
                         >
                             탈퇴하기
                         </button>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             style={styles.buttonBack}
                             onClick={handleBack}
                         >

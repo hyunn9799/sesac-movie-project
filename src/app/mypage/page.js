@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useGenreStore } from './_component/GenreStoreContext'; 
+import { useGenreStore } from './_component/GenreStoreContext';
 
 // 1. 🎈 ProfileIcon
 const ProfileIcon = () => (
@@ -19,8 +19,8 @@ const HoverButton = ({ onClick, children }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     const buttonStyle = {
-        background: isHovered 
-            ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+        background: isHovered
+            ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
             : 'rgba(255, 255, 255, 0.1)',
         color: 'white',
         border: isHovered ? 'none' : '1px solid rgba(255, 255, 255, 0.2)',
@@ -34,8 +34,8 @@ const HoverButton = ({ onClick, children }) => {
     };
 
     return (
-        <button 
-            style={buttonStyle} 
+        <button
+            style={buttonStyle}
             onClick={onClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -52,7 +52,7 @@ const WithdrawButton = ({ onClick }) => {
 
     const buttonStyle = {
         padding: '12px 20px',
-        background: isHovered 
+        background: isHovered
             ? 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)'
             : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
         color: 'white',
@@ -65,7 +65,7 @@ const WithdrawButton = ({ onClick }) => {
         width: '100%',
         boxSizing: 'border-box',
         fontSize: '14px',
-        boxShadow: isHovered 
+        boxShadow: isHovered
             ? '0 6px 20px rgba(245, 87, 108, 0.5)'
             : '0 4px 15px rgba(245, 87, 108, 0.3)',
         transform: isHovered ? 'translateY(-2px)' : 'none',
@@ -89,15 +89,17 @@ const WithdrawButton = ({ onClick }) => {
 // 4. 마이페이지 컴포넌트 (메인 로직)
 export default function MyPage() {
 
-    const [user,setUser] = useState();
+    const [user, setUser] = useState();
 
-    useEffect(()=>{
-        const data = localStorage.getItem("loggedInUser")
-    },[])
+    useEffect(() => {
+        const data = JSON.parse(localStorage.getItem("loggedInUser"));
+        console.log(data)
+        setUser(data)
+    }, [])
 
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
     const { favGenres, unfavGenres } = useGenreStore();
-    
+
     const router = useRouter();
 
     const userData = {
@@ -108,15 +110,15 @@ export default function MyPage() {
     const handleProfileEdit = () => {
         router.push('/mypage/profileEdit');
     }
-    
+
     const openWithdrawModal = () => {
-        router.push('/mypage/withdraw'); 
+        router.push('/mypage/withdraw');
     }
-    
+
     // SettingItem 임시 Mock 컴포넌트
     const SettingItem = ({ label, value, isLink = false, linkText = '', routePath, customAction }) => {
         const [isHovered, setIsHovered] = useState(false);
-        
+
         const itemStyles = {
             ...settingItemStyles.settingItem,
             padding: '16px 20px',
@@ -124,20 +126,20 @@ export default function MyPage() {
             transition: 'all 0.2s ease',
             backgroundColor: isHovered ? 'rgba(255, 255, 255, 0.03)' : 'transparent',
         };
-        const labelStyle = { 
-            ...settingItemStyles.settingLabel, 
+        const labelStyle = {
+            ...settingItemStyles.settingLabel,
             fontSize: '14px',
             fontWeight: '500',
             color: 'rgba(255, 255, 255, 0.7)',
         };
-        const valueStyle = { 
-            ...settingItemStyles.settingValue, 
+        const valueStyle = {
+            ...settingItemStyles.settingValue,
             fontSize: '14px',
             fontWeight: '600',
             color: 'rgba(255, 255, 255, 0.95)',
         };
-        const linkStyle = { 
-            ...settingItemStyles.linkText, 
+        const linkStyle = {
+            ...settingItemStyles.linkText,
             fontSize: '13px',
             marginLeft: '12px',
             color: '#667eea',
@@ -150,7 +152,7 @@ export default function MyPage() {
         };
 
         return (
-            <div 
+            <div
                 style={itemStyles}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
@@ -185,12 +187,18 @@ export default function MyPage() {
                             </HoverButton>
                         </div>
 
-                        <ProfileIcon />
+                        <div style={styles.profileContainer}>
+                            {/* ProfileIcon 컴포넌트 */}
+                            <ProfileIcon />
+
+                            {/* 사용자 이름 (span 태그) */}
+                            <span style={styles.liltitle}>{user?.name}</span>
+                        </div>
 
                         {/* 계정 Section */}
                         <h3 style={styles.sectionTitle}>계정</h3>
                         <div style={styles.sectionBox}>
-                            <SettingItem label="이메일" value={userData.email} />
+                            <SettingItem label="이메일" value={user?.email} />
                             <SettingItem
                                 label="비밀번호"
                                 value=""
@@ -298,6 +306,19 @@ const styles = {
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
         backgroundClip: 'text',
+    },
+    profileContainer: {
+        display: 'flex',            // 자식 요소들을 Flex 아이템으로 만듭니다.
+        flexDirection: 'column',    // Flexbox 방향을 수직(세로)으로 설정합니다.
+        alignItems: 'center',       // 수평축(이 경우, X축)을 기준으로 아이템들을 중앙 정렬합니다.
+        justifyContent: 'center',   // (선택 사항) 수직축(Y축)을 기준으로 아이템들을 중앙 정렬합니다.
+    },
+    liltitle: {
+         fontSize: '16px',
+        marginBottom: '12px',
+        fontWeight: '600',
+        color: 'rgba(255, 255, 255, 0.9)',
+        textAlign: 'center',
     },
     sectionTitle: {
         fontSize: '16px',

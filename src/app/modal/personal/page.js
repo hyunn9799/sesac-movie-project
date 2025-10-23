@@ -2,17 +2,17 @@
 import React, { useState } from "react";
 import "./modal.css";
 
-export default function ModalPage() {
-  const [isOpen, setIsOpen] = useState(true);
+export default function PerSonalModalPage({closeModal1}) {
+  // const [isOpen, setIsOpen] = useState(true);
 
-  const closeModal = () => {
-    setIsOpen(false);
-  };
+  // const closeModal = () => {
+  //   setIsOpen(false);
+  // };
 
   return (
     <>
-      {isOpen && (
-        <div className="overlay" onClick={closeModal}>
+    
+        <div className="overlay" onClick={closeModal1}>
           <div className="modalBox" onClick={(e) => e.stopPropagation()}>
             <h2>MovieHub 개인 정보 처리 방침</h2>
             <div className="modalContent">
@@ -100,15 +100,10 @@ export default function ModalPage() {
             본 방침은 법령 및 정책 변경에 따라 수정될 수 있으며, 변경 시 사전 공지됩니다.
           </p>
             </div>
-            <button onClick={closeModal}>닫기</button>
+            <button onClick={closeModal1}>닫기</button>
           </div>
         </div>
-      )}
-      {!isOpen && (
-        <div style={{ color: "#fff", textAlign: "center", padding: "60px" }}>
-          <h3>이용약관을 닫았습니다.</h3>
-        </div>
-      )}
+     
     </>
   );
 }
