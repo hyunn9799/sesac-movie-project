@@ -14,6 +14,7 @@ import {
 export default function NoticePage() {
   const [notices, setNotices] = useState([]);
   const [search, setSearch] = useState("");
+  const [openId, setOpenId] = useState(null); // ✅ 현재 열려있는 항목 ID
 
   // 페이지 관련
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,17 +43,25 @@ export default function NoticePage() {
     }
   };
 
-  // ✅ QnA 스타일 단순 필터링
+  // 검색
   const filteredNotices = notices.filter((notice) =>
     notice.title.toLowerCase().includes(search.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredNotices.length / noticesPerPage);
   const startIndex = (currentPage - 1) * noticesPerPage;
-  const currentNotices = filteredNotices.slice(startIndex, startIndex + noticesPerPage);
+  const currentNotices = filteredNotices.slice(
+    startIndex,
+    startIndex + noticesPerPage
+  );
 
   const goToPage = (page) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+
+  // ✅ 클릭 시 열기/닫기
+  const toggleNotice = (id) => {
+    setOpenId(openId === id ? null : id);
   };
 
   return (
@@ -93,13 +102,33 @@ export default function NoticePage() {
               </tr>
             ) : (
               currentNotices.map((notice) => (
-                <tr key={notice.id} style={styles.tableRow}>
-                  <td style={styles.tableCell}>{notice.id}</td>
-                  <td style={styles.tableCell}>
-                    <em style={{ color: colors.primary }}>MovieHub</em> {notice.title}
-                  </td>
-                  <td style={styles.tableCell}>{notice.date}</td>
-                </tr>
+                <React.Fragment key={notice.id}>
+                  <tr
+                    style={{
+                      ...styles.tableRow,
+                      cursor: "pointer",
+                      backgroundColor:
+                        openId === notice.id ? colors.darkGray : "transparent",
+                    }}
+                    onClick={() => toggleNotice(notice.id)}
+                  >
+                    <td style={styles.tableCell}>{notice.id}</td>
+                    <td style={styles.tableCell}>
+                      <em style={{ color: colors.primary }}>MovieHub</em>{" "}
+                      {notice.title}
+                    </td>
+                    <td style={styles.tableCell}>{notice.date}</td>
+                  </tr>
+
+                  {/* ✅ 상세 내용 (열렸을 때만 표시) */}
+                  {openId === notice.id && (
+                    <tr>
+                      <td colSpan="3" style={styles.detailCell}>
+                        {notice.content || "상세 내용이 없습니다."}
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))
             )}
           </tbody>
@@ -155,6 +184,7 @@ export default function NoticePage() {
   );
 }
 
+// 스타일
 const styles = {
   container: {
     minHeight: "100vh",
@@ -231,6 +261,14 @@ const styles = {
     padding: spacing.lg,
     color: colors.white,
     fontSize: fontSize.medium,
+    borderBottom: `1px solid ${colors.mediumGray}`,
+  },
+  detailCell: {
+    padding: spacing.xl,
+    backgroundColor: colors.dark,
+    color: colors.textSecondary,
+    fontSize: fontSize.medium,
+    lineHeight: 1.6,
     borderBottom: `1px solid ${colors.mediumGray}`,
   },
   emptyCell: {
