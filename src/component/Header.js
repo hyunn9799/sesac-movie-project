@@ -1,5 +1,5 @@
 'use client';
-//거의 최최최최최최최종 수정
+
 import styles from './Header.module.css';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -210,14 +210,27 @@ export default function Header() {
       localStorage.removeItem('loggedInAdmin');
       setLoggedInUser(null);
       setLoggedInAdmin(null);
+      // Prevent caching of previous page after logout
+      window.history.replaceState(null, '', '/');
       router.push('/');
     } catch (err) {
       console.error('Logout error:', err);
+      router.push('/');
     }
   };
 
   const handleAdminPageClick = () => {
     router.push('/admin');
+  };
+
+  const handleMypageClick = () => {
+    if (loggedInUser || loggedInAdmin) {
+      router.push('/mypage');
+    } else {
+      if (confirm('로그인을 먼저 해야 합니다.')) {
+        router.push('/login');
+      }
+    }
   };
 
   return (
@@ -507,9 +520,15 @@ export default function Header() {
             <Link href="/" className={styles.loginButton}>
               홈
             </Link>
-            <Link href="/mypage" className={styles.mypageLink}>
-              마이페이지
-            </Link>
+            {(loggedInUser || loggedInAdmin) ? (
+              <Link href="/mypage" className={styles.mypageLink}>
+                마이페이지
+              </Link>
+            ) : (
+              <button onClick={handleMypageClick} className={styles.mypageLink}>
+                마이페이지
+              </button>
+            )}
 
             {loggedInAdmin ? (
               <>
