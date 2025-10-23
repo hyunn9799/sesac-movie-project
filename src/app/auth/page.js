@@ -140,6 +140,7 @@ export default function AuthPage() {
             }, 1000);
             setLoading(false);
             return;
+           
           }
 
           // 일반 회원 로그인
@@ -175,8 +176,10 @@ export default function AuthPage() {
           setMessage('로그인에 성공했습니다!');
 
           setTimeout(() => {
-            router.push('/');
+            window.location.href = '/';
           }, 1000);
+            
+
         } else {
           // 회원가입 처리
           const newUser = {

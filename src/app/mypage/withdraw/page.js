@@ -68,29 +68,36 @@ export default function WithdrawPage() {
     // 4. 렌더링
     return (
         <div style={styles.container}>
-            
+            <div style={styles.overlay}></div>
             
             <div style={styles.content}>
-                <h1 style={styles.title}>탈퇴하기</h1>
+                <h1 style={styles.title}>😥 회원 탈퇴</h1>
+                <p style={styles.description}>
+                    탈퇴 시 모든 정보가 삭제되며 복구할 수 없습니다.
+                </p>
 
-                <form onSubmit={handleSubmit} style={styles.form}>
+                <div style={styles.formWrapper}>
+                    <h3 style={styles.sectionTitle}>탈퇴 사유를 선택해주세요</h3>
+                    
                     {/* 체크박스 목록 */}
-                    {REASONS.map((reason) => (
-                        <div key={reason} style={styles.checkboxContainer}>
-                            <label style={styles.checkboxLabel}>
-                                <input 
-                                    type="checkbox" 
-                                    checked={selectedReasons.includes(reason)}
-                                    onChange={() => handleCheckboxChange(reason)}
-                                    style={styles.checkboxInput}
-                                />
-                                {reason}
-                            </label>
-                        </div>
-                    ))}
+                    <div style={styles.checkboxList}>
+                        {REASONS.map((reason) => (
+                            <div key={reason} style={styles.checkboxContainer}>
+                                <label style={styles.checkboxLabel}>
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedReasons.includes(reason)}
+                                        onChange={() => handleCheckboxChange(reason)}
+                                        style={styles.checkboxInput}
+                                    />
+                                    <span style={styles.checkboxText}>{reason}</span>
+                                </label>
+                            </div>
+                        ))}
+                    </div>
 
                     {/* 기타 사유 및 비밀번호 */}
-                    <h3 style={styles.subtitle}>기타</h3>
+                    <h3 style={styles.sectionTitle}>기타 사유</h3>
                     <div style={styles.formGroup}>
                         <input
                             type="text"
@@ -101,6 +108,7 @@ export default function WithdrawPage() {
                         />
                     </div>
 
+                    <h3 style={styles.sectionTitle}>비밀번호 확인</h3>
                     <div style={styles.formGroup}>
                         <input
                             type="password"
@@ -114,9 +122,10 @@ export default function WithdrawPage() {
                     
                     <div style={styles.actions}>
                         <button 
-                            type="submit"
+                            type="button"
                             style={isFormValid ? styles.buttonPrimary : styles.buttonDisabled}
                             disabled={!isFormValid}
+                            onClick={handleSubmit}
                         >
                             탈퇴하기
                         </button>
@@ -125,10 +134,10 @@ export default function WithdrawPage() {
                             style={styles.buttonBack}
                             onClick={handleBack}
                         >
-                            뒤로
+                            ← 뒤로
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     );
@@ -136,137 +145,159 @@ export default function WithdrawPage() {
 
 /* --- 스타일 정의 --- */
 const styles = {
-    // 1. 컨테이너 스타일 (배경 어둡게 및 이미지 경로 유지)
+    // 1. 컨테이너 스타일
     container: {
-        // backgroundColor: '#1c1c1c',
         minHeight: '100vh',
         color: 'white',
-        fontFamily: 'Arial, sans-serif',
-        // 💡 배경 화면 추가
-        backgroundImage: `linear-gradient(rgba(0,0,0, 0.6), rgba(0,0,0, 0.6)), url("/black_tunnel.jpg")`,
-        backgroundSize: 'cover', 
-        backgroundPosition: 'center', 
-        backgroundAttachment: 'fixed',
-        // 배경 이미지 위에 Overlay를 씌우는 효과를 위해 background-color를 유지하고,
-        // Content 영역의 배경을 더 어둡게 처리합니다.
-    },
-    header: {
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#222',
-        padding: '15px 50px',
-        borderBottom: '1px solid #444',
+        padding: '50px 20px',
+        position: 'relative',
     },
-    logo: {
-        margin: 0,
-        color: '#c0392b',
-        fontSize: '24px'
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'radial-gradient(circle at top right, rgba(102, 126, 234, 0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(118, 75, 162, 0.1), transparent 50%)',
+        zIndex: 1,
     },
-    headerRight: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-    },
-    // 2. 콘텐츠 스타일 (폼 영역 배경을 더 어둡게)
+    // 2. 콘텐츠 스타일
     content: {
         maxWidth: '650px',
-        margin: '0 auto',
+        width: '100%',
         padding: '50px',
         textAlign: 'center',
-        // 💡 폼 영역 배경을 더 어둡게 하여 가독성 향상
-        // backgroundColor: 'rgba(15, 15, 15, 0.95)', 
-        borderRadius: '8px',
-        // border: '1px solid black'
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '20px',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        zIndex: 2,
+        position: 'relative',
     },
     title: {
-        fontSize: '36px',
-        marginBottom: '40px',
-        color: 'white',
+        fontSize: '32px',
+        marginBottom: '15px',
+        fontWeight: '700',
+        background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
     },
-    form: {
+    description: {
+        fontSize: '14px',
+        color: 'rgba(255, 255, 255, 0.6)',
+        marginBottom: '40px',
+        fontWeight: '500',
+    },
+    formWrapper: {
+        textAlign: 'left',
         display: 'flex',
         flexDirection: 'column',
-        gap: '15px',
-        textAlign: 'left',
+        gap: '20px',
+    },
+    sectionTitle: {
+        fontSize: '16px',
+        color: 'rgba(255, 255, 255, 0.9)',
+        marginBottom: '12px',
+        fontWeight: '600',
+    },
+    checkboxList: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
+        marginBottom: '10px',
     },
     checkboxContainer: {
-        backgroundColor: '#2c2c2c',
-        borderRadius: '4px',
-        padding: '15px',
+        background: 'rgba(255, 255, 255, 0.05)',
+        borderRadius: '12px',
+        padding: '16px 20px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        transition: 'all 0.2s ease',
+        cursor: 'pointer',
     },
     checkboxLabel: {
         display: 'flex',
         alignItems: 'center',
         cursor: 'pointer',
-        fontSize: '16px',
+        fontSize: '15px',
+        color: 'rgba(255, 255, 255, 0.9)',
     },
     checkboxInput: {
         marginRight: '15px',
         width: '20px',
         height: '20px',
         cursor: 'pointer',
-        // Next.js에서 기본 input 스타일 오버라이딩을 위한 추가 CSS 필요 (브라우저별 상이)
+        accentColor: '#f5576c',
     },
-    subtitle: {
-        fontSize: '18px',
-        color: '#aaa',
-        marginTop: '20px',
-        marginBottom: '10px',
+    checkboxText: {
+        fontWeight: '500',
     },
     formGroup: {
         marginBottom: '10px',
     },
-    // 3. 입력 필드 스타일 (길이 100%로 유지, 이미 되어 있었음)
     input: {
-        width: '100%', // 이미 100%로 설정되어 있습니다.
-        padding: '15px',
-        backgroundColor: '#2c2c2c',
-        border: '1px solid #444',
+        width: '100%',
+        padding: '14px 18px',
+        background: 'rgba(255, 255, 255, 0.08)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
         color: 'white',
-        borderRadius: '4px',
-        fontSize: '16px',
+        borderRadius: '12px',
+        fontSize: '15px',
+        boxSizing: 'border-box',
+        transition: 'all 0.3s ease',
+        outline: 'none',
     },
     actions: {
         display: 'flex',
         justifyContent: 'flex-start',
-        gap: '15px',
+        gap: '12px',
         marginTop: '30px',
+        paddingTop: '30px',
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
     },
-    // 버튼 스타일 (이전 페이지에서 사용한 것 재사용)
     buttonPrimary: {
-        backgroundColor: '#c0392b', // 활성화 시 빨간색
+        background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
         color: 'white',
         border: 'none',
-        padding: '12px 30px',
-        fontSize: '16px',
+        padding: '14px 32px',
+        fontSize: '15px',
         cursor: 'pointer',
-        borderRadius: '4px',
+        borderRadius: '25px',
+        fontWeight: '600',
+        transition: 'all 0.3s ease',
+        flexGrow: 1,
+        maxWidth: '200px',
+        boxShadow: '0 4px 15px rgba(245, 87, 108, 0.4)',
     },
     buttonDisabled: {
-        backgroundColor: '#555', // 비활성화 시 회색
-        color: '#ccc',
-        border: 'none',
-        padding: '12px 30px',
-        fontSize: '16px',
+        background: 'rgba(255, 255, 255, 0.1)',
+        color: 'rgba(255, 255, 255, 0.4)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        padding: '14px 32px',
+        fontSize: '15px',
         cursor: 'not-allowed',
-        borderRadius: '4px',
+        borderRadius: '25px',
+        fontWeight: '600',
+        flexGrow: 1,
+        maxWidth: '200px',
     },
     buttonBack: {
-        backgroundColor: '#444', 
+        background: 'rgba(255, 255, 255, 0.1)',
         color: 'white',
-        border: 'none',
-        padding: '12px 30px',
-        fontSize: '16px',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        padding: '14px 32px',
+        fontSize: '15px',
         cursor: 'pointer',
-        borderRadius: '4px',
-    },
-    buttonSecondary: {
-        backgroundColor: 'transparent',
-        color: 'white',
-        border: '1px solid #777',
-        padding: '8px 15px',
-        cursor: 'pointer',
-        borderRadius: '4px',
+        borderRadius: '25px',
+        fontWeight: '600',
+        transition: 'all 0.3s ease',
+        flexGrow: 1,
+        maxWidth: '200px',
     },
 };

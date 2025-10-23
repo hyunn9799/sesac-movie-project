@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGenreStore } from './_component/GenreStoreContext'; 
@@ -88,6 +88,12 @@ const WithdrawButton = ({ onClick }) => {
 
 // 4. 마이페이지 컴포넌트 (메인 로직)
 export default function MyPage() {
+
+    const [user,setUser] = useState();
+
+    useEffect(()=>{
+        const data = localStorage.getItem("loggedInUser")
+    },[])
 
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
     const { favGenres, unfavGenres } = useGenreStore();
