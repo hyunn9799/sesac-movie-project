@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import "./modal.css";
 
-export default function ModalPage() {
+export default function UseModalPage() {
   const [isOpen, setIsOpen] = useState(true);
 
   const closeModal = () => {
@@ -130,11 +130,11 @@ export default function ModalPage() {
           </div>
         </div>
       )}
-      {!isOpen && (
+      {/* {!isOpen && (
         <div style={{ color: "#fff", textAlign: "center", padding: "60px" }}>
           <h3>이용약관을 닫았습니다.</h3>
         </div>
-      )}
+      )} */}
     </>
   );
 }
