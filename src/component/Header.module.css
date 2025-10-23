@@ -1,4 +1,4 @@
-/* Header.module.css */
+/* Header.module.css (unchanged from your provided version) */
 
 .header {
   background-color: #1a1a1a;
@@ -36,15 +36,17 @@
 .logo:hover {
   opacity: 0.8;
 }
+
 .logoImage {
-    height: 50px;
-    width: auto;
+  height: 50px;
+  width: auto;
 }
+
 .logoTextGroup {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap:0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
 }
 
 .logoMain {
@@ -123,30 +125,25 @@
   font-size: 14px;
   color: #e0e0e0;
   text-decoration: none;
-  transition: color 0.3s ease;
-  padding: 8px 12px;
-  border-radius: 4px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.15) 0%, rgba(255, 107, 107, 0.05) 100%);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
 }
 
 .mypageLink:hover {
-  color: #fff;
-  background-color: #333;
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.25) 0%, rgba(255, 107, 107, 0.1) 100%);
+  border-color: rgba(255, 107, 107, 0.5);
+  color: #ffb3b3;
+  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.2);
+  transform: translateY(-2px);
 }
 
-.logoutButton {
-  background-color: #ff6b6b;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.logoutButton:hover {
-  background-color: #ff5252;
+.mypageLink:active {
+  transform: translateY(0);
 }
 
 /* 로그아웃 상태 */
@@ -163,6 +160,11 @@
   padding: 8px 16px;
   border-radius: 4px;
   transition: all 0.3s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  font-family: inherit;
 }
 
 .loginButton:hover {
@@ -250,7 +252,6 @@
     font-size: 12px;
   }
 
-  .logoutButton,
   .signupButton {
     padding: 6px 10px;
     font-size: 12px;
@@ -262,19 +263,16 @@
 }
 
 /* ===============================================
-  추천 드롭다운 스타일 (여기서부터 추가된 코드)
+  추천 드롭다운 스타일
 ===============================================
 */
 
-/* '영화 추천' 버튼과 드롭다운을 감싸는 래퍼 */
 .recommendationWrapper {
-  position: relative; /* 드롭다운의 기준점이 됨 */
+  position: relative;
   flex-shrink: 0;
 }
 
-/* '영화 추천' 트리거 버튼 스타일 */
 .recommendationTriggerButton {
-  /* 다른 인증 버튼과 유사하게 스타일링 */
   font-size: 14px;
   color: #e0e0e0;
   text-decoration: none;
@@ -285,7 +283,7 @@
   border: none;
   cursor: pointer;
   font-weight: 500;
-  font-family: inherit; /* 폰트 상속 */
+  font-family: inherit;
 }
 
 .recommendationTriggerButton:hover {
@@ -293,13 +291,12 @@
   background-color: #333;
 }
 
-/* 드롭다운 패널 전체 */
 .recommendationDropdown {
   position: absolute;
-  top: calc(100% + 12px); /* 헤더 하단 패딩만큼 띄우기 */
+  top: calc(100% + 12px);
   left: 50%;
-  transform: translateX(-50%); /* 버튼 중앙 기준으로 패널 중앙 정렬 */
-  width: 800px; /* 이미지와 유사한 넉넉한 너비 (조정 가능) */
+  transform: translateX(-50%);
+  width: 800px;
   max-width: 90vw;
   background-color: #1a1a1a;
   border: 1px solid #333;
@@ -309,32 +306,28 @@
   z-index: 99;
   display: flex;
   flex-direction: column;
-  gap: 24px; /* 각 추천 그룹 사이의 간격 */
+  gap: 24px;
 }
 
-/* "장르별 추천" 등 각 그룹 (제목 + 버튼 리스트) */
 .recommendationGroup {
   display: flex;
   flex-direction: column;
-  gap: 12px; /* 제목과 버튼 리스트 사이의 간격 */
+  gap: 12px;
 }
 
-/* "장르별 추천" 등 그룹 제목 */
 .recommendationTitle {
   font-size: 14px;
   font-weight: 500;
-  color: #999; /* 이미지의 회색 텍스트 */
+  color: #999;
   margin: 0;
 }
 
-/* 버튼들을 감싸는 리스트 */
 .recommendationButtonList {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px; /* 버튼 사이의 간격 */
+  gap: 12px;
 }
 
-/* 개별 추천 버튼 공통 스타일 */
 .recommendationItemButton {
   background-color: #333;
   color: #e0e0e0;
@@ -351,41 +344,79 @@
   transform: translateY(-2px);
 }
 
-/* 장르별, 기분별 버튼 (타원형) */
 .genreButton,
 .moodButton {
   border-radius: 20px;
 }
 
-/* 상황별 버튼 (둥근 사각형) */
 .situationButton {
   border-radius: 6px;
 }
+
+/* ===============================================
+  환영 메시지 및 관리자 버튼 스타일
+===============================================
+*/
+
 .welcomeText {
   font-size: 14px;
   font-weight: 600;
-  color: #eee4e4;
-  padding: 0 12px;
+  color: #e0e0e0;
+  padding: 0 4px;
+}
+
+/* 관리자 페이지 버튼 - 프리미엄 스타일 */
+.loginButton {
+  position: relative;
+  overflow: hidden;
+}
+
+/* 관리자 페이지 버튼에만 특별 스타일 적용 */
+.authButtons .loginButton:nth-child(3) {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.15) 0%, rgba(255, 107, 107, 0.05) 100%);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: #ff8787;
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: 6px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.authButtons .loginButton:nth-child(3):hover {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.25) 0%, rgba(255, 107, 107, 0.1) 100%);
+  border-color: rgba(255, 107, 107, 0.5);
+  color: #ffb3b3;
+  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.2);
+  transform: translateY(-2px);
+  background-color: transparent;
 }
 
 .logoutButton {
-  padding: 8px 16px;
-  background-color: #e53e3e;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 13px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.15);
 }
 
 .logoutButton:hover {
-  background-color: #c53030;
+  background: linear-gradient(135deg, #ff5252 0%, #ff3838 100%);
+  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.25);
+  transform: translateY(-2px);
+}
+
+.logoutButton:active {
+  transform: translateY(0);
 }
 
 /* ================================
-   자동완성 제어 버튼 스타일 (추가)
+   자동완성 제어 버튼 스타일
 ================================ */
 
 .suggestionControlButton {
@@ -404,7 +435,6 @@
   color: #fff;
 }
 
-/* '전체삭제' 버튼은 강조색 적용 */
 .deleteAllButton {
   color: #ff6b6b;
   border-color: #ff6b6b;
@@ -415,7 +445,6 @@
   color: #fff;
 }
 
-/* 개별 '삭제' 버튼 */
 .deleteButton {
   color: #ccc;
   border-color: #666;

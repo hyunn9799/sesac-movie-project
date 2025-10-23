@@ -1,5 +1,7 @@
 
-
+/**
+내 수정
+*/
 .footer {
   background-color: #1a1a1a;
   color: #e0e0e0;
@@ -42,9 +44,15 @@
   grid-column: 2;
 }
 
-.footerColumn {
-  display: flex;
-  flex-direction: column;
+.footerColumn a {
+  color: #b0b0b0;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease;
+  display: inline-block;
+  white-space: nowrap;      /* ✅ 줄바꿈 절대 금지 */
+  word-break: keep-all;     /* ✅ 단어 중간 줄바꿈 방지 */
+  overflow-wrap: normal;    /* ✅ 자동 줄바꿈 방지 */
 }
 
 .footerSubtitle {
@@ -162,11 +170,12 @@
     margin-bottom: 12px;
   }
 
-  .footerColumn a {
-    font-size: 13px;
-  }
 
   .footerCopyright {
     font-size: 12px;
   }
+  
+ 
+
+  
 }

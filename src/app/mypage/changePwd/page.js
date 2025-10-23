@@ -1,5 +1,6 @@
 'use client'
 
+import { useAuth } from "@/app/auth/AuthContext";
 import { useEffect, useState } from "react";
 
 // 비밀번호 최소 길이 설정
@@ -21,14 +22,20 @@ export default function ChangePwdPage() {
 
     // 3. 버튼 활성화 상태
     const [isFormValid, setIsFormValid] = useState(false);
+    const [realPwd,setRealPwd] = useState('')
+
+    const {user, updateUser} = useAuth();
+    
 
     /* --- 유효성 검사 및 버튼 활성화 로직 --- */
     useEffect(() => {
         // 메시지 초기화
+        setRealPwd(user?.password)
         setMessage(null);
+        // setCurrentPwd(user?.password);
 
         // 모든 필드가 최소 길이를 만족하는지 확인
-        const isCurrentValid = currentPwd.length >= MIN_PASSWORD_LENGTH;
+        const isCurrentValid = currentPwd?.length >= MIN_PASSWORD_LENGTH;
         const isNewValid = newPwd.length >= MIN_PASSWORD_LENGTH;
 
         // 새 비밀번호와 확인이 일치하고, 길이가 0보다 큰지 확인
@@ -45,8 +52,10 @@ export default function ChangePwdPage() {
         // 실시간 에러 메시지 업데이트
 
         // 기존 비밀번호 에러 메시지
-        if (currentPwd.length > 0 && currentPwd.length < MIN_PASSWORD_LENGTH) {
+        if (currentPwd?.length > 0 && currentPwd?.length < MIN_PASSWORD_LENGTH) {
             setCurrentPwdError(`${MIN_PASSWORD_LENGTH}자리 이상의 비밀번호를 입력해주세요.`);
+        } else if (currentPwd !== realPwd) {
+            setCurrentPwdError('비밀번호가 틀립니다.');
         } else {
             setCurrentPwdError('');
         }
@@ -85,6 +94,13 @@ export default function ChangePwdPage() {
         
         setMessage("비밀번호가 성공적으로 변경되었습니다. (마이페이지로 이동 시뮬레이션)");
         setMessageType('success');
+
+        const updatedUser = {
+            ...user,
+            password : newPwd
+        }
+
+        updateUser(updatedUser)
         
         // 2초 후 페이지 이동 시뮬레이션 (router.push 대체)
         setTimeout(() => {

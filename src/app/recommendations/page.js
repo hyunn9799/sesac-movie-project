@@ -43,8 +43,9 @@ async function fetchMoviesByGenre(genreIds) {
  * @param {object} props.searchParams - URL의 쿼리 파라미터 (예: { genres: '18,10749' })
  */
 export default async function RecommendationsPage({ searchParams }) {
-  // 1. URL 쿼리에서 'genres' 값을 가져옵니다.
+  // 1. URL 쿼리에서 'genres'와 'label' 값을 가져옵니다.
   const genreIds = searchParams.genres;
+  const label = searchParams.label ? decodeURIComponent(searchParams.label) : '추천';
 
   // 2. 해당 장르 ID로 영화를 검색합니다.
   const movies = await fetchMoviesByGenre(genreIds);
@@ -52,18 +53,18 @@ export default async function RecommendationsPage({ searchParams }) {
   // 3. MovieSection을 재사용하여 결과를 렌더링합니다.
   return (
     <main className="main-container">
-      <h1 className="main-title">🎬 추천 영화 결과</h1>
+      <h1 className="main-title">🎬 {label} 맞춤 영화 추천</h1>
 
       {movies.length > 0 ? (
         <MovieSection 
-          title="회원님을 위한 추천작" 
+          title={`${label}을 위한 특별 추천`} 
           movies={movies} 
         />
       ) : (
         <p style={{ textAlign: 'center', marginTop: '40px' }}>
-          아쉽지만, 해당 조건의 추천 영화를 찾지 못했습니다. 😢
+          아쉽지만, {label}에 맞는 추천 영화를 찾지 못했습니다. 😢
         </p>
       )}
     </main>
   );
-}
+};

@@ -17,9 +17,8 @@ import {
 export default function ReviewWritePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const movieId = searchParams.get('movieId'); 
-  // 2. editReviewId 가져오기 추가
-  const editReviewId = searchParams.get('editReviewId'); 
+  const movieId = searchParams.get('movieId'); // URL에서 movieId 가져오기
+  const movieTitle = searchParams.get('movieTitle'); // URL에서 movieTitle 가져오기
 
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0); 
@@ -69,7 +68,15 @@ export default function ReviewWritePage() {
         return;
     }
 
-    setIsSubmitting(true);
+    // --- 실제 데이터 저장 로직 ---
+    // ... (LocalStorage 또는 추후 API 호출 로직) ...
+    const savedReviews = JSON.parse(localStorage.getItem('myReviews') || '[]');
+    const newReview = {
+      id: Date.now(), movieId: movieId, userName: '나', rating: 0, movieTitle:movieTitle,
+      content: reviewText, likes: 0, date: new Date().toISOString().split('T')[0], isVerified: false,
+    };
+    const updatedReviews = [newReview, ...savedReviews];
+    localStorage.setItem('myReviews', JSON.stringify(updatedReviews));
 
     try {
       const loggedInUser = localStorage.getItem('loggedInUser') || '나'; 

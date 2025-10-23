@@ -6,7 +6,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 // 🚀 프로젝트 구조에 맞게 경로를 수정했습니다.
-import { useGenreStore } from '../_component/GenreStoreContext'; 
+import { useGenreStore } from '../_component/GenreStoreContext';
+import { useAuth } from '@/app/auth/AuthContext';
 
 // 장르 목록 및 상수
 const ALL_GENRES = [
@@ -36,13 +37,22 @@ function useOutsideClick(refs, handler) {
 
 
 export default function ProfileEditPage() {
+
+    const {user,updateUser} = useAuth();
+    const [name, setName] = useState(user?.name);
+
+    // useEffect(() => {
+    //     const data = JSON.parse(localStorage.getItem("loggedInUser"));
+    //     console.log(data)
+    //     setName(data?.name)
+    // }, [])
     const router = useRouter();
 
     // 🚀 실제 useGenreStore Hook 사용
     const { favGenres: initialFav, unfavGenres: initialUnfav, updateGenres } = useGenreStore();
 
     // 1. 프로필 상태
-    const [name, setName] = useState("새싹");
+
 
     // 2. 장르 상태
     const [favGenres, setFavGenres] = useState(initialFav); // 초기값 설정
@@ -67,6 +77,10 @@ export default function ProfileEditPage() {
     const handleNameChange = (e) => {
         setName(e.target.value);
         setNameMessage('');
+
+        
+
+
     };
 
     /* --- 장르 선택 핸들러 --- */
@@ -102,6 +116,14 @@ export default function ProfileEditPage() {
             return;
         }
 
+        const updatedUser = {
+            ...user,
+            name: name,
+        }
+
+        updateUser(updatedUser);
+        
+        
         // 장르 상태 업데이트
         updateGenres(favGenres, unfavGenres);
 
@@ -152,11 +174,11 @@ export default function ProfileEditPage() {
                                 <span style={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
                                     {genre}
                                 </span>
-                                
+
                                 {/* 아이콘 및 텍스트 표시 */}
                                 {isSelected && <span style={{ color: 'white', fontSize: '1em', marginLeft: '5px', fontWeight: 'bold' }}>✓</span>}
                                 {isDisabled && <span style={{ color: '#aaaaaa', fontSize: '12px' }}> (다른 항목에 있음)</span>}
-                                
+
                             </div>
                         );
                     })}
@@ -254,7 +276,7 @@ export default function ProfileEditPage() {
 // 💡 배경 이미지를 위한 최상위 컨테이너 스타일
 const CONTAINER_STYLE = {
     minHeight: '100vh',
-    position: 'relative', 
+    position: 'relative',
     background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
 };
@@ -267,7 +289,7 @@ const OVERLAY_STYLE = {
     width: '100%',
     height: '100%',
     background: 'radial-gradient(circle at top right, rgba(102, 126, 234, 0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(118, 75, 162, 0.1), transparent 50%)',
-    zIndex: 1, 
+    zIndex: 1,
 };
 
 
@@ -281,8 +303,8 @@ const styles = {
         paddingTop: '50px',
         paddingBottom: '50px',
         width: '100%',
-        zIndex: 2, 
-        position: 'relative', 
+        zIndex: 2,
+        position: 'relative',
     },
     content: {
         maxWidth: '650px',
@@ -394,7 +416,7 @@ const styles = {
     },
     genreSection: {
         padding: '0 0 30px 0',
-        marginBottom: '0', 
+        marginBottom: '0',
         textAlign: 'left',
     },
     genreTitle: {
@@ -422,7 +444,7 @@ const styles = {
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'space-between',
-        position: 'relative', 
+        position: 'relative',
     },
     tagList: {
         display: 'flex',
@@ -430,7 +452,7 @@ const styles = {
         flexWrap: 'wrap',
         marginTop: '5px',
     },
-    tag: { 
+    tag: {
         color: 'white',
         padding: '8px 16px',
         borderRadius: '20px',
@@ -475,10 +497,10 @@ const styles = {
 const dropdownStyles = {
     container: {
         position: 'absolute',
-        top: '100%', 
+        top: '100%',
         right: '0',
         zIndex: 50,
-        width: '300px', 
+        width: '300px',
         marginTop: '12px',
         padding: '16px',
         background: 'rgba(255, 255, 255, 0.08)',
@@ -488,7 +510,7 @@ const dropdownStyles = {
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)'
     },
     select: {
-        maxHeight: '240px', 
+        maxHeight: '240px',
         overflowY: 'auto',
         padding: '0',
     },

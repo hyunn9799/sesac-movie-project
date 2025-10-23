@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import styles from './auth.module.css';
+import styles from './login.module.css';
 import { initialMembers } from '@/lib/data/memberData';
 import { adminMembers } from '@/lib/data/admin1';
 
@@ -14,6 +14,9 @@ export default function AuthPage() {
     confirmPassword: '',
     name: '',
     phone: '',
+    //  1. 새로운 필드 추가
+    favoriteGenre: '',
+    dislikedGenre: '',
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -81,6 +84,16 @@ export default function AuthPage() {
         newErrors.phone = '휴대폰 번호 형식: 010-1234-5678';
       }
 
+      // ⭐ 2. 좋아하는 장르 필수 입력 검증
+      if (!formData.favoriteGenre) {
+        newErrors.favoriteGenre = '좋아하는 영화 장르를 입력해주세요.';
+      }
+
+      // ⭐ 3. 싫어하는 장르 필수 입력 검증
+      if (!formData.dislikedGenre) {
+        newErrors.dislikedGenre = '싫어하는 영화 장르를 입력해주세요.';
+      }
+
       if (!formData.confirmPassword) {
         newErrors.confirmPassword = '비밀번호 확인을 입력해주세요.';
       } else if (formData.password !== formData.confirmPassword) {
@@ -114,13 +127,12 @@ export default function AuthPage() {
     setTimeout(() => {
       try {
         if (isLogin) {
-          // 관리자 로그인 확인
+          // ... (로그인 로직은 변경 없음)
           const admin = adminMembers.find(
             (a) => a.email === formData.email && a.password === formData.password
           );
 
           if (admin) {
-            // 관리자 로그인 성공
             const adminLoginData = {
               id: admin.id,
               name: admin.name,
@@ -140,10 +152,8 @@ export default function AuthPage() {
             }, 1000);
             setLoading(false);
             return;
-           
           }
 
-          // 일반 회원 로그인
           const user = initialMembers.find(
             (u) => u.email === formData.email && u.password === formData.password
           );
@@ -160,7 +170,6 @@ export default function AuthPage() {
             return;
           }
 
-          // 로그인 성공
           const loginData = {
             id: user.id,
             name: user.name,
@@ -179,8 +188,6 @@ export default function AuthPage() {
           setTimeout(() => {
             window.location.href = '/';
           }, 1000);
-            
-
         } else {
           // 회원가입 처리
           const newUser = {
@@ -193,6 +200,9 @@ export default function AuthPage() {
             status: '활성',
             role: '일반회원',
             lastLogin: new Date().toISOString().split('T')[0],
+            // 4. 신규 사용자 데이터에 장르 정보 추가
+            favoriteGenre: formData.favoriteGenre,
+            dislikedGenre: formData.dislikedGenre,
           };
 
           // 실제로는 여기서 새 사용자를 서버에 저장해야 하지만,
@@ -210,6 +220,9 @@ export default function AuthPage() {
             confirmPassword: '',
             name: '',
             phone: '',
+            //  5. 폼 데이터 초기화 시 장르 필드도 초기화
+            favoriteGenre: '',
+            dislikedGenre: '',
           });
 
           setTimeout(() => {
@@ -234,6 +247,9 @@ export default function AuthPage() {
       confirmPassword: '',
       name: '',
       phone: '',
+      //  6. 모드 전환 시 폼 데이터 초기화에 장르 필드 포함
+      favoriteGenre: '',
+      dislikedGenre: '',
     });
     setErrors({});
     setMessage('');
@@ -266,7 +282,7 @@ export default function AuthPage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="이름을 입력하세요"
+                  placeholder="이름을 입력해주세요"
                   className={`${styles.input} ${
                     errors.name ? styles.inputError : ''
                   }`}
@@ -293,6 +309,48 @@ export default function AuthPage() {
                 />
                 {errors.phone && (
                   <span className={styles.errorText}>{errors.phone}</span>
+                )}
+              </div>
+
+              {/* 7. 좋아하는 영화 장르 입력 필드 추가 */}
+              <div className={styles.formGroup}>
+                <label htmlFor="favoriteGenre" className={styles.label}>
+                  좋아하는 영화 장르는 무엇입니까?
+                </label>
+                <input
+                  type="text"
+                  id="favoriteGenre"
+                  name="favoriteGenre"
+                  value={formData.favoriteGenre}
+                  onChange={handleChange}
+                  placeholder="예: SF, 코미디"
+                  className={`${styles.input} ${
+                    errors.favoriteGenre ? styles.inputError : ''
+                  }`}
+                />
+                {errors.favoriteGenre && (
+                  <span className={styles.errorText}>{errors.favoriteGenre}</span>
+                )}
+              </div>
+
+              {/* 8. 싫어하는 영화 장르 입력 필드 추가 */}
+              <div className={styles.formGroup}>
+                <label htmlFor="dislikedGenre" className={styles.label}>
+                  싫어하는 영화 장르는 무엇입니까?
+                </label>
+                <input
+                  type="text"
+                  id="dislikedGenre"
+                  name="dislikedGenre"
+                  value={formData.dislikedGenre}
+                  onChange={handleChange}
+                  placeholder="예: 공포, 다큐멘터리"
+                  className={`${styles.input} ${
+                    errors.dislikedGenre ? styles.inputError : ''
+                  }`}
+                />
+                {errors.dislikedGenre && (
+                  <span className={styles.errorText}>{errors.dislikedGenre}</span>
                 )}
               </div>
             </>
@@ -328,7 +386,7 @@ export default function AuthPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="최소 6자 이상"
+              placeholder="최소 6자 이상 입력해주세요"
               className={`${styles.input} ${
                 errors.password ? styles.inputError : ''
               }`}
@@ -349,7 +407,7 @@ export default function AuthPage() {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="비밀번호를 다시 입력하세요"
+                placeholder="비밀번호를 다시 한번 입력해주세요"
                 className={`${styles.input} ${
                   errors.confirmPassword ? styles.inputError : ''
                 }`}
@@ -361,7 +419,7 @@ export default function AuthPage() {
               )}
             </div>
           )}
-
+          
           {message && (
             <div
               className={`${styles.message} ${
@@ -388,12 +446,12 @@ export default function AuthPage() {
                 ? '로그인 중...'
                 : '회원가입 중...'
               : isLogin
-                ? '로그인'
-                : '회원가입'}
+              ? '로그인'
+              : '회원가입'}
           </button>
         </form>
 
-       
+        
 
         <div className={styles.toggleSection}>
           <p className={styles.toggleText}>
@@ -411,7 +469,7 @@ export default function AuthPage() {
         <div className={styles.divider}></div>
 
         <Link href="/" className={styles.backButton}>
-          ← 홈으로 돌아가기
+          ← 메인 페이지로 이동
         </Link>
       </div>
     </div>
