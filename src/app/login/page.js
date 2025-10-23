@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import styles from './auth.module.css';
+import styles from './login.module.css';
 import { initialMembers } from '@/lib/data/memberData';
 import { adminMembers } from '@/lib/data/admin1';
 
@@ -185,7 +185,7 @@ export default function AuthPage() {
           setMessage('로그인에 성공했습니다!');
 
           setTimeout(() => {
-            router.push('/');
+            window.location.href = '/';
           }, 1000);
         } else {
           // 회원가입 처리

@@ -8,4 +8,6 @@ export const adminMembers = [{
     status: '활성',
     role: '관리자',
     lastLogin: '2022-10-19',
-  }]
+    
+  },
+]

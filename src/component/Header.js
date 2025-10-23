@@ -512,7 +512,7 @@ export default function Header() {
             ) : (
               <>
                 
-                <Link href="/auth" className={styles.loginButton}>
+                <Link href="/login" className={styles.loginButton}>
                   로그인
                 </Link>
               </>
