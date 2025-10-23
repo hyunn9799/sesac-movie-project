@@ -7,9 +7,8 @@ import Link from 'next/link';
 import { useAuth } from '@/app/auth/AuthContext';
 
 export default function Header() {
-
-  const {user} = useAuth();
-  console.log('user',user)
+  const { user } = useAuth();
+  console.log('user', user);
 
   const [query, setQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -226,7 +225,7 @@ export default function Header() {
       <div className={styles.headerContainer}>
         <div className={styles.logoSection}>
           <Link href="/" className={styles.logo}>
-           <img
+            <img
               src="/Logo.png"
               alt="MovieHub Logo"
               className={styles.logoImage}
@@ -235,7 +234,6 @@ export default function Header() {
               <span className={styles.logoMain}>MovieHub</span>
               <span className={styles.logoSub}>REVIEWS</span>
             </div>
-           
           </Link>
         </div>
 
@@ -306,200 +304,202 @@ export default function Header() {
         </div>
 
         {/* 검색 섹션 */}
-<div
-  className={styles.searchSection}
-  ref={wrapperRef}
-  style={{ position: 'relative' }}
->
-  <form
-    onSubmit={handleSearch}
-    className={styles.searchContainer}
-    autoComplete="off"
-  >
-    <input
-      type="text"
-      value={query}
-      onChange={(e) => {
-        setQuery(e.target.value);
-        if (e.target.value && e.target.value.trim().length >= 2) {
-          setShowSuggestionBox(true);
-        } else {
-          setShowSuggestionBox(false);
-        }
-      }}
-      placeholder="영화, 배우, 감독 검색..."
-      className={styles.searchInput}
-      aria-label="영화 검색"
-      onFocus={() => {
-        if (!query) setShowSuggestionBox(true);
-      }}
-    />
-    <button type="submit" className={styles.searchButton}>
-      🔍
-    </button>
-  </form>
+        <div
+          className={styles.searchSection}
+          ref={wrapperRef}
+          style={{ position: 'relative' }}
+        >
+          <form
+            onSubmit={handleSearch}
+            className={styles.searchContainer}
+            autoComplete="off"
+          >
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                if (e.target.value && e.target.value.trim().length >= 2) {
+                  setShowSuggestionBox(true);
+                } else {
+                  setShowSuggestionBox(false);
+                }
+              }}
+              placeholder="영화, 배우, 감독 검색..."
+              className={styles.searchInput}
+              aria-label="영화 검색"
+              onFocus={() => {
+                if (!query) setShowSuggestionBox(true);
+              }}
+            />
+            <button type="submit" className={styles.searchButton}>
+              🔍
+            </button>
+          </form>
 
-  {/* 자동완성 / 최근검색 박스 */}
-  {showSuggestionBox &&
-    ((query && suggestions.length > 0) ||
-      (!query && recent.length > 0)) && (
-      <div
-        className={styles.suggestionBox}
-        style={{
-          position: 'absolute',
-          top: 'calc(100% + 6px)',
-          left: 0,
-          width: '360px',
-          maxHeight: '420px',
-          overflowY: 'auto',
-          background: '#2a2a2a',
-          color: '#fff',
-          borderRadius: '6px',
-          boxShadow: '0 6px 18px rgba(0,0,0,0.4)',
-          zIndex: 60,
-        }}
-      >
-        {/* 쿼리 있을 때: 자동완성 결과 표시 */}
-        {query && suggestions.length > 0 && (
-          <div>
-            {suggestions.map((s) => (
+          {/* 자동완성 / 최근검색 박스 */}
+          {showSuggestionBox &&
+            ((query && suggestions.length > 0) ||
+              (!query && recent.length > 0)) && (
               <div
-                key={s.id}
-                className={styles.suggestionItem}
+                className={styles.suggestionBox}
                 style={{
-                  padding: '10px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  gap: '10px',
-                  alignItems: 'center',
-                  backgroundColor: '#2a2a2a',
+                  position: 'absolute',
+                  top: 'calc(100% + 6px)',
+                  left: 0,
+                  width: '360px',
+                  maxHeight: '420px',
+                  overflowY: 'auto',
+                  background: '#2a2a2a',
+                  color: '#fff',
+                  borderRadius: '6px',
+                  boxShadow: '0 6px 18px rgba(0,0,0,0.4)',
+                  zIndex: 60,
                 }}
-                onClick={() => handleSuggestionClick(s)}
               >
-                <div
-                  style={{
-                    width: 40,
-                    height: 56,
-                    background: '#444',
-                    borderRadius: 4,
-                    overflow: 'hidden',
-                  }}
-                >
-                  {s.poster_path ? (
-                    <img
-                      src={`https://image.tmdb.org/t/p/w92${s.poster_path}`}
-                      alt={s.title}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                      }}
-                    />
-                  ) : (
+                {/* 쿼리 있을 때: 자동완성 결과 표시 */}
+                {query && suggestions.length > 0 && (
+                  <div>
+                    {suggestions.map((s) => (
+                      <div
+                        key={s.id}
+                        className={styles.suggestionItem}
+                        style={{
+                          padding: '10px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          gap: '10px',
+                          alignItems: 'center',
+                          backgroundColor: '#2a2a2a',
+                        }}
+                        onClick={() => handleSuggestionClick(s)}
+                      >
+                        <div
+                          style={{
+                            width: 40,
+                            height: 56,
+                            background: '#444',
+                            borderRadius: 4,
+                            overflow: 'hidden',
+                          }}
+                        >
+                          {s.poster_path ? (
+                            <img
+                              src={`https://image.tmdb.org/t/p/w92${s.poster_path}`}
+                              alt={s.title}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                              }}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 12,
+                                color: '#aaa',
+                              }}
+                            >
+                              No
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 600 }}>{s.title}</div>
+                          <div style={{ fontSize: 12, color: '#bbb' }}>
+                            {s.media_type} {s.sub ? `· ${s.sub}` : ''}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* 쿼리 없을 때: 최근 검색어 */}
+                {!query && recent.length > 0 && (
+                  <div>
                     <div
                       style={{
-                        width: '100%',
-                        height: '100%',
                         display: 'flex',
+                        justifyContent: 'space-between',
+                        padding: '8px 10px',
+                        borderBottom: '1px solid #444',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 12,
-                        color: '#aaa',
                       }}
                     >
-                      No
+                      <strong style={{ color: '#ddd' }}>최근 검색어</strong>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSaveSearch((s) => !s);
+                          }}
+                          className={styles.suggestionControlButton}
+                        >
+                          {saveSearch ? '저장 끄기' : '저장 켜기'}
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            clearRecent();
+                          }}
+                          className={`${styles.suggestionControlButton} ${styles.deleteAllButton}`}
+                        >
+                          전체삭제
+                        </button>
+                      </div>
                     </div>
-                  )}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600 }}>{s.title}</div>
-                  <div style={{ fontSize: 12, color: '#bbb' }}>
-                    {s.media_type} {s.sub ? `· ${s.sub}` : ''}
+                    {recent.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className={styles.recentItem}
+                        style={{
+                          padding: '8px 10px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                        onClick={() => handleRecentClick(item)}
+                      >
+                        <div>{item}</div>
+                        <div style={{ fontSize: 12 }}>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const updated = recent.filter((r) => r !== item);
+                              try {
+                                localStorage.setItem(
+                                  'recentSearches',
+                                  JSON.stringify(updated)
+                                );
+                              } catch {}
+                              setRecent(updated);
+                            }}
+                            className={`${styles.suggestionControlButton} ${styles.deleteButton}`}
+                          >
+                            삭제
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+                )}
 
-        {/* 쿼리 없을 때: 최근 검색어 */}
-        {!query && recent.length > 0 && (
-          <div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                padding: '8px 10px',
-                borderBottom: '1px solid #444',
-                alignItems: 'center',
-              }}
-            >
-              <strong style={{ color: '#ddd' }}>최근 검색어</strong>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSaveSearch((s) => !s);
-                  }}
-                  className={styles.suggestionControlButton}
-                >
-                  {saveSearch ? '저장 끄기' : '저장 켜기'}
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    clearRecent();
-                  }}
-                  className={`${styles.suggestionControlButton} ${styles.deleteAllButton}`}
-                >
-                  전체삭제
-                </button>
+                {/* 쿼리 있으나 결과 없음 */}
+                {query && suggestions.length === 0 && (
+                  <div style={{ padding: 12, color: '#bbb' }}>
+                    검색 결과가 없습니다.
+                  </div>
+                )}
               </div>
-            </div>
-            {recent.map((item, idx) => (
-              <div
-                key={idx}
-                className={styles.recentItem}
-                style={{
-                  padding: '8px 10px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-                onClick={() => handleRecentClick(item)}
-              >
-                <div>{item}</div>
-                <div style={{ fontSize: 12 }}>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const updated = recent.filter((r) => r !== item);
-                      try {
-                        localStorage.setItem(
-                          'recentSearches',
-                          JSON.stringify(updated)
-                        );
-                      } catch {}
-                      setRecent(updated);
-                    }}
-                    className={`${styles.suggestionControlButton} ${styles.deleteButton}`}
-                  >
-                    삭제
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* 쿼리 있으나 결과 없음 */}
-        {query && suggestions.length === 0 && (
-          <div style={{ padding: 12, color: '#bbb' }}>검색 결과가 없습니다.</div>
-        )}
-      </div>
-    )}
-</div>
+            )}
+        </div>
 
         {/* 인증 / 링크 섹션 - 로그인 상태에 따라 표시 */}
         <div className={styles.authSection}>
@@ -522,10 +522,7 @@ export default function Header() {
                 >
                   관리자 페이지로 이동
                 </button>
-                <button
-                  onClick={handleLogout}
-                  className={styles.logoutButton}
-                >
+                <button onClick={handleLogout} className={styles.logoutButton}>
                   로그아웃
                 </button>
               </>
@@ -534,10 +531,7 @@ export default function Header() {
                 <span className={styles.welcomeText}>
                   {loggedInUser.name}님 환영합니다
                 </span>
-                <button
-                  onClick={handleLogout}
-                  className={styles.logoutButton}
-                >
+                <button onClick={handleLogout} className={styles.logoutButton}>
                   로그아웃
                 </button>
               </>
