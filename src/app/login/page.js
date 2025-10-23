@@ -69,8 +69,8 @@ export default function AuthPage() {
 
     if (!formData.password) {
       newErrors.password = '비밀번호를 입력해주세요.';
-    } else if (formData.password.length < 4) {
-      newErrors.password = '비밀번호는 최소 4자 이상이어야 합니다.';
+    } else if (formData.password.length < 6) {
+      newErrors.password = '비밀번호는 최소 6자 이상이어야 합니다.';
     }
 
     if (!isLogin) {
@@ -174,6 +174,7 @@ export default function AuthPage() {
             id: user.id,
             name: user.name,
             email: user.email,
+            password : user.password,
             phone: user.phone,
             role: user.role,
             status: user.status,
@@ -385,7 +386,7 @@ export default function AuthPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="최소 4자 이상 입력해주세요"
+              placeholder="최소 6자 이상 입력해주세요"
               className={`${styles.input} ${
                 errors.password ? styles.inputError : ''
               }`}

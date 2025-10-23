@@ -90,11 +90,17 @@ const WithdrawButton = ({ onClick }) => {
 export default function MyPage() {
 
     const [user, setUser] = useState();
+    const [myReviews, setMyReviews] = useState([]);
 
     useEffect(() => {
+    
         const data = JSON.parse(localStorage.getItem("loggedInUser"));
-        console.log(data)
+        const reviewData = JSON.parse(localStorage.getItem("myReviews"))
+        
+        console.log(data);
+        console.log('reviewData',reviewData);
         setUser(data)
+        setMyReviews(reviewData)
     }, [])
 
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
@@ -230,9 +236,9 @@ export default function MyPage() {
 
 
                         {/* 리뷰 관리 Section */}
-                        <h3 style={styles.sectionTitle}>리뷰 관리 / 작성한 리뷰 : {userData.reviewCount}개</h3>
+                        <h3 style={styles.sectionTitle}>리뷰 관리 / 작성한 리뷰 : {myReviews.length}개</h3>
                         <div style={styles.sectionBox}>
-                            <SettingItem label="작성한 리뷰" value={`${userData.reviewCount}개`} isLink={true} linkText="보기" routePath="/mypage/myReview" />
+                            <SettingItem label="작성한 리뷰" value={`${myReviews.length}개`} isLink={true} linkText="보기" routePath="/mypage/myReview" />
                         </div>
 
                         {/* 회원 탈퇴 Section */}

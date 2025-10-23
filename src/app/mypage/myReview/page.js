@@ -1,47 +1,159 @@
-'use client'; 
+'use client';
 
-import React, { useState } from 'react';
+import Link from 'next/link';
+import React, { useEffect, useState, useCallback } from 'react';
 
 // =========================================================================
-// 💡 목업(Mock) 데이터: 사용자가 작성한 리뷰 목록
+// 🎨 [MOCK] 스타일 가이드 (ReviewWritePage.jsx와 일관성을 위해 임시 정의)
 // =========================================================================
-const MOCK_REVIEWS = [
-    {
-        id: 101,
-        movieTitle: "범죄도시 4",
-        rating: 5,
-        content: "마동석의 시원한 액션이 최고! 스트레스가 확 풀리는 영화입니다. 기대했던 것보다 훨씬 더 재미있었습니다.",
-        date: "2025.09.28",
+const colors = {
+    dark: '#1e1e3f',
+    white: '#ffffff',
+    textPrimary: '#f4f4f4',
+    mediumGray: '#6c757d',
+    lightGray: '#dee2e6',
+    accent: '#DB6666',
+    error: '#dc3545',
+};
+
+const spacing = {
+    sm: '8px',
+    md: '12px',
+    lg: '20px',
+    xl: '28px',
+    xxl: '60px',
+};
+
+const fontSize = {
+    small: '14px',
+    medium: '16px',
+    large: '18px',
+    xlarge: '24px',
+    xxlarge: '32px',
+};
+
+const fontWeight = {
+    bold: '700',
+};
+
+const borderRadius = {
+    small: '4px',
+    medium: '8px',
+};
+
+const commonStyles = {
+    card: {
+        boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
     },
-    {
-        id: 102,
-        movieTitle: "파묘",
-        rating: 4,
-        content: "기대했던 것보다 더 몰입감 있었습니다. 긴장감이 대단하네요. 배우들의 연기가 정말 일품이었습니다.",
-        date: "2025.08.15",
-    },
-    {
-        id: 103,
-        movieTitle: "모던 타임즈",
-        rating: 5,
-        content: "고전 명작은 역시 다르네요. 시대를 초월하는 메시지가 인상적입니다.",
-        date: "2025.07.01",
-    },
-];
+    button: {
+        padding: '10px 20px',
+        borderRadius: borderRadius.medium,
+        transition: 'background-color 0.3s ease, transform 0.1s ease',
+    }
+};
+
+// =========================================================================
+// 🧩 [수정] 모달 컴포넌트 추가 (alert() 대체)
+// =========================================================================
+
+/**
+ * 📢 경고/성공 메시지를 표시하는 사용자 정의 모달 컴포넌트 (alert 대체)
+ */
+const CustomModal = ({ isOpen, message, onClose, onConfirm, showConfirm = false, confirmText = '확인', cancelText = '취소' }) => {
+    if (!isOpen) return null;
+
+    const modalStyles = {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+    };
+
+    const contentStyles = {
+        backgroundColor: colors.white,
+        color: colors.dark,
+        padding: spacing.xl,
+        borderRadius: borderRadius.medium,
+        maxWidth: '400px',
+        textAlign: 'center',
+        boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+        animation: 'fadeIn 0.3s ease-out',
+    };
+
+    const buttonBaseStyle = {
+        ...commonStyles.button,
+        marginTop: spacing.lg,
+        border: 'none',
+        cursor: 'pointer',
+        padding: '10px 30px',
+        fontWeight: '600',
+        minWidth: '100px',
+    };
+    
+    const confirmButtonStyle = {
+        ...buttonBaseStyle,
+        backgroundColor: colors.accent,
+        color: colors.white,
+        marginLeft: showConfirm ? spacing.md : '0',
+    };
+
+    const cancelButtonStyle = {
+        ...buttonBaseStyle,
+        backgroundColor: colors.lightGray,
+        color: colors.dark,
+    };
+
+    const handleConfirm = () => {
+        onConfirm();
+        onClose();
+    };
+
+    return (
+        <div style={modalStyles}>
+            <div style={contentStyles}>
+                <p style={{ fontSize: fontSize.large, marginBottom: spacing.lg, whiteSpace: 'pre-wrap' }}>{message}</p>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: spacing.md }}>
+                    <button style={cancelButtonStyle} onClick={onClose}>
+                        {cancelText}
+                    </button>
+                    {showConfirm && (
+                        <button style={confirmButtonStyle} onClick={handleConfirm}>
+                            {confirmText}
+                        </button>
+                    )}
+                </div>
+            </div>
+            {/* CSS Animation */}
+            <style jsx global>{`
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(-20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            `}</style>
+        </div>
+    );
+};
+
+// =========================================================================
 
 /**
  * 인라인 SVG 별 아이콘 컴포넌트
  */
 const StarIcon = ({ style }) => (
-    <svg 
+    <svg
         style={{ ...style, width: '1em', height: '1em', display: 'block' }}
-        viewBox="0 0 24 24" 
+        viewBox="0 0 24 24"
         fill="currentColor"
     >
         <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
     </svg>
 );
-
 
 /**
  * 별점 아이콘을 렌더링하는 컴포넌트
@@ -63,11 +175,16 @@ const RatingDisplay = ({ rating }) => {
 
 /**
  * 개별 리뷰 아이템 컴포넌트
+ * 🧩 [수정] onEdit과 onDelete 프롭스 추가
  */
-const ReviewItem = ({ review }) => {
+const ReviewItem = ({ review, onEdit, onDelete }) => {
     const [isEditHovered, setIsEditHovered] = useState(false);
     const [isDeleteHovered, setIsDeleteHovered] = useState(false);
     const [isCardHovered, setIsCardHovered] = useState(false);
+
+    const id = review.movieId;
+
+    const movieTitle = review.movieTitle;
 
     const editButtonStyle = {
         ...styles.actionButton,
@@ -83,7 +200,7 @@ const ReviewItem = ({ review }) => {
     };
 
     return (
-        <div 
+        <div
             style={cardStyle}
             onMouseEnter={() => setIsCardHovered(true)}
             onMouseLeave={() => setIsCardHovered(false)}
@@ -91,27 +208,31 @@ const ReviewItem = ({ review }) => {
             <div style={styles.reviewHeader}>
                 <div style={styles.reviewTitleBox}>
                     <h3 style={styles.movieTitle}>{review.movieTitle}</h3>
-                    <RatingDisplay rating={review.rating} />
+                    {/* <RatingDisplay rating={review.rating} /> */}
                 </div>
                 <p style={styles.reviewDate}>작성일: {review.date}</p>
             </div>
-            
+
             <p style={styles.reviewContent}>{review.content}</p>
 
             <div style={styles.reviewActions}>
-                <button 
+                {/* 🧩 [수정] 수정 버튼 클릭 시 onEdit 호출 */}
+                <button
                     style={editButtonStyle}
                     onMouseEnter={() => setIsEditHovered(true)}
                     onMouseLeave={() => setIsEditHovered(false)}
-                    onClick={() => console.log('Edit clicked for review:', review.id)}
+                    onClick={() => onEdit(review)}
                 >
-                    ✏️ 리뷰 수정
+                    <Link href={`/review/write?movieId=${id}&movieTitle=${movieTitle}`} style={{textDecoration:'none',color:'white'}}>✏️ 리뷰 수정</Link>
+                    
                 </button>
-                <button 
+                
+                {/* 🧩 [수정] 삭제 버튼 클릭 시 onDelete 호출 */}
+                <button
                     style={deleteButtonStyle}
                     onMouseEnter={() => setIsDeleteHovered(true)}
                     onMouseLeave={() => setIsDeleteHovered(false)}
-                    onClick={() => console.log('Delete clicked for review:', review.id)} 
+                    onClick={() => onDelete(review.id)}
                 >
                     🗑️ 리뷰 삭제
                 </button>
@@ -125,13 +246,103 @@ const ReviewItem = ({ review }) => {
  * 메인 페이지 컴포넌트: 작성한 리뷰 목록
  */
 export default function MyReviewsPage() {
-    const reviews = MOCK_REVIEWS;
     const [isBackHovered, setIsBackHovered] = useState(false);
+    const [reviews, setMyReviews] = useState([]);
+    
+    // 모달 상태
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+    const [modalAction, setModalAction] = useState(null); // 삭제 시 실행할 콜백 함수
+    const [isConfirmModal, setIsConfirmModal] = useState(false);
+
+
+    /**
+     * Local Storage에서 리뷰 데이터를 불러오는 함수
+     */
+    const loadReviews = useCallback(() => {
+        if (typeof window !== 'undefined') {
+            try {
+                const reviewData = JSON.parse(localStorage.getItem("myReviews") || '[]');
+                setMyReviews(reviewData);
+            } catch (e) {
+                console.error("Local Storage 파싱 오류:", e);
+                setMyReviews([]); // 오류 발생 시 빈 배열로 초기화
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        loadReviews();
+    }, [loadReviews]);
+    
+    /**
+     * 🧩 [구현] 리뷰 수정 핸들러: ReviewWritePage로 이동
+     */
+    const handleEdit = (review) => {
+        if (typeof window !== 'undefined') {
+            // Next.js Link의 기능을 모방하여 페이지 이동 (Canvas 환경을 위해 window.location 사용)
+            const url = `/review/write?movieId=${review.movieId}&movieTitle=${review.movieTitle}&reviewId=${review.id}&content=${encodeURIComponent(review.content)}`;
+            console.log(`[EDIT] Navigating to: ${url}`);
+            // window.location.href = url; // 실제 Next.js 환경에서는 라우터 사용
+            
+            // Canvas 환경에서 페이지 이동을 시뮬레이션하고, 편집 페이지에서 사용할 쿼리 파라미터를 로그에 남깁니다.
+            setModalMessage(`리뷰 수정 페이지로 이동을 시뮬레이션합니다.\n\n편집 URL 쿼리:\n${url}`);
+            setIsConfirmModal(false);
+            setIsModalOpen(true);
+        }
+    };
+
+    /**
+     * 🧩 [구현] 리뷰 삭제 핸들러: Local Storage에서 삭제
+     */
+    const handleDelete = (reviewId) => {
+        const deleteAction = () => {
+            if (typeof window !== 'undefined') {
+                try {
+                    const existingReviews = JSON.parse(localStorage.getItem("myReviews") || '[]');
+                    
+                    // 해당 ID를 제외한 새로운 배열 생성
+                    const updatedReviews = existingReviews.filter(review => review.id !== reviewId);
+
+                    // Local Storage 업데이트
+                    localStorage.setItem("myReviews", JSON.stringify(updatedReviews));
+
+                    // 화면 상태 업데이트
+                    setMyReviews(updatedReviews);
+                    
+                    // 성공 모달 표시
+                    setModalMessage('리뷰가 성공적으로 삭제되었습니다.');
+                    setIsConfirmModal(false);
+                    setIsModalOpen(true);
+
+                } catch (e) {
+                    console.error("리뷰 삭제 중 오류 발생:", e);
+                    setModalMessage('리뷰 삭제 중 오류가 발생했습니다.');
+                    setIsConfirmModal(false);
+                    setIsModalOpen(true);
+                }
+            }
+        };
+
+        // 삭제 확인 모달 띄우기
+        setModalMessage('정말로 이 리뷰를 삭제하시겠습니까?');
+        setModalAction(() => deleteAction);
+        setIsConfirmModal(true);
+        setIsModalOpen(true);
+    };
+
 
     const handleBack = () => {
         if (typeof window !== 'undefined') {
             window.history.back();
         }
+    };
+    
+    // 모달 닫기
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        setModalAction(null);
+        setIsConfirmModal(false);
     };
 
     const backButtonStyle = {
@@ -146,7 +357,7 @@ export default function MyReviewsPage() {
                     <h1 style={styles.title}>
                         🎬 내가 작성한 리뷰 <span style={styles.reviewCount}>({reviews.length})</span>
                     </h1>
-                    <button 
+                    <button
                         style={backButtonStyle}
                         onClick={handleBack}
                         onMouseEnter={() => setIsBackHovered(true)}
@@ -158,21 +369,37 @@ export default function MyReviewsPage() {
 
                 {/* 리뷰 목록 렌더링 */}
                 <div style={styles.reviewList}>
-                    {reviews.length > 0 ? (
+                    {reviews && reviews.length > 0 ? (
                         reviews.map(review => (
-                            <ReviewItem key={review.id} review={review} />
+                            <ReviewItem 
+                                key={review.id} 
+                                review={review} 
+                                onEdit={handleEdit} // 수정 핸들러 전달
+                                onDelete={handleDelete} // 삭제 핸들러 전달
+                            />
                         ))
                     ) : (
                         <p style={styles.noReviewText}>아직 작성된 리뷰가 없습니다. 📝</p>
                     )}
                 </div>
             </div>
+            
+            {/* 🧩 [추가] Custom Modal 컴포넌트 */}
+            <CustomModal
+                isOpen={isModalOpen}
+                message={modalMessage}
+                onClose={handleModalClose}
+                onConfirm={modalAction}
+                showConfirm={isConfirmModal}
+                confirmText={isConfirmModal ? '삭제' : '확인'}
+                cancelText={isConfirmModal ? '취소' : '닫기'}
+            />
         </div>
     );
 }
 
 // =========================================================================
-// 🎨 스타일 정의
+// 🎨 스타일 정의 (기존 스타일 유지)
 // =========================================================================
 
 const styles = {
@@ -191,7 +418,7 @@ const styles = {
         margin: '0 auto',
         padding: '0 20px',
     },
-    
+
     // 3. 헤더 및 제목
     header: {
         display: 'flex',
@@ -238,7 +465,7 @@ const styles = {
         flexDirection: 'column',
         gap: '24px',
     },
-    
+
     // 5. 개별 리뷰 아이템
     reviewItem: {
         background: 'rgba(255, 255, 255, 0.05)',
