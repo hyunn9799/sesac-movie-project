@@ -28,16 +28,12 @@ export default function ReviewButton({ movieId, movieTitle, styles }) {
 
   return (
     <>
-      {user ? (
+      {user && (
         <Link
           href={`/review/write?movieId=${movieId}&movieTitle=${movieTitle}`}
         >
           <button style={styles.reviewButton}>작성하기</button>
         </Link>
-      ) : (
-        <button style={styles.reviewButton} onClick={handleReviewClick}>
-          작성하기
-        </button>
       )}
 
       {/* Popup Modal */}
