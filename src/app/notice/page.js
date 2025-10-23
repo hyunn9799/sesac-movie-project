@@ -37,6 +37,7 @@ export default function NoticePage() {
         setNotices(initialNotices);
         localStorage.setItem("notices", JSON.stringify(initialNotices));
       }
+
     } catch (error) {
       console.error("공지사항 불러오기 실패:", error);
       setNotices(initialNotices);
@@ -307,7 +308,7 @@ const styles = {
   footerBtns: {
     display: "flex",
     justifyContent: "center",
-    gap: spacing.md,
+    gap: "150px",
     flexWrap: "wrap",
   },
   footerButton: {

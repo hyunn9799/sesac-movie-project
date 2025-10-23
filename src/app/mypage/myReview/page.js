@@ -181,10 +181,11 @@ const ReviewItem = ({ review, onEdit, onDelete }) => {
     const [isEditHovered, setIsEditHovered] = useState(false);
     const [isDeleteHovered, setIsDeleteHovered] = useState(false);
     const [isCardHovered, setIsCardHovered] = useState(false);
+    const [isEdit,setIsEdit] = useState(true)
 
     const id = review.movieId;
-
     const movieTitle = review.movieTitle;
+    const reviewId = review.id;
 
     const editButtonStyle = {
         ...styles.actionButton,
@@ -208,7 +209,7 @@ const ReviewItem = ({ review, onEdit, onDelete }) => {
             <div style={styles.reviewHeader}>
                 <div style={styles.reviewTitleBox}>
                     <h3 style={styles.movieTitle}>{review.movieTitle}</h3>
-                    {/* <RatingDisplay rating={review.rating} /> */}
+                    <RatingDisplay rating={review.rating} />
                 </div>
                 <p style={styles.reviewDate}>작성일: {review.date}</p>
             </div>
@@ -221,9 +222,9 @@ const ReviewItem = ({ review, onEdit, onDelete }) => {
                     style={editButtonStyle}
                     onMouseEnter={() => setIsEditHovered(true)}
                     onMouseLeave={() => setIsEditHovered(false)}
-                    onClick={() => onEdit(review)}
+                    // onClick={() => onEdit(review)}
                 >
-                    <Link href={`/review/write?movieId=${id}&movieTitle=${movieTitle}`} style={{textDecoration:'none',color:'white'}}>✏️ 리뷰 수정</Link>
+                    <Link href={`/review/edit?movieId=${id}&movieTitle=${movieTitle}&reviewId=${reviewId}`} style={{textDecoration:'none',color:'white'}}>✏️ 리뷰 수정</Link>
                     
                 </button>
                 
@@ -278,19 +279,19 @@ export default function MyReviewsPage() {
     /**
      * 🧩 [구현] 리뷰 수정 핸들러: ReviewWritePage로 이동
      */
-    const handleEdit = (review) => {
-        if (typeof window !== 'undefined') {
-            // Next.js Link의 기능을 모방하여 페이지 이동 (Canvas 환경을 위해 window.location 사용)
-            const url = `/review/write?movieId=${review.movieId}&movieTitle=${review.movieTitle}&reviewId=${review.id}&content=${encodeURIComponent(review.content)}`;
-            console.log(`[EDIT] Navigating to: ${url}`);
-            // window.location.href = url; // 실제 Next.js 환경에서는 라우터 사용
+    // const handleEdit = (review) => {
+    //     if (typeof window !== 'undefined') {
+    //         // Next.js Link의 기능을 모방하여 페이지 이동 (Canvas 환경을 위해 window.location 사용)
+    //         const url = `/review/write?movieId=${review.movieId}&movieTitle=${review.movieTitle}&reviewId=${review.id}&content=${encodeURIComponent(review.content)}`;
+    //         console.log(`[EDIT] Navigating to: ${url}`);
+    //         // window.location.href = url; // 실제 Next.js 환경에서는 라우터 사용
             
-            // Canvas 환경에서 페이지 이동을 시뮬레이션하고, 편집 페이지에서 사용할 쿼리 파라미터를 로그에 남깁니다.
-            setModalMessage(`리뷰 수정 페이지로 이동을 시뮬레이션합니다.\n\n편집 URL 쿼리:\n${url}`);
-            setIsConfirmModal(false);
-            setIsModalOpen(true);
-        }
-    };
+    //         // Canvas 환경에서 페이지 이동을 시뮬레이션하고, 편집 페이지에서 사용할 쿼리 파라미터를 로그에 남깁니다.
+    //         setModalMessage(`리뷰 수정 페이지로 이동을 시뮬레이션합니다.\n\n편집 URL 쿼리:\n${url}`);
+    //         setIsConfirmModal(false);
+    //         setIsModalOpen(true);
+    //     }
+    // };
 
     /**
      * 🧩 [구현] 리뷰 삭제 핸들러: Local Storage에서 삭제
@@ -355,7 +356,7 @@ export default function MyReviewsPage() {
             <div style={styles.contentContainer}>
                 <div style={styles.header}>
                     <h1 style={styles.title}>
-                        🎬 내가 작성한 리뷰 <span style={styles.reviewCount}>({reviews.length})</span>
+                        🎬 내가 작성한 리뷰 <span style={styles.reviewCount}>({reviews?.length})</span>
                     </h1>
                     <button
                         style={backButtonStyle}
@@ -369,12 +370,12 @@ export default function MyReviewsPage() {
 
                 {/* 리뷰 목록 렌더링 */}
                 <div style={styles.reviewList}>
-                    {reviews && reviews.length > 0 ? (
+                    {reviews && reviews?.length > 0 ? (
                         reviews.map(review => (
                             <ReviewItem 
                                 key={review.id} 
                                 review={review} 
-                                onEdit={handleEdit} // 수정 핸들러 전달
+                                // onEdit={handleEdit} // 수정 핸들러 전달
                                 onDelete={handleDelete} // 삭제 핸들러 전달
                             />
                         ))
