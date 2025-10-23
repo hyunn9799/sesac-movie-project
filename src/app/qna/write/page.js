@@ -15,7 +15,7 @@ export default function WriteQna() {
       return;
     }
 
-    alert("Q&A가 등록되었습니다!");
+    alert("FAQ가 등록되었습니다!");
     router.push("/qna"); // 등록 후 목록으로 이동
   };
 

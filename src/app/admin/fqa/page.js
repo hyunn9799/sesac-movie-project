@@ -8,7 +8,7 @@ import {
   adminStyles,
   mergeStyles,
 } from '@/app/admin/_lib/style/adminTokens';
-import { faqs as initialFaqs } from '@/lib/data/fqa';
+import { faqs as initialFaqs } from '@/lib/data/faq';
 
 export default function AdminFqa() {
   const [faqs, setFaqs] = useState([]);
