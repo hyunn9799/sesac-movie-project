@@ -1,4 +1,3 @@
-/* 전체 배경 */
 .container {
   background-color: #111;
   min-height: 100vh;
@@ -8,28 +7,26 @@
   font-family: "Noto Sans KR", sans-serif;
 }
 
-/* 흰색 카드 영역 */
-.qnaBox {
-  background: #fff;
-  color: #000;
+.faqBox {
+  background: #1b1b1b;
+  color: #fff;
   width: 90%;
-  max-width: 900px;
+  max-width: 1200px;
   border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   padding: 30px 40px;
 }
 
-/* 제목 */
 .title {
   font-size: 1.8rem;
   margin-bottom: 10px;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid #e50914;
   padding-bottom: 8px;
+  font-weight: 700;
 }
 
-/* 부제 */
 .subtitle {
-  color: #555;
+  color: #ccc;
   margin-bottom: 20px;
   font-size: 0.95rem;
 }
@@ -43,107 +40,79 @@
 }
 
 .searchBox input {
-  padding: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #2a2a2a;
+  color: #fff;
   width: 250px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  background: #f8f8f8;
-  color: #000;
 }
 
 .searchBox button {
-  background: #0066ff;
-  color: white;
+  background-color: #e50914;
   border: none;
+  color: #fff;
   padding: 8px 16px;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
-.searchBox button:hover {
-  background-color: #0050cc;
-}
-
-
-/* 공지사항 테이블 */
+/* 테이블 */
 .table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
-  color: #000;
-  border-radius: 10px; /* ✅ 둥근 모서리 */
-  overflow: hidden; /* ✅ 둥근 모서리 안쪽 잘림 방지 */
-  border: 1px solid #ddd; /* ✅ 외곽선 */
+  color: #fff;
 }
 
-/* ✅ 중앙 정렬 */
-/* 공지사항 테이블 */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  color: #000;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid #ddd;
-}
-
-/* 전체 중앙 정렬 */
 .table th,
 .table td {
-  padding: 12px;
+  border-bottom: 1px solid #333;
   text-align: center;
-  border-bottom: 1px solid #ccc;
-  vertical-align: middle;
+  padding: 12px;
 }
 
-/* ✅ 제목(두 번째 열)만 왼쪽 정렬 */
-.table td:nth-child(2) {
-  text-align: left;
-  padding-left: 20px;
+.table th {
+  background-color: #222;
+  font-weight: 600;
 }
 
-/* 제목 아래 본문(드롭다운 내용) */
-.dropdownRow td {
-  background: #fafafa;
-  padding: 15px 30px;
-  color: #333;
-  border-top: 1px solid #ddd;
-  text-align: left;
-  line-height: 1.6;
+.table tr:hover {
+  background-color: #2f2f2f;
 }
 
-
-.row {
-  cursor: pointer;
-  transition: background 0.2s ease;
+.noData {
+  text-align: center;
+  color: #aaa;
+  padding: 20px;
 }
 
-.row:hover {
-  background: #f3f3f3;
+/* 하단 영역 */
+.footerBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+  gap: 15px;
 }
 
-/* ✅ 페이지네이션 중앙 정렬 */
 .pagination {
   display: flex;
-  justify-content: center; /* 🔹가운데 정렬 */
-  align-items: center;
-  gap: 8px; 
-  margin-top: 50px;
-  margin-bottom: 50px;
+  justify-content: center;
+  gap: 6px;
 }
 
 .pagination button {
-  background: #f3f3f3;
-  border: 1px solid #ccc;
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
   border-radius: 6px;
-  padding: 6px 12px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.3s;
 }
 
 .pagination button:hover:not(:disabled) {
-  background: #ddd;
+  background: #e50914;
 }
 
 .pagination button:disabled {
@@ -151,38 +120,27 @@
   cursor: not-allowed;
 }
 
+.pagination .active {
+  background: #e50914;
+}
 
-/* 하단 버튼 */
-
-.footerBtns {
+.bottomButtons {
   display: flex;
-  justify-content: flex-end;
-  color: white;
-  gap: 50px;
+  justify-content: center;
+  gap: 10px;
 }
 
-.footerBtns button {
-  background-color: #0066ff;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  padding: 8px 30px;
-  color: white;
-  box-shadow: 0 2px 4px rgba(253, 252, 252, 0.1);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: white;
-}
-
-.footerBtns button:hover {
-  background-color: #0050cc;
-}
-
-.activePage {
-  background: #0066ff;
-  color: rgb(0, 0, 0);
-  font-weight: bold;
-  border: 1px solid #0066ff;
+.btn {
+  background: transparent;
+  color: #aaa;
+  border: 1px solid #555;
+  padding: 8px 14px;
   border-radius: 6px;
-  padding: 6px 12px;
-  box-shadow: 0 0 6px rgba(0, 102, 255, 0.6);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  border-color: #e50914;
+  color: #fff;
 }

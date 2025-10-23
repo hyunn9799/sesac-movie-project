@@ -1,62 +1,35 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // ✅ 페이지 이동용
+
+import React, { useState, useEffect } from "react";
 import styles from "./qna.module.css";
-import { initialQna } from "@/lib/data/qna";
+import { faqs as initialFaqs } from "@/lib/data/fqa"; // 초기 데이터 (백업용)
 
-export default function QnaPage() {
-  const router = useRouter(); // ✅ 라우터 사용 선언
+export default function FqaPage() {
+  const [faqs, setFaqs] = useState([]); // 전체 FAQ
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const [qnaList] = useState(initialQna);
-  const [openId, setOpenId] = useState(null);
-  const [search, setSearch] = useState("");
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const qnaPerPage = 10;
-  const totalPages = Math.ceil(qnaList.length / qnaPerPage);
-
-  const filteredQna = qnaList.filter(
-    (qna) =>
-      qna.title.toLowerCase().includes(search.toLowerCase()) ||
-      qna.content.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const startIndex = (currentPage - 1) * qnaPerPage;
-  const endIndex = startIndex + qnaPerPage;
-  const currentQnaList = filteredQna.slice(startIndex, endIndex);
-
-  const goToPage = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      setOpenId(null);
+  // ✅ localStorage에서 데이터 불러오기
+  useEffect(() => {
+    const saved = localStorage.getItem("faqs");
+    if (saved) {
+      setFaqs(JSON.parse(saved));
+    } else {
+      // localStorage에 없으면 기본값 저장
+      const withIds = initialFaqs.map((f, i) => ({ ...f, id: i + 1 }));
+      localStorage.setItem("faqs", JSON.stringify(withIds));
+      setFaqs(withIds);
     }
-  };
+  }, []);
 
-  const toggleQna = (id) => setOpenId(openId === id ? null : id);
-
-  const highlightText = (text, keyword) => {
-    if (!keyword) return text;
-    const parts = text.split(new RegExp(`(${keyword})`, "gi"));
-    return parts.map((part, i) =>
-      part.toLowerCase() === keyword.toLowerCase() ? (
-        <mark key={i} className={styles.highlight}>
-          {part}
-        </mark>
-      ) : (
-        part
-      )
-    );
-  };
-
-  // ✅ 등록 버튼 클릭 시 이동
-  const goToRegister = () => {
-    router.push("/qna/write"); // ✅ /qna/write 페이지로 이동
-  };
+  // ✅ 검색 기능
+  const filteredFaqs = faqs.filter((item) =>
+    item.question.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className={styles.container}>
-      <div className={styles.qnaBox}>
-        <h2 className={styles.title}>Q&amp;A</h2>
+      <div className={styles.faqBox}>
+        <h2 className={styles.title}>FAQ</h2>
         <p className={styles.subtitle}>
           <em>MovieHub</em> 이용 시 궁금한 점을 확인할 수 있습니다.
         </p>
@@ -65,82 +38,54 @@ export default function QnaPage() {
         <div className={styles.searchBox}>
           <input
             type="text"
-            placeholder="🔍 검색어를 입력하세요"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            placeholder="검색어를 입력하세요"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <button>검색</button>
         </div>
 
-        {search && (
-          <p className={styles.searchResult}>
-            🔎 검색어: <strong>{search}</strong>
-          </p>
-        )}
-
-        {/* QnA 테이블 */}
+        {/* FAQ 테이블 */}
         <table className={styles.table}>
           <thead>
             <tr>
               <th>번호</th>
               <th>제목</th>
-              <th>작성일자</th>
-              <th>조회수</th>
+              <th>내용</th>
             </tr>
           </thead>
           <tbody>
-            {currentQnaList.map((qna) => (
-              <React.Fragment key={qna.id}>
-                <tr className={styles.row} onClick={() => toggleQna(qna.id)}>
-                  <td>{qna.id}</td>
-                  <td>{highlightText(qna.title, search)}</td>
-                  <td>{qna.date}</td>
-                  <td>{qna.views}</td>
+            {filteredFaqs.length > 0 ? (
+              filteredFaqs.map((faq, index) => (
+                <tr key={faq.id || index}>
+                  <td>{index + 1}</td>
+                  <td>{faq.question}</td>
+                  <td>{faq.answer}</td>
                 </tr>
-                {openId === qna.id && (
-                  <tr className={styles.dropdownRow}>
-                    <td colSpan="4">{highlightText(qna.content, search)}</td>
-                  </tr>
-                )}
-              </React.Fragment>
-            ))}
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" className={styles.noData}>
+                  검색 결과가 없습니다.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
 
-        {/* 페이지네이션 */}
-        <div className={styles.pagination}>
-          <button
-            onClick={() => goToPage(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            이전
-          </button>
-
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i + 1}
-              onClick={() => goToPage(i + 1)}
-              className={
-                currentPage === i + 1
-                  ? styles.activePage
-                  : styles.pageButton
-              }
-            >
-              {i + 1}
-            </button>
-          ))}
-
-          <button
-            onClick={() => goToPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            다음
-          </button>
-        </div>
-
-        {/* ✅ 등록 버튼 */}
-        <div className={styles.footerBtns}>
-          <button onClick={goToRegister}>등록</button>
+        {/* 하단 */}
+        <div className={styles.footerBox}>
+          <div className={styles.pagination}>
+            <button disabled>이전</button>
+            <button className={styles.active}>1</button>
+            <button disabled>다음</button>
+          </div>
+          <div className={styles.bottomButtons}>
+            <button className={styles.btn}>검색결과 수집에 대한 정책</button>
+            <button className={styles.btn}>MovieHub 사용문의</button>
+            <button className={styles.btn}>제휴제안</button>
+            <button className={styles.btn}>고객센터</button>
+          </div>
         </div>
       </div>
     </div>
