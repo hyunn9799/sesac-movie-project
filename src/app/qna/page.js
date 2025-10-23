@@ -213,7 +213,7 @@ const styles = {
   footerBtns: {
     display: "flex",
     justifyContent: "center",
-    gap: spacing.md,
+    gap: "150px",
     flexWrap: "wrap",
   },
   footerButton: {
