@@ -23,9 +23,7 @@ export default function Footer() {
               <li>
                 <Link href="/">홈</Link>
               </li>
-              <li>
-                <Link href="/movieinfo">검색</Link>
-              </li>
+              
               <li>
                 <Link href="/mypage">마이페이지</Link>
               </li>

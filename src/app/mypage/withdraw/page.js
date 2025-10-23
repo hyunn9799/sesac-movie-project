@@ -1,5 +1,3 @@
-// src/app/withdraw/page.js
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -70,13 +68,7 @@ export default function WithdrawPage() {
     // 4. 렌더링
     return (
         <div style={styles.container}>
-            <header style={styles.header}>
-                <h1 style={styles.logo}>MovieHub</h1>
-                <div style={styles.headerRight}>
-                    <button style={styles.buttonSecondary} onClick={() => router.push('/')}>메인으로</button>
-                    <button style={styles.buttonPrimary} onClick={() => console.log('로그아웃')}>로그아웃</button>
-                </div>
-            </header>
+            
             
             <div style={styles.content}>
                 <h1 style={styles.title}>탈퇴하기</h1>
@@ -119,7 +111,7 @@ export default function WithdrawPage() {
                         />
                     </div>
                     
-                   
+                    
                     <div style={styles.actions}>
                         <button 
                             type="submit"
@@ -144,11 +136,19 @@ export default function WithdrawPage() {
 
 /* --- 스타일 정의 --- */
 const styles = {
+    // 1. 컨테이너 스타일 (배경 어둡게 및 이미지 경로 유지)
     container: {
-        backgroundColor: '#1c1c1c',
+        // backgroundColor: '#1c1c1c',
         minHeight: '100vh',
         color: 'white',
-        fontFamily: 'Arial, sans-serif'
+        fontFamily: 'Arial, sans-serif',
+        // 💡 배경 화면 추가
+        backgroundImage: `linear-gradient(rgba(0,0,0, 0.6), rgba(0,0,0, 0.6)), url("/black_tunnel.jpg")`,
+        backgroundSize: 'cover', 
+        backgroundPosition: 'center', 
+        backgroundAttachment: 'fixed',
+        // 배경 이미지 위에 Overlay를 씌우는 효과를 위해 background-color를 유지하고,
+        // Content 영역의 배경을 더 어둡게 처리합니다.
     },
     header: {
         display: 'flex',
@@ -168,11 +168,16 @@ const styles = {
         alignItems: 'center',
         gap: '10px',
     },
+    // 2. 콘텐츠 스타일 (폼 영역 배경을 더 어둡게)
     content: {
-        maxWidth: '500px',
+        maxWidth: '650px',
         margin: '0 auto',
-        padding: '40px 20px',
+        padding: '50px',
         textAlign: 'center',
+        // 💡 폼 영역 배경을 더 어둡게 하여 가독성 향상
+        // backgroundColor: 'rgba(15, 15, 15, 0.95)', 
+        borderRadius: '8px',
+        // border: '1px solid black'
     },
     title: {
         fontSize: '36px',
@@ -212,8 +217,9 @@ const styles = {
     formGroup: {
         marginBottom: '10px',
     },
+    // 3. 입력 필드 스타일 (길이 100%로 유지, 이미 되어 있었음)
     input: {
-        width: '100%',
+        width: '100%', // 이미 100%로 설정되어 있습니다.
         padding: '15px',
         backgroundColor: '#2c2c2c',
         border: '1px solid #444',
