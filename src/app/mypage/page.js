@@ -1,11 +1,11 @@
-"use client"; // ⬅️ useState 훅을 사용하므로 클라이언트 컴포넌트로 지정
+"use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
-import SettingItem from './_component/SettingItem';
 import { useRouter } from 'next/navigation';
-import { useGenreStore } from './_component/GenreStoreContext';
+import { useGenreStore } from './_component/GenreStoreContext'; 
 
+// 1. 🎈 ProfileIcon
 const ProfileIcon = () => (
     <div style={styles.profileIcon}>
         🌱
@@ -14,20 +14,23 @@ const ProfileIcon = () => (
 
 const arrayToGenreString = (arr) => arr.join(', ');
 
-// 1. 🚀 호버 이벤트가 적용된 커스텀 버튼 컴포넌트
+// 2. 🎈 HoverButton 컴포넌트
 const HoverButton = ({ onClick, children }) => {
     const [isHovered, setIsHovered] = useState(false);
 
-    // 기존 styles.editButton 기반으로 호버 스타일 추가
     const buttonStyle = {
-        backgroundColor: isHovered ? '#2c2c2c' : 'transparent', // 🚀 호버 시 어두운 배경색
-        color: isHovered ? '#dcdcdc' : '#b69d71', // 🚀 호버 시 밝은 텍스트 색상
-        border: isHovered ? '1px solid #dcdcdc' : '1px solid #b69d71', // 🚀 호버 시 테두리 색상 변경
-        padding: '5px 10px',
+        background: isHovered 
+            ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+            : 'rgba(255, 255, 255, 0.1)',
+        color: 'white',
+        border: isHovered ? 'none' : '1px solid rgba(255, 255, 255, 0.2)',
+        padding: '8px 16px',
         cursor: 'pointer',
-        borderRadius: '4px', // 부드러운 모서리 추가
-        transition: 'all 0.3s ease', // 부드러운 전환 효과
-        fontWeight: 'normal',
+        borderRadius: '20px',
+        transition: 'all 0.3s ease',
+        fontWeight: '600',
+        fontSize: '13px',
+        boxShadow: isHovered ? '0 4px 15px rgba(102, 126, 234, 0.4)' : 'none',
     };
 
     return (
@@ -43,23 +46,29 @@ const HoverButton = ({ onClick, children }) => {
 };
 
 
-// 2. 호버 이벤트가 적용된 회원 탈퇴 버튼 컴포넌트 (이전 요청에서 추가됨)
+// 3. 🎈 WithdrawButton
 const WithdrawButton = ({ onClick }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     const buttonStyle = {
-        padding: '10px 15px',
-        backgroundColor: '#8b0000' , 
-        color:  'white', 
+        padding: '12px 20px',
+        background: isHovered 
+            ? 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)'
+            : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        color: 'white',
         border: 'none',
-        borderRadius: '5px',
+        borderRadius: '25px',
         cursor: 'pointer',
-        fontWeight: 'bold',
+        fontWeight: '600',
         textAlign: 'center',
-        transition: 'background-color 0.3s, color 0.3s',
+        transition: 'all 0.3s ease',
         width: '100%',
         boxSizing: 'border-box',
-        fontSize: '16px',
+        fontSize: '14px',
+        boxShadow: isHovered 
+            ? '0 6px 20px rgba(245, 87, 108, 0.5)'
+            : '0 4px 15px rgba(245, 87, 108, 0.3)',
+        transform: isHovered ? 'translateY(-2px)' : 'none',
     };
 
     return (
@@ -77,13 +86,19 @@ const WithdrawButton = ({ onClick }) => {
 };
 
 
-// 3. 마이페이지 컴포넌트 (메인 로직)
+// 4. 마이페이지 컴포넌트 (메인 로직)
 export default function MyPage() {
+
+    const [user,setUser] = useState();
+
+    useEffect(()=>{
+        const data = localStorage.getItem("loggedInUser")
+    },[])
 
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
     const { favGenres, unfavGenres } = useGenreStore();
+    
     const router = useRouter();
-
 
     const userData = {
         email: "sesac1234@gmail.com",
@@ -95,9 +110,64 @@ export default function MyPage() {
     }
     
     const openWithdrawModal = () => {
-        // 실제로는 setIsWithdrawModalOpen(true); 또는 router.push('/mypage/withdraw')
         router.push('/mypage/withdraw'); 
     }
+    
+    // SettingItem 임시 Mock 컴포넌트
+    const SettingItem = ({ label, value, isLink = false, linkText = '', routePath, customAction }) => {
+        const [isHovered, setIsHovered] = useState(false);
+        
+        const itemStyles = {
+            ...settingItemStyles.settingItem,
+            padding: '16px 20px',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+            transition: 'all 0.2s ease',
+            backgroundColor: isHovered ? 'rgba(255, 255, 255, 0.03)' : 'transparent',
+        };
+        const labelStyle = { 
+            ...settingItemStyles.settingLabel, 
+            fontSize: '14px',
+            fontWeight: '500',
+            color: 'rgba(255, 255, 255, 0.7)',
+        };
+        const valueStyle = { 
+            ...settingItemStyles.settingValue, 
+            fontSize: '14px',
+            fontWeight: '600',
+            color: 'rgba(255, 255, 255, 0.95)',
+        };
+        const linkStyle = { 
+            ...settingItemStyles.linkText, 
+            fontSize: '13px',
+            marginLeft: '12px',
+            color: '#667eea',
+            fontWeight: '600',
+        };
+
+        const handleClick = () => {
+            if (routePath) router.push(routePath);
+            else if (customAction) customAction();
+        };
+
+        return (
+            <div 
+                style={itemStyles}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                <div style={labelStyle}>{label}</div>
+                <div style={valueStyle}>
+                    {value}
+                    {isLink && (
+                        <span style={linkStyle} onClick={routePath || customAction ? handleClick : undefined}>
+                            {linkText}
+                        </span>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
 
     return (
 
@@ -110,7 +180,6 @@ export default function MyPage() {
                     <div style={styles.content}>
                         <div style={styles.profileHeader}>
                             <h2 style={styles.title}>내 프로필</h2>
-                            {/* 🚀 HoverButton 적용 */}
                             <HoverButton onClick={handleProfileEdit}>
                                 ✏️ 프로필 수정
                             </HoverButton>
@@ -119,7 +188,7 @@ export default function MyPage() {
                         <ProfileIcon />
 
                         {/* 계정 Section */}
-                        <h3 style={{ fontSize: '18px' }}>계정</h3>
+                        <h3 style={styles.sectionTitle}>계정</h3>
                         <div style={styles.sectionBox}>
                             <SettingItem label="이메일" value={userData.email} />
                             <SettingItem
@@ -132,9 +201,8 @@ export default function MyPage() {
                         </div>
 
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h3 style={{ fontSize: '18px' }}>장르</h3>
-                            {/* 🚀 HoverButton 적용 */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px' }}>
+                            <h3 style={styles.sectionTitle}>장르</h3>
                             <HoverButton onClick={handleProfileEdit}>
                                 ✏️ 장르 수정
                             </HoverButton>
@@ -154,13 +222,13 @@ export default function MyPage() {
 
 
                         {/* 리뷰 관리 Section */}
-                        <h3 style={{ fontSize: '18px' }} >리뷰 관리 / 작성한 리뷰 : {userData.reviewCount}개</h3>
+                        <h3 style={styles.sectionTitle}>리뷰 관리 / 작성한 리뷰 : {userData.reviewCount}개</h3>
                         <div style={styles.sectionBox}>
-                            <SettingItem label="작성한 리뷰" value={`${userData.reviewCount}개`} isLink={true} linkText="보기" routePath="/mypage/reviews" />
+                            <SettingItem label="작성한 리뷰" value={`${userData.reviewCount}개`} isLink={true} linkText="보기" routePath="/mypage/myReview" />
                         </div>
 
                         {/* 회원 탈퇴 Section */}
-                        <h3 style={{ fontSize: '18px' }}>회원 탈퇴</h3>
+                        <h3 style={styles.sectionTitle}>회원 탈퇴</h3>
                         <div style={styles.sectionBox}>
                             <WithdrawButton onClick={openWithdrawModal} />
                         </div>
@@ -173,135 +241,116 @@ export default function MyPage() {
     );
 }
 
-// 4. 인라인 스타일 정의 (MyPage 전용)
+// 5. 🎈 인라인 스타일 정의 (MyPage 전용)
 const containerStyle = {
     minHeight: "100vh",
-    backgroundColor: "#1c1c1c", 
+    background: "linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)",
     color: "white",
     display: "flex",
     justifyContent: "center",
     padding: '0px',
     margin: '0px',
-    position: 'relative', 
-
-    // 🚀 배경 이미지 스타일
-    backgroundImage: `url('/modernTimes.jpg')`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundAttachment: 'fixed',
+    position: 'relative',
 };
 
-// ❗ 배경 이미지를 더 어둡게 만드는 오버레이 스타일
+// 6. 🎈 오버레이 스타일 
 const overlayStyle = {
     position: 'absolute',
     top: 0,
     left: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', 
-    zIndex: 1, 
+    background: 'radial-gradient(circle at top right, rgba(102, 126, 234, 0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(118, 75, 162, 0.1), transparent 50%)',
+    zIndex: 1,
 };
 
 const styles = {
     contentBox: {
         zIndex: 2,
-        width: '100%', 
-    },
-    container: { 
-        backgroundColor: '#1c1c1c',
-        minHeight: '100vh',
-        color: 'white',
-        fontFamily: 'Arial, sans-serif',
+        width: '100%',
     },
     content: {
-        width: 'calc(100% - 40px)', 
-        maxWidth: '800px', 
-        margin: '0 auto', 
-        padding: '40px 20px',
-
-        borderRadius: '8px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '40px 50px',
+        borderRadius: '20px',
         marginTop: '50px',
         marginBottom: '50px',
         maxWidth: '650px',
-
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
-        border: '1px solid black'
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(20px)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
     },
     profileHeader: {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: '10px'
+        marginBottom: '20px',
+        paddingBottom: '20px',
+        borderBottom: '2px solid rgba(255, 255, 255, 0.1)',
     },
     title: {
-        fontSize: '25px',
-        margin: '0'
+        fontSize: '28px',
+        margin: '0',
+        fontWeight: '700',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
     },
-    // ❗ editButton 스타일은 HoverButton으로 대체되었으므로 주석 처리하거나 제거
-    // editButton: { 
-    //     backgroundColor: 'transparent',
-    //     color: '#b69d71',
-    //     border: '1px solid #b69d71',
-    //     padding: '5px 10px',
-    //     cursor: 'pointer'
-    // },
+    sectionTitle: {
+        fontSize: '16px',
+        marginTop: '30px',
+        marginBottom: '12px',
+        fontWeight: '600',
+        color: 'rgba(255, 255, 255, 0.9)',
+    },
     sectionBox: {
-        borderRadius: '5px',
+        borderRadius: '16px',
         overflow: 'hidden',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        background: 'rgba(255, 255, 255, 0.03)',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
     },
     profileIcon: {
-        width: '100px',
-        height: '100px',
+        width: '90px',
+        height: '90px',
         borderRadius: '50%',
-        backgroundColor: '#444',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         fontSize: '40px',
         color: 'white',
-        border: '1px solid #777',
-        margin: '20px 0'
+        border: '3px solid rgba(255, 255, 255, 0.2)',
+        margin: '20px 0',
+        boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)',
     },
-    sectionItem: { 
+    sectionItem: {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '15px 0',
-        borderBottom: '1px solid #333',
+        padding: '16px 0',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
     }
 };
 
-const modalStyles = {
-    // 모달 스타일은 변경 없음
-    backdrop: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0,0,0,0.8)',
+// 7. SettingItem에 사용될 스타일
+const settingItemStyles = {
+    settingItem: {
         display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000
+        justifyContent: 'space-between',
     },
-    content: {
-        backgroundColor: '#1c1c1c',
-        padding: '30px',
-        borderRadius: '8px',
-        maxWidth: '400px',
-        width: '90%',
-        boxShadow: '0 5px 15px rgba(0,0,0,0.5)',
-        border: '1px solid #444'
-    },
-    closeButton: {
-        marginTop: '20px',
-        padding: '8px 15px',
-        cursor: 'pointer',
-        backgroundColor: '#333',
+    settingLabel: {
         color: 'white',
-        border: 'none',
-        borderRadius: '4px'
+    },
+    settingValue: {
+        color: 'white',
+        position: 'relative',
+    },
+    linkText: {
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
     }
 };
