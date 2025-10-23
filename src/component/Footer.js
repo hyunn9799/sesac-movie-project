@@ -53,7 +53,7 @@ export default function Footer() {
                   <Link href="/notice">공지사항</Link>
                 </li>
                   <li>
-                  <Link href="/qna">문의하기</Link>
+                  <Link href="/qna">FAQ</Link>
                 </li>
                 
               </ul>
@@ -77,7 +77,7 @@ export default function Footer() {
                     href="#" 
                     onClick={(e) => { e.preventDefault(); openUseModal(); }}
                   >
-                    자주묻는 질문
+                    사이트 이용 약관
                   </a>
                 </li>
               </ul>

@@ -1,3 +1,5 @@
+// src/lib/data/fqa.js
+
 export const faqs = [
   {
     question: '영화 리뷰는 어떻게 작성하나요?',
