@@ -3,8 +3,13 @@ import styles from './Header.module.css';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/app/auth/AuthContext';
 
 export default function Header() {
+
+  const {user} = useAuth();
+  console.log('user',user)
+
   const [query, setQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
@@ -63,12 +68,12 @@ export default function Header() {
 
   useEffect(() => {
     try {
-      const user = JSON.parse(localStorage.getItem('loggedInUser'));
-      setLoggedInUser(user);
+      const userData = JSON.parse(localStorage.getItem('loggedInUser'));
+      setLoggedInUser(userData);
     } catch {
       setLoggedInUser(null);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
@@ -500,7 +505,7 @@ export default function Header() {
             {loggedInUser ? (
               <>
                 <span className={styles.welcomeText}>
-                  {loggedInUser.name}님 환영합니다
+                  {user.name}님 환영합니다
                 </span>
                 <button
                   onClick={handleLogout}

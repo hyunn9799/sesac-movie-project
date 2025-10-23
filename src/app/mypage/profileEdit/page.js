@@ -1,11 +1,13 @@
-// src/app/mypage/profile-edit/
+// src/app/mypage/profile-edit/ProfileEditPage.js
 
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-// ❗ useGenreStore 경로를 프로젝트 구조에 맞게 수정해주세요.
-import { useGenreStore } from '../_component/GenreStoreContext'; 
+
+// 🚀 프로젝트 구조에 맞게 경로를 수정했습니다.
+import { useGenreStore } from '../_component/GenreStoreContext';
+import { useAuth } from '@/app/auth/AuthContext';
 
 // 장르 목록 및 상수
 const ALL_GENRES = [
@@ -15,6 +17,7 @@ const ALL_GENRES = [
 const MAX_LENGTH = 6;
 const MIN_LENGTH = 2;
 const MAX_GENRE_SELECTION = 3;
+
 
 // 💡 useOutsideClick 훅 (내부 정의)
 function useOutsideClick(refs, handler) {
@@ -34,12 +37,22 @@ function useOutsideClick(refs, handler) {
 
 
 export default function ProfileEditPage() {
+
+    const {user,updateUser} = useAuth();
+    const [name, setName] = useState(user?.name);
+
+    // useEffect(() => {
+    //     const data = JSON.parse(localStorage.getItem("loggedInUser"));
+    //     console.log(data)
+    //     setName(data?.name)
+    // }, [])
     const router = useRouter();
 
+    // 🚀 실제 useGenreStore Hook 사용
     const { favGenres: initialFav, unfavGenres: initialUnfav, updateGenres } = useGenreStore();
 
     // 1. 프로필 상태
-    const [name, setName] = useState("새싹");
+
 
     // 2. 장르 상태
     const [favGenres, setFavGenres] = useState(initialFav); // 초기값 설정
@@ -64,6 +77,10 @@ export default function ProfileEditPage() {
     const handleNameChange = (e) => {
         setName(e.target.value);
         setNameMessage('');
+
+        
+
+
     };
 
     /* --- 장르 선택 핸들러 --- */
@@ -99,6 +116,14 @@ export default function ProfileEditPage() {
             return;
         }
 
+        const updatedUser = {
+            ...user,
+            name: name,
+        }
+
+        updateUser(updatedUser);
+        
+        
         // 장르 상태 업데이트
         updateGenres(favGenres, unfavGenres);
 
@@ -106,11 +131,13 @@ export default function ProfileEditPage() {
         alert(`프로필 및 장르가 저장되었습니다: 이름(${name}), 선호(${favGenres.join(', ')})`);
 
         // 마이페이지로 이동
-        router.push(`/mypage`);
+        // 🚀 router.push(`/mypage`);
+        window.history.back(); // Next.js 환경이 아니므로 뒤로가기 시뮬레이션
     };
 
     const handleCancel = () => {
-        router.back();
+        // 🚀 router.back();
+        window.history.back(); // Next.js 환경이 아니므로 뒤로가기 시뮬레이션
     };
 
 
@@ -147,11 +174,11 @@ export default function ProfileEditPage() {
                                 <span style={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
                                     {genre}
                                 </span>
-                                
-                                {/* 🚀 변경된 부분: 아이콘 및 텍스트 표시 */}
-                                {isSelected && <span style={{ color: '#ecf0f1', fontSize: '1em', marginLeft: '5px', fontWeight: 'bold' }}>✓</span>}
+
+                                {/* 아이콘 및 텍스트 표시 */}
+                                {isSelected && <span style={{ color: 'white', fontSize: '1em', marginLeft: '5px', fontWeight: 'bold' }}>✓</span>}
                                 {isDisabled && <span style={{ color: '#aaaaaa', fontSize: '12px' }}> (다른 항목에 있음)</span>}
-                                
+
                             </div>
                         );
                     })}
@@ -162,15 +189,12 @@ export default function ProfileEditPage() {
 
     /* --- 메인 렌더링 --- */
     return (
-        // ❗ 1. 가장 바깥 컨테이너에 배경 이미지와 오버레이를 위한 스타일 적용
         <div style={CONTAINER_STYLE}>
-            {/* ❗ 2. 어둡게 만드는 오버레이 레이어 */}
             <div style={OVERLAY_STYLE}></div>
 
-            {/* ❗ 3. 실제 콘텐츠는 z-index를 높여 오버레이 위에 표시 */}
             <div style={styles.container}>
                 <div style={styles.content}>
-                    <h1 style={styles.title}>프로필 수정</h1>
+                    <h1 style={styles.title}>✏️ 프로필 수정</h1>
 
                     {/* 1. 프로필 이름 섹션 */}
                     <div style={styles.profileSection}>
@@ -193,7 +217,7 @@ export default function ProfileEditPage() {
 
                     {/* 2. 장르 선택 섹션 */}
                     <div style={styles.genreSection}>
-                        <h3 style={styles.genreTitle}>장르 설정 (선호/비선호)</h3>
+                        <h3 style={styles.genreTitle}>🎬 장르 설정 (선호/비선호)</h3>
                         {genreMessage && <div style={styles.genreMessage}>{genreMessage}</div>}
 
                         {/* 선호 장르 */}
@@ -240,7 +264,7 @@ export default function ProfileEditPage() {
                             취소
                         </button>
                         <button style={styles.buttonPrimary} onClick={handleSave}>
-                            변경 저장
+                            💾 변경 저장
                         </button>
                     </div>
                 </div>
@@ -249,19 +273,12 @@ export default function ProfileEditPage() {
     );
 }
 
-// 💡 배경 이미지를 위한 최상위 컨테이너 스타일 (새로 추가)
+// 💡 배경 이미지를 위한 최상위 컨테이너 스타일
 const CONTAINER_STYLE = {
     minHeight: '100vh',
-    position: 'relative', // 오버레이의 기준점
-    backgroundColor: '#1c1c1c', // 이미지가 로드되지 않을 때의 색상
-    fontFamily: 'Arial, sans-serif',
-    
-    // 🚀 배경 이미지 설정 (public 폴더의 'movie-edit-bg.jpg'를 가정)
-    backgroundImage: `url('/black_building.jpg')`, 
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundAttachment: 'fixed',
+    position: 'relative',
+    background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
 };
 
 // 💡 배경 이미지를 더 어둡게 만들 오버레이 스타일
@@ -271,65 +288,64 @@ const OVERLAY_STYLE = {
     left: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.65)', // 65% 투명도의 검정색 (더 어둡게 설정)
-    zIndex: 1, // 배경 위에 위치
+    background: 'radial-gradient(circle at top right, rgba(102, 126, 234, 0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(118, 75, 162, 0.1), transparent 50%)',
+    zIndex: 1,
 };
 
 
 // 💡 메인 섹션 스타일
 const styles = {
-    // ❗ 컨테이너 스타일: 오버레이 위에 올라오도록 zIndex 설정
     container: {
         color: 'white',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-start',
         paddingTop: '50px',
+        paddingBottom: '50px',
         width: '100%',
-        zIndex: 2, // ❗ 오버레이 위에 위치
-        position: 'relative', // z-index가 제대로 작동하도록 설정
+        zIndex: 2,
+        position: 'relative',
     },
     content: {
-        maxWidth: '650px', // 너비 확장
+        maxWidth: '650px',
         width: '100%',
-        padding: '20px',
-        textAlign: 'center',
-        
-        // ❗ 내용 영역 배경: 불투명한 배경을 추가하여 가독성 확보
-        // backgroundColor: 'rgba(28, 28, 28, 0.9)', 
-        borderRadius: '12px',
-        boxShadow: '0 8px 16px rgba(0,0,0,0.4)', // 그림자 추가
-        marginBottom: '80px', // 하단 간격 추가
-        border : '1px solid black'
+        padding: '40px 50px',
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '20px',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
     },
     title: {
-        fontSize: '30px',
-        marginBottom: '50px',
-        color: 'white',
+        fontSize: '28px',
+        marginBottom: '30px',
+        fontWeight: '700',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
     },
     profileSection: {
         display: 'flex',
         alignItems: 'flex-start',
-        gap: '40px',
+        gap: '30px',
         textAlign: 'left',
-        padding: '50px',
-        // backgroundColor: '#383838', // 배경이 겹치지 않도록 살짝 밝은 색으로 조정
-        // borderRadius: '8px',
+        padding: '20px 0',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         marginBottom: '30px',
-        // boxShadow: '0 8px 16px rgba(0,0,0,0.4)', // 그림자 추가
-        // border: '1px solid #b69d71'
-        // borderBottom : '1px solid white'
     },
     profileIcon: {
-        width: '80px',
-        height: '80px',
+        width: '90px',
+        height: '90px',
         borderRadius: '50%',
-        backgroundColor: '#444',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: '36px',
+        fontSize: '40px',
         flexShrink: 0,
+        boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)',
+        border: '3px solid rgba(255, 255, 255, 0.2)',
     },
     formGroup: {
         flexGrow: 1,
@@ -337,123 +353,143 @@ const styles = {
     },
     label: {
         display: 'block',
-        color: 'white',
-        marginBottom: '5px',
+        color: 'rgba(255, 255, 255, 0.9)',
+        marginBottom: '8px',
         fontSize: '14px',
+        fontWeight: '600',
     },
     input: {
         width: '100%',
-        padding: '10px',
-        backgroundColor: '#3c3c3c',
-        border: '1px solid #555',
+        padding: '12px 16px',
+        background: 'rgba(255, 255, 255, 0.08)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
         color: 'white',
-        borderRadius: '4px',
+        borderRadius: '12px',
         fontSize: '16px',
+        boxSizing: 'border-box',
+        transition: 'all 0.3s ease',
+        outline: 'none',
     },
     hint: {
         fontSize: '12px',
-        color: 'white',
+        color: 'rgba(255, 255, 255, 0.5)',
         marginTop: '8px',
         marginBottom: '0',
+        fontWeight: '400',
     },
     errorMessage: {
         fontSize: '12px',
-        color: '#e74c3c',
+        color: '#ff6b6b',
         marginTop: '8px',
+        fontWeight: '500',
     },
     actions: {
         display: 'flex',
-        justifyContent: 'center',
-        gap: '15px',
-        marginTop: '50px',
+        justifyContent: 'flex-start',
+        gap: '12px',
+        marginTop: '40px',
+        paddingTop: '30px',
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
     },
     buttonPrimary: {
-        backgroundColor: '#ff6b6b', // 붉은색 강조
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         color: 'white',
         border: 'none',
-        padding: '12px 30px',
-        fontSize: '16px',
+        padding: '12px 32px',
+        fontSize: '15px',
         cursor: 'pointer',
-        borderRadius: '4px',
+        borderRadius: '25px',
+        fontWeight: '600',
+        transition: 'all 0.3s ease',
+        boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
     },
     buttonSecondary: {
-        backgroundColor: '#555',
+        background: 'rgba(255, 255, 255, 0.1)',
         color: 'white',
-        border: 'none',
-        padding: '12px 30px',
-        fontSize: '16px',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        padding: '12px 32px',
+        fontSize: '15px',
         cursor: 'pointer',
-        borderRadius: '4px',
+        borderRadius: '25px',
+        fontWeight: '600',
+        transition: 'all 0.3s ease',
     },
-    // 💡 장르 섹션 스타일
     genreSection: {
-        padding: '30px',
-        // backgroundColor: '#383838', // 배경이 겹치지 않도록 살짝 밝은 색으로 조정
-        borderRadius: '8px',
-        marginBottom: '30px',
+        padding: '0 0 30px 0',
+        marginBottom: '0',
         textAlign: 'left',
-        // border: '1px solid #b69d71',
-        // boxShadow : '0 8px 16px rgba(0, 0, 0, 0.4)',
     },
     genreTitle: {
-        fontSize: '20px',
-        color: 'white',
+        fontSize: '18px',
+        color: 'rgba(255, 255, 255, 0.95)',
         marginBottom: '20px',
-        // borderBottom: '1px solid #b69d71',
-        paddingBottom: '10px',
+        fontWeight: '700',
     },
     genreRow: {
         display: 'flex',
-        alignItems: 'center',
-        padding: '15px 0',
-        borderBottom: '1px solid #3c3c3c',
+        alignItems: 'flex-start',
+        padding: '20px 0',
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
     },
     genreLabel: {
-        width: '100px',
-        color: 'white',
+        width: '120px',
+        color: 'rgba(255, 255, 255, 0.7)',
         flexShrink: 0,
+        paddingTop: '8px',
+        fontSize: '14px',
+        fontWeight: '600',
     },
     genreValueContainer: {
         flexGrow: 1,
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
-        position: 'relative', // 💡 드롭다운의 기준점
+        position: 'relative',
     },
     tagList: {
         display: 'flex',
-        gap: '8px',
+        gap: '10px',
         flexWrap: 'wrap',
+        marginTop: '5px',
     },
     tag: {
-        // backgroundColor: '#b69d71',
         color: 'white',
-        padding: '5px 10px',
-        borderRadius: '3px',
-        fontSize: '14px',
-        border: '1px solid #b69d71'
+        padding: '8px 16px',
+        borderRadius: '20px',
+        fontSize: '13px',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        fontWeight: '600',
+        boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)',
     },
     emptyTag: {
-        color: '#777',
-        fontSize: '14px',
+        color: 'rgba(255, 255, 255, 0.4)',
+        fontSize: '13px',
+        marginTop: '8px',
+        fontStyle: 'italic',
     },
     editButton: {
-        backgroundColor: 'transparent',
+        background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
         color: 'white',
-        border: '1px solid #b69d71',
-        padding: '5px 10px',
+        border: 'none',
+        padding: '8px 18px',
         cursor: 'pointer',
-        borderRadius: '4px',
+        borderRadius: '20px',
         marginLeft: '15px',
         flexShrink: 0,
+        fontSize: '13px',
+        fontWeight: '600',
+        transition: 'all 0.3s ease',
+        boxShadow: '0 4px 12px rgba(245, 87, 108, 0.3)',
     },
     genreMessage: {
-        color: '#e74c3c',
-        backgroundColor: '#3e2e2e',
-        padding: '10px',
-        borderRadius: '4px',
+        color: '#ff6b6b',
+        background: 'rgba(255, 107, 107, 0.1)',
+        padding: '12px 16px',
+        borderRadius: '12px',
         marginBottom: '20px',
-        fontSize: '14px',
+        fontSize: '13px',
+        fontWeight: '500',
+        border: '1px solid rgba(255, 107, 107, 0.3)',
     }
 };
 
@@ -461,45 +497,55 @@ const styles = {
 const dropdownStyles = {
     container: {
         position: 'absolute',
-        top: '100%', // 버튼 아래로 내려오게
+        top: '100%',
         right: '0',
         zIndex: 50,
-        width: '240px', // 드롭다운 너비 확장 (텍스트 수용)
-        marginTop: '10px',
-        padding: '10px',
-        backgroundColor: '#444', 
-        borderRadius: '5px',
-        border: '1px solid #555',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.7)'
+        width: '300px',
+        marginTop: '12px',
+        padding: '16px',
+        background: 'rgba(255, 255, 255, 0.08)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '16px',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)'
     },
     select: {
-        maxHeight: '180px',
+        maxHeight: '240px',
         overflowY: 'auto',
-        backgroundColor: 'transparent',
         padding: '0',
     },
     option: {
-        padding: '8px',
+        padding: '10px 12px',
         cursor: 'pointer',
         fontSize: '14px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderRadius: '3px',
+        borderRadius: '8px',
+        transition: 'all 0.2s ease',
+        marginBottom: '4px',
+        color: 'rgba(255, 255, 255, 0.8)',
     },
     selectedOption: {
-        backgroundColor: '#b69d71', // 짙은 파란색으로 선택됨 강조
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         color: 'white',
+        fontWeight: '600',
+        boxShadow: '0 2px 8px rgba(102, 126, 234, 0.4)',
     },
     disabledOption: {
-        color: '#aaaaaa', // 비활성화된 항목은 밝은 회색으로
-        backgroundColor: '#383838', // 배경도 살짝 다르게
+        color: 'rgba(255, 255, 255, 0.3)',
+        background: 'rgba(255, 255, 255, 0.03)',
         cursor: 'not-allowed',
-        opacity: 0.8,
+        opacity: 0.6,
     },
     message: {
-        color: '#ccc',
+        color: '#667eea',
         fontSize: '12px',
-        marginBottom: '5px'
+        marginBottom: '12px',
+        fontWeight: '600',
+        textAlign: 'center',
+        padding: '8px',
+        background: 'rgba(102, 126, 234, 0.1)',
+        borderRadius: '8px',
     }
 };

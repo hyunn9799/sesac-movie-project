@@ -170,6 +170,7 @@
   box-shadow: 0 2px 4px rgba(253, 252, 252, 0.1);
   cursor: pointer;
   transition: all 0.2s ease;
+  color: white;
 }
 
 .footerBtns button:hover {

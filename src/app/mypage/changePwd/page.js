@@ -1,7 +1,6 @@
-
 'use client'
-// Next.js useRouter 대신 브라우저의 history API를 사용하거나 동작을 시뮬레이션합니다.
 
+import { useAuth } from "@/app/auth/AuthContext";
 import { useEffect, useState } from "react";
 
 // 비밀번호 최소 길이 설정
@@ -23,14 +22,20 @@ export default function ChangePwdPage() {
 
     // 3. 버튼 활성화 상태
     const [isFormValid, setIsFormValid] = useState(false);
+    const [realPwd,setRealPwd] = useState('')
+
+    const {user, updateUser} = useAuth();
+    
 
     /* --- 유효성 검사 및 버튼 활성화 로직 --- */
     useEffect(() => {
         // 메시지 초기화
+        setRealPwd(user?.password)
         setMessage(null);
+        // setCurrentPwd(user?.password);
 
         // 모든 필드가 최소 길이를 만족하는지 확인
-        const isCurrentValid = currentPwd.length >= MIN_PASSWORD_LENGTH;
+        const isCurrentValid = currentPwd?.length >= MIN_PASSWORD_LENGTH;
         const isNewValid = newPwd.length >= MIN_PASSWORD_LENGTH;
 
         // 새 비밀번호와 확인이 일치하고, 길이가 0보다 큰지 확인
@@ -47,8 +52,10 @@ export default function ChangePwdPage() {
         // 실시간 에러 메시지 업데이트
 
         // 기존 비밀번호 에러 메시지
-        if (currentPwd.length > 0 && currentPwd.length < MIN_PASSWORD_LENGTH) {
+        if (currentPwd?.length > 0 && currentPwd?.length < MIN_PASSWORD_LENGTH) {
             setCurrentPwdError(`${MIN_PASSWORD_LENGTH}자리 이상의 비밀번호를 입력해주세요.`);
+        } else if (currentPwd !== realPwd) {
+            setCurrentPwdError('비밀번호가 틀립니다.');
         } else {
             setCurrentPwdError('');
         }
@@ -87,6 +94,13 @@ export default function ChangePwdPage() {
         
         setMessage("비밀번호가 성공적으로 변경되었습니다. (마이페이지로 이동 시뮬레이션)");
         setMessageType('success');
+
+        const updatedUser = {
+            ...user,
+            password : newPwd
+        }
+
+        updateUser(updatedUser)
         
         // 2초 후 페이지 이동 시뮬레이션 (router.push 대체)
         setTimeout(() => {
@@ -102,12 +116,17 @@ export default function ChangePwdPage() {
 
     /* --- 렌더링 --- */
     return (
-        // ❗ 1. 배경 이미지와 오버레이를 포함하는 최상위 컨테이너
         <div style={CONTAINER_STYLE}>
+            <div style={OVERLAY_STYLE}></div>
             
-            {/* ❗ 2. 메시지 표시 영역 (Alert 대체) */}
+            {/* 메시지 표시 영역 (Alert 대체) */}
             {message && (
-                <div style={{...MESSAGE_BOX_STYLE, backgroundColor: messageType === 'error' ? '#e74c3c' : '#2ecc71'}}>
+                <div style={{
+                    ...MESSAGE_BOX_STYLE, 
+                    background: messageType === 'error' 
+                        ? 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)'
+                        : 'linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)'
+                }}>
                     {message}
                     <button 
                         onClick={() => setMessage(null)}
@@ -118,12 +137,12 @@ export default function ChangePwdPage() {
                 </div>
             )}
 
-            {/* ❗ 3. 콘텐츠 중앙 정렬 및 패딩 */}
+            {/* 콘텐츠 중앙 정렬 및 패딩 */}
             <div style={CENTER_CONTENT_STYLE}>
                 <div style={styles.content}>
-                    <h1 style={styles.title}>비밀번호 변경</h1>
+                    <h1 style={styles.title}>🔒 비밀번호 변경</h1>
 
-                    <form onSubmit={handleSubmit} style={styles.form}>
+                    <div style={styles.formWrapper} onSubmit={handleSubmit}>
 
                         {/* 1. 기존 비밀번호 */}
                         <div style={styles.formGroup}>
@@ -171,21 +190,22 @@ export default function ChangePwdPage() {
                         {/* 4. 액션 버튼 */}
                         <div style={styles.actions}>
                             <button
-                                type="submit"
+                                type="button"
                                 style={isFormValid ? styles.buttonPrimary : styles.buttonDisabled}
                                 disabled={!isFormValid}
+                                onClick={handleSubmit}
                             >
-                                저장
+                                💾 저장
                             </button>
                             <button
                                 type="button"
                                 style={styles.buttonBack}
                                 onClick={handleBack}
                             >
-                                뒤로
+                                ← 뒤로
                             </button>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -195,170 +215,194 @@ export default function ChangePwdPage() {
 
 /* --- 고정 스타일 정의 --- */
 
-// 💡 배경 이미지 URL (로컬 이미지 대신 다크 테마 플레이스홀더 사용)
-const BACKGROUND_IMAGE_URL = '/black_lock.jpg';
-
-// 💡 배경 이미지 및 오버레이 스타일 (CONTAINER_STYLE와 OVERLAY_STYLE을 결합)
+// 💡 배경 컨테이너 스타일
 const CONTAINER_STYLE = {
     minHeight: '100vh',
-    display: 'flex', // 자식 요소(콘텐츠)를 중앙에 배치하기 위해 flex 사용
-    justifyContent: 'center', // 가로 중앙 정렬
-    // alignItems: 'center', // 세로 중앙 정렬
-    padding: '50px',
+    display: 'flex', 
+    justifyContent: 'center', 
+    padding: '50px 20px',
     boxSizing: 'border-box',
-    fontFamily: 'Inter, sans-serif',
-    // 배경 이미지 설정
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${BACKGROUND_IMAGE_URL}')`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundAttachment: 'fixed',
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+    position: 'relative',
 };
 
-// 💡 콘텐츠 중앙 정렬 래퍼 스타일 (모바일 반응성을 위해 최대 너비 지정)
+// 💡 오버레이 스타일
+const OVERLAY_STYLE = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    background: 'radial-gradient(circle at top right, rgba(102, 126, 234, 0.1), transparent 50%), radial-gradient(circle at bottom left, rgba(118, 75, 162, 0.1), transparent 50%)',
+    zIndex: 1,
+};
+
+// 💡 콘텐츠 중앙 정렬 래퍼 스타일
 const CENTER_CONTENT_STYLE = {
     width: '100%',
-    maxWidth: '500px',
+    maxWidth: '650px',
     zIndex: 10,
     position: 'relative',
+    height: 'fit-content', 
 };
 
 // 💡 메시지 박스 스타일 (Alert 대체)
 const MESSAGE_BOX_STYLE = {
     position: 'fixed',
-    top: '20px',
+    top: '30px',
     left: '50%',
     transform: 'translateX(-50%)',
-    padding: '15px 30px',
-    borderRadius: '8px',
+    padding: '16px 32px',
+    borderRadius: '25px',
     color: 'white',
     fontSize: '15px',
     fontWeight: '600',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+    boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
     zIndex: 100,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: '20px',
+    backdropFilter: 'blur(10px)',
 };
 
 // 💡 메시지 박스 닫기 버튼 스타일
 const CLOSE_BUTTON_STYLE = {
-    background: 'none',
+    background: 'rgba(255, 255, 255, 0.2)',
     border: 'none',
     color: 'white',
-    fontSize: '20px',
+    fontSize: '24px',
     cursor: 'pointer',
-    padding: '0 5px',
+    padding: '0 8px',
+    borderRadius: '50%',
+    width: '30px',
+    height: '30px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'all 0.2s ease',
 };
 
 /* --- 컴포넌트 내부 스타일 정의 --- */
 const styles = {
-    // ❗ content 스타일 조정: 배경 이미지 위에 콘텐츠 영역이 불투명하게 보이도록 함
     content: {
-        width: '100%',
-        padding: '40px',
+        padding: '50px 50px', 
         textAlign: 'center',
-        // backgroundColor: 'rgba(28, 28, 28, 0.95)', // 더 불투명하게 조정
-        borderRadius: '12px',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
-        border: '1px solid black',
-        maxWidth: '650px'
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '20px', 
+        boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+        border: '1px solid rgba(255, 255, 255, 0.1)', 
     },
     title: {
-        fontSize: '32px',
-        marginBottom: '40px',
+        fontSize: '28px', 
+        marginBottom: '40px', 
         color: 'white',
         fontWeight: '700',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
     },
-    form: {
+    formWrapper: {
         display: 'flex',
         flexDirection: 'column',
-        gap: '15px',
+        gap: '24px', 
         textAlign: 'left',
     },
     formGroup: {
-        marginBottom: '10px',
+        marginBottom: '0', 
     },
     label: {
         display: 'block',
-        color: 'white',
-        marginBottom: '5px',
+        color: 'rgba(255, 255, 255, 0.9)',
+        marginBottom: '10px', 
         fontSize: '14px',
-        // opacity: 0.7,
+        fontWeight: '600',
     },
     labelError: {
-        color: '#e74c3c',
-        opacity: 1,
+        display: 'block',
+        color: '#ff6b6b',
+        marginBottom: '10px',
+        fontSize: '14px',
+        fontWeight: '600',
     },
     input: {
         width: '100%',
-        padding: '14px',
-        backgroundColor: '#3c3c3c',
-        border: '1px solid #555',
+        padding: '14px 18px', 
+        background: 'rgba(255, 255, 255, 0.08)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
         color: 'white',
-        borderRadius: '6px',
+        borderRadius: '12px',
         fontSize: '16px',
-        boxSizing: 'border-box', // 패딩이 너비에 포함되도록 설정
-        transition: 'border-color 0.2s',
+        boxSizing: 'border-box', 
+        transition: 'all 0.3s ease',
+        outline: 'none',
     },
     inputError: {
-        border: '1px solid #e74c3c',
-        backgroundColor: '#3e2e2e',
+        border: '1px solid #ff6b6b',
+        background: 'rgba(255, 107, 107, 0.1)',
     },
     hint: {
         fontSize: '12px',
-        color: '#aaa',
+        color: 'rgba(255, 255, 255, 0.5)',
         marginTop: '8px',
         marginBottom: '0',
+        fontWeight: '400',
     },
     hintError: {
         fontSize: '12px',
-        color: '#e74c3c',
+        color: '#ff6b6b',
         marginTop: '8px',
         marginBottom: '0',
+        fontWeight: '500',
     },
     actions: {
         display: 'flex',
         justifyContent: 'flex-start',
-        gap: '15px',
-        marginTop: '30px',
+        gap: '12px', 
+        marginTop: '40px',
+        paddingTop: '30px',
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
     },
     buttonPrimary: {
-        backgroundColor: '#c0392b',
-        color: 'white',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: 'white', 
         border: 'none',
-        padding: '12px 25px',
-        fontSize: '16px',
+        padding: '14px 32px', 
+        fontSize: '15px',
         cursor: 'pointer',
-        borderRadius: '6px',
-        fontWeight: 'bold',
-        transition: 'background-color 0.2s',
+        borderRadius: '25px',
+        fontWeight: '600',
+        transition: 'all 0.3s ease',
         flexGrow: 1,
-        maxWidth: '150px'
+        maxWidth: '200px',
+        boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
     },
     buttonDisabled: {
-        backgroundColor: '#555',
-        color: '#ccc',
-        border: 'none',
-        padding: '12px 25px',
-        fontSize: '16px',
+        background: 'rgba(255, 255, 255, 0.1)',
+        color: 'rgba(255, 255, 255, 0.4)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        padding: '14px 32px', 
+        fontSize: '15px',
         cursor: 'not-allowed',
-        borderRadius: '6px',
-        fontWeight: 'bold',
+        borderRadius: '25px',
+        fontWeight: '600',
         flexGrow: 1,
-        maxWidth: '150px'
+        maxWidth: '200px',
     },
     buttonBack: {
-        backgroundColor: '#444',
+        background: 'rgba(255, 255, 255, 0.1)',
         color: 'white',
-        border: 'none',
-        padding: '12px 25px',
-        fontSize: '16px',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        padding: '14px 32px', 
+        fontSize: '15px',
         cursor: 'pointer',
-        borderRadius: '6px',
-        transition: 'background-color 0.2s',
+        borderRadius: '25px',
+        transition: 'all 0.3s ease',
         flexGrow: 1,
-        maxWidth: '150px'
+        maxWidth: '200px',
+        fontWeight: '600',
     },
 };
