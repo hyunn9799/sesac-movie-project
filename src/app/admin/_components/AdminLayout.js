@@ -31,7 +31,7 @@ export default function AdminLayout({
   const navItems = [
     { icon: '📊', label: '대시보드', href: '/admin', key: 'dashboard' },
     { icon: '👥', label: '회원 관리', href: '/admin/users', key: 'users' },
-    { icon: '📋', label: '문의 관리', href: '/admin/fqa', key: 'fqa' },
+    { icon: '📋', label: 'FAQ 관리', href: '/admin/fqa', key: 'fqa' },
   ];
 
   const handleLogout = () => {

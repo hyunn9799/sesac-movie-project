@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   colors,
   spacing,
@@ -9,21 +9,21 @@ import {
   borderRadius,
   shadow,
   transition,
-} from "@/lib/style/styles";
-import { faqs as initialFaqs } from "@/lib/data/fqa";
+} from '@/lib/style/styles';
+import { faqs as initialFaqs } from '@/lib/data/fqa';
 
 export default function FqaPage() {
   const [faqs, setFaqs] = useState([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [openId, setOpenId] = useState(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("faqs");
+    const saved = localStorage.getItem('faqs');
     if (saved) {
       setFaqs(JSON.parse(saved));
     } else {
       const withIds = initialFaqs.map((f, i) => ({ ...f, id: i + 1 }));
-      localStorage.setItem("faqs", JSON.stringify(withIds));
+      localStorage.setItem('faqs', JSON.stringify(withIds));
       setFaqs(withIds);
     }
   }, []);
@@ -41,7 +41,8 @@ export default function FqaPage() {
       <div style={styles.noticeBox}>
         <h2 style={styles.title}>FAQ</h2>
         <p style={styles.subtitle}>
-          <em style={{ color: colors.primary }}>MovieHub</em> 이용 시 궁금한 점을 확인할 수 있습니다.
+          <em style={{ color: colors.primary }}>MovieHub</em> 이용 시 궁금한
+          점을 확인할 수 있습니다.
         </p>
 
         {/* 검색창 */}
@@ -77,15 +78,17 @@ export default function FqaPage() {
                   <tr
                     style={{
                       ...styles.tableRow,
-                      cursor: "pointer",
+                      cursor: 'pointer',
                       backgroundColor:
-                        openId === faq.id ? colors.darkGray : "transparent",
+                        openId === faq.id ? colors.darkGray : 'transparent',
                     }}
                     onClick={() => toggleFaq(faq.id)}
                   >
-                    <td style={styles.tableCell}>{faq.id}</td>
                     <td style={styles.tableCell}>
-                      <em style={{ color: colors.primary }}>MovieHub</em>{" "}
+                      {filteredFaqs.indexOf(faq) + 1}
+                    </td>
+                    <td style={styles.tableCell}>
+                      <em style={{ color: colors.primary }}>MovieHub</em>{' '}
                       {faq.question}
                     </td>
                   </tr>
@@ -94,7 +97,7 @@ export default function FqaPage() {
                   {openId === faq.id && (
                     <tr>
                       <td colSpan="2" style={styles.detailCell}>
-                        {faq.answer || "내용이 없습니다."}
+                        {faq.answer || '내용이 없습니다.'}
                       </td>
                     </tr>
                   )}
@@ -119,14 +122,14 @@ export default function FqaPage() {
 // ✅ 공지사항 스타일 그대로 복사
 const styles = {
   container: {
-    minHeight: "100vh",
+    minHeight: '100vh',
     backgroundColor: colors.dark,
     padding: spacing.xl,
-    paddingTop: "100px",
+    paddingTop: '100px',
   },
   noticeBox: {
-    maxWidth: "1200px",
-    margin: "0 auto",
+    maxWidth: '1200px',
+    margin: '0 auto',
     backgroundColor: colors.darkGray,
     borderRadius: borderRadius.large,
     padding: spacing.xxl,
@@ -136,20 +139,20 @@ const styles = {
     fontSize: fontSize.hero,
     fontWeight: fontWeight.bold,
     color: colors.white,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: spacing.md,
   },
   subtitle: {
     fontSize: fontSize.large,
     color: colors.textSecondary,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: spacing.xxl,
   },
   searchBox: {
-    display: "flex",
+    display: 'flex',
     gap: spacing.md,
     marginBottom: spacing.xl,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   searchInput: {
     padding: spacing.md,
@@ -158,8 +161,8 @@ const styles = {
     borderRadius: borderRadius.medium,
     backgroundColor: colors.dark,
     color: colors.white,
-    width: "400px",
-    outline: "none",
+    width: '400px',
+    outline: 'none',
   },
   searchButton: {
     padding: `${spacing.sm} ${spacing.xl}`,
@@ -167,14 +170,14 @@ const styles = {
     fontWeight: fontWeight.medium,
     backgroundColor: colors.primary,
     color: colors.white,
-    border: "none",
+    border: 'none',
     borderRadius: borderRadius.medium,
-    cursor: "pointer",
+    cursor: 'pointer',
     transition: transition.normal,
   },
   table: {
-    width: "100%",
-    borderCollapse: "collapse",
+    width: '100%',
+    borderCollapse: 'collapse',
     marginBottom: spacing.xl,
   },
   tableHeader: {
@@ -183,7 +186,7 @@ const styles = {
     color: colors.textSecondary,
     fontSize: fontSize.medium,
     fontWeight: fontWeight.bold,
-    textAlign: "left",
+    textAlign: 'left',
     borderBottom: `2px solid ${colors.mediumGray}`,
   },
   tableRow: {
@@ -202,28 +205,28 @@ const styles = {
     fontSize: fontSize.medium,
     lineHeight: 1.6,
     borderBottom: `1px solid ${colors.mediumGray}`,
-    animation: "fadeIn 0.3s ease-in-out",
+    animation: 'fadeIn 0.3s ease-in-out',
   },
   emptyCell: {
     padding: spacing.xxl,
-    textAlign: "center",
+    textAlign: 'center',
     color: colors.textSecondary,
     fontSize: fontSize.large,
   },
   footerBtns: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "150px",
-    flexWrap: "wrap",
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '150px',
+    flexWrap: 'wrap',
   },
   footerButton: {
     padding: `${spacing.sm} ${spacing.lg}`,
     fontSize: fontSize.medium,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     color: colors.textSecondary,
     border: `1px solid ${colors.mediumGray}`,
     borderRadius: borderRadius.medium,
-    cursor: "pointer",
+    cursor: 'pointer',
     transition: transition.normal,
   },
 };
