@@ -402,7 +402,7 @@ const ReviewItem = ({ review, onEdit, onDelete }) => {
           style={editButtonStyle}
           onMouseEnter={() => setIsEditHovered(true)}
           onMouseLeave={() => setIsEditHovered(false)}
-          onClick={() => onEdit(review)}
+          // onClick={() => onEdit(review)}
         >
           <Link
             href={`/review/edit?movieId=${id}&movieTitle=${movieTitle}&reviewId=${reviewId}`}

@@ -54,8 +54,6 @@ export default function ChangePwdPage() {
         // 기존 비밀번호 에러 메시지
         if (currentPwd?.length > 0 && currentPwd?.length < MIN_PASSWORD_LENGTH) {
             setCurrentPwdError(`${MIN_PASSWORD_LENGTH}자리 이상의 비밀번호를 입력해주세요.`);
-        } else if (currentPwd !== realPwd) {
-            setCurrentPwdError('비밀번호가 틀립니다.');
         } else {
             setCurrentPwdError('');
         }
@@ -89,6 +87,13 @@ export default function ChangePwdPage() {
             return;
         }
 
+        if (currentPwd !== realPwd) {
+        setCurrentPwdError('비밀번호가 틀립니다.'); // 기존 비밀번호 필드 아래 에러 메시지 표시
+        setMessage("기존 비밀번호가 올바르지 않습니다."); // 상단 알림 메시지 표시
+        setMessageType('error');
+        return; // 비밀번호 변경 중단
+    }
+
         // 💡 실제 비밀번호 변경 API 호출 로직 (시뮬레이션)
         console.log("Password change requested. Current:", currentPwd, "New:", newPwd);
         
@@ -105,6 +110,7 @@ export default function ChangePwdPage() {
         // 2초 후 페이지 이동 시뮬레이션 (router.push 대체)
         setTimeout(() => {
             // 이 환경에서는 실제 페이지 이동이 어려우므로, 뒤로 가기 동작을 시뮬레이션합니다.
+          
             window.history.back(); 
         }, 1500);
     };
