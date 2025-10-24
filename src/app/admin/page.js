@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import AdminLayout from "@/app/admin/_components/AdminLayout";
+import { useState, useEffect } from 'react';
+import AdminLayout from '@/app/admin/_components/AdminLayout';
 import {
   adminColors,
   adminSizes,
   adminStyles,
   mergeStyles,
-} from "@/app/admin/_lib/style/adminTokens";
-import { initialMembers } from "@/lib/data/memberData";
-import { initialNotices } from "@/lib/data/notice";
-import { initialReviews } from "@/lib/data/review";
+} from '@/app/admin/_lib/style/adminTokens';
+import { initialMembers } from '@/lib/data/memberData';
+import { initialNotices } from '@/lib/data/notice';
+import { initialReviews } from '@/lib/data/review';
 
 export default function AdminDashboard() {
   const [notices, setNotices] = useState([]);
   const [showAll, setShowAll] = useState(false);
-  const [movieCount, setMovieCount] = useState("로딩중...");
+  const [movieCount, setMovieCount] = useState('로딩중...');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedNotice, setSelectedNotice] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editData, setEditData] = useState({
-    title: "",
-    content: "",
+    title: '',
+    content: '',
     isPinned: false,
     isNew: false,
   });
@@ -29,7 +29,7 @@ export default function AdminDashboard() {
   // 공지사항 불러오기
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("notices");
+      const saved = localStorage.getItem('notices');
       if (saved) {
         const loadedNotices = JSON.parse(saved);
         const sortedNotices = sortNotices(loadedNotices);
@@ -37,10 +37,10 @@ export default function AdminDashboard() {
       } else {
         const sortedNotices = sortNotices(initialNotices);
         setNotices(sortedNotices);
-        localStorage.setItem("notices", JSON.stringify(sortedNotices));
+        localStorage.setItem('notices', JSON.stringify(sortedNotices));
       }
     } catch (error) {
-      console.error("공지사항 불러오기 실패:", error);
+      console.error('공지사항 불러오기 실패:', error);
       setNotices(initialNotices);
     }
   }, []);
@@ -49,19 +49,19 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchMovieCount = async () => {
       try {
-        const API_KEY = "7a89fbdd41af6829b981a747ef965dc7";
+        const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
         const response = await fetch(
           `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=ko-KR`
         );
         if (response.ok) {
           const data = await response.json();
-          setMovieCount(data.total_results?.toLocaleString() || "8,532");
+          setMovieCount(data.total_results?.toLocaleString() || '8,532');
         } else {
-          setMovieCount("8,532");
+          setMovieCount('8,532');
         }
       } catch (error) {
-        console.error("영화 개수 가져오기 실패:", error);
-        setMovieCount("8,532");
+        console.error('영화 개수 가져오기 실패:', error);
+        setMovieCount('8,532');
       }
     };
     fetchMovieCount();
@@ -82,7 +82,7 @@ export default function AdminDashboard() {
       n.id === notice.id ? { ...n, views: n.views + 1 } : n
     );
     setNotices(updatedNotices);
-    localStorage.setItem("notices", JSON.stringify(updatedNotices));
+    localStorage.setItem('notices', JSON.stringify(updatedNotices));
     setSelectedNotice({ ...notice, views: notice.views + 1 });
     setIsModalOpen(true);
     setIsEditMode(false);
@@ -103,8 +103,8 @@ export default function AdminDashboard() {
   const handleCancelEdit = () => {
     setIsEditMode(false);
     setEditData({
-      title: "",
-      content: "",
+      title: '',
+      content: '',
       isPinned: false,
       isNew: false,
     });
@@ -113,11 +113,11 @@ export default function AdminDashboard() {
   // 수정 저장
   const handleSaveEdit = () => {
     if (!editData.title.trim()) {
-      alert("제목을 입력해주세요.");
+      alert('제목을 입력해주세요.');
       return;
     }
     if (!editData.content.trim()) {
-      alert("내용을 입력해주세요.");
+      alert('내용을 입력해주세요.');
       return;
     }
 
@@ -136,7 +136,7 @@ export default function AdminDashboard() {
 
     const sortedNotices = sortNotices(updatedNotices);
     setNotices(sortedNotices);
-    localStorage.setItem("notices", JSON.stringify(sortedNotices));
+    localStorage.setItem('notices', JSON.stringify(sortedNotices));
 
     setSelectedNotice({
       ...selectedNotice,
@@ -147,17 +147,17 @@ export default function AdminDashboard() {
     });
 
     setIsEditMode(false);
-    alert("수정되었습니다!");
+    alert('수정되었습니다!');
   };
 
   // 공지사항 삭제
   const handleDelete = (id) => {
-    if (confirm("정말 삭제하시겠습니까?")) {
+    if (confirm('정말 삭제하시겠습니까?')) {
       const updated = notices.filter((notice) => notice.id !== id);
       const sortedUpdated = sortNotices(updated);
       setNotices(sortedUpdated);
-      localStorage.setItem("notices", JSON.stringify(sortedUpdated));
-      alert("삭제되었습니다.");
+      localStorage.setItem('notices', JSON.stringify(sortedUpdated));
+      alert('삭제되었습니다.');
       if (isModalOpen) {
         setIsModalOpen(false);
         setSelectedNotice(null);
@@ -174,35 +174,35 @@ export default function AdminDashboard() {
 
   // 새 공지사항 작성
   const handleAdd = () => {
-    window.location.href = "/admin/notice/create";
+    window.location.href = '/admin/notice/create';
   };
 
   // 통계 카드 데이터
   const stats = [
     {
-      icon: "📢",
-      label: "총 공지사항",
+      icon: '📢',
+      label: '총 공지사항',
       value: notices.length,
       color: adminColors.statRed,
       bg: adminColors.statRedBg,
     },
     {
-      icon: "👥",
-      label: "전체 회원",
+      icon: '👥',
+      label: '전체 회원',
       value: initialMembers.length,
       color: adminColors.statBlue,
       bg: adminColors.statBlueBg,
     },
     {
-      icon: "🎬",
-      label: "등록 영화",
+      icon: '🎬',
+      label: '등록 영화',
       value: movieCount,
       color: adminColors.statYellow,
       bg: adminColors.statYellowBg,
     },
     {
-      icon: "⭐",
-      label: "리뷰 수",
+      icon: '⭐',
+      label: '리뷰 수',
       value: initialReviews.length.toLocaleString(),
       color: adminColors.statGreen,
       bg: adminColors.statGreenBg,
@@ -214,8 +214,8 @@ export default function AdminDashboard() {
       {/* 통계 카드 */}
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
           gap: adminSizes.spacing.xl,
           marginBottom: adminSizes.spacing.xxl,
         }}
@@ -230,8 +230,8 @@ export default function AdminDashboard() {
           >
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
+                display: 'flex',
+                alignItems: 'center',
                 gap: adminSizes.spacing.md,
                 marginBottom: adminSizes.spacing.lg,
               }}
@@ -246,7 +246,7 @@ export default function AdminDashboard() {
               </div>
               <div
                 style={{
-                  fontSize: "14px",
+                  fontSize: '14px',
                   color: adminColors.textTertiary,
                   fontWeight: 500,
                 }}
@@ -263,19 +263,19 @@ export default function AdminDashboard() {
       <section style={adminStyles.card.base}>
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             padding: `20px ${adminSizes.spacing.xl}`,
             borderBottom: `1px solid ${adminColors.border}`,
           }}
         >
           <h2
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              fontSize: "18px",
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              fontSize: '18px',
               fontWeight: 700,
               color: adminColors.textPrimary,
               margin: 0,
@@ -301,18 +301,18 @@ export default function AdminDashboard() {
           <table style={adminStyles.table.table}>
             <thead style={adminStyles.table.thead}>
               <tr>
-                <th style={{ ...adminStyles.table.th, width: "80px" }}>번호</th>
+                <th style={{ ...adminStyles.table.th, width: '80px' }}>번호</th>
                 <th style={adminStyles.table.th}>제목</th>
-                <th style={{ ...adminStyles.table.th, width: "120px" }}>
+                <th style={{ ...adminStyles.table.th, width: '120px' }}>
                   작성자
                 </th>
-                <th style={{ ...adminStyles.table.th, width: "120px" }}>
+                <th style={{ ...adminStyles.table.th, width: '120px' }}>
                   등록일
                 </th>
-                <th style={{ ...adminStyles.table.th, width: "100px" }}>
+                <th style={{ ...adminStyles.table.th, width: '100px' }}>
                   조회수
                 </th>
-                <th style={{ ...adminStyles.table.th, width: "200px" }}>
+                <th style={{ ...adminStyles.table.th, width: '200px' }}>
                   관리
                 </th>
               </tr>
@@ -329,15 +329,15 @@ export default function AdminDashboard() {
                         style={{
                           fontWeight: 600,
                           color: adminColors.textPrimary,
-                          cursor: "pointer",
+                          cursor: 'pointer',
                         }}
                         onClick={() => handleViewNotice(notice)}
                       >
                         <span
                           style={{
-                            textDecoration: "underline",
-                            textDecorationColor: "transparent",
-                            transition: "all 0.2s",
+                            textDecoration: 'underline',
+                            textDecorationColor: 'transparent',
+                            transition: 'all 0.2s',
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.textDecorationColor =
@@ -345,7 +345,7 @@ export default function AdminDashboard() {
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.textDecorationColor =
-                              "transparent";
+                              'transparent';
                           }}
                         >
                           {notice.title}
@@ -355,7 +355,7 @@ export default function AdminDashboard() {
                             style={mergeStyles(
                               adminStyles.badge.base,
                               adminStyles.badge.error,
-                              { marginLeft: "8px" }
+                              { marginLeft: '8px' }
                             )}
                           >
                             NEW
@@ -369,7 +369,7 @@ export default function AdminDashboard() {
                                 background: adminColors.statPurpleBg,
                                 color: adminColors.statPurple,
                               },
-                              { marginLeft: "8px" }
+                              { marginLeft: '8px' }
                             )}
                           >
                             📌 고정
@@ -397,7 +397,7 @@ export default function AdminDashboard() {
                       {notice.views.toLocaleString()}
                     </td>
                     <td style={adminStyles.table.td}>
-                      <div style={{ display: "flex", gap: "8px" }}>
+                      <div style={{ display: 'flex', gap: '8px' }}>
                         <button
                           onClick={() => handleViewNotice(notice)}
                           style={mergeStyles(
@@ -431,7 +431,7 @@ export default function AdminDashboard() {
           <div
             style={{
               padding: adminSizes.spacing.lg,
-              textAlign: "center",
+              textAlign: 'center',
               borderTop: `1px solid ${adminColors.border}`,
             }}
           >
@@ -454,17 +454,17 @@ export default function AdminDashboard() {
       {isModalOpen && selectedNotice && (
         <div
           style={{
-            position: "fixed",
+            position: 'fixed',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            background: "rgba(0, 0, 0, 0.6)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            background: 'rgba(0, 0, 0, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             zIndex: 1000,
-            padding: "20px",
+            padding: '20px',
           }}
           onClick={handleCloseModal}
         >
@@ -472,11 +472,11 @@ export default function AdminDashboard() {
             style={{
               background: adminColors.bgSecondary,
               borderRadius: adminSizes.radius.lg,
-              width: "100%",
-              maxWidth: "800px",
-              maxHeight: "90vh",
-              overflow: "auto",
-              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+              width: '100%',
+              maxWidth: '800px',
+              maxHeight: '90vh',
+              overflow: 'auto',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -490,9 +490,9 @@ export default function AdminDashboard() {
             >
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
                   marginBottom: adminSizes.spacing.md,
                 }}
               >
@@ -505,22 +505,22 @@ export default function AdminDashboard() {
                     }
                     style={{
                       ...adminStyles.form.input,
-                      fontSize: "20px",
+                      fontSize: '20px',
                       fontWeight: 700,
                       flex: 1,
-                      marginRight: "20px",
+                      marginRight: '20px',
                     }}
                     placeholder="제목을 입력하세요"
                   />
                 ) : (
                   <h2
                     style={{
-                      fontSize: "24px",
+                      fontSize: '24px',
                       fontWeight: 700,
                       color: adminColors.textPrimary,
                       margin: 0,
                       flex: 1,
-                      paddingRight: "20px",
+                      paddingRight: '20px',
                     }}
                   >
                     {selectedNotice.title}
@@ -529,26 +529,26 @@ export default function AdminDashboard() {
                 <button
                   onClick={handleCloseModal}
                   style={{
-                    background: "none",
-                    border: "none",
-                    fontSize: "28px",
+                    background: 'none',
+                    border: 'none',
+                    fontSize: '28px',
                     color: adminColors.textTertiary,
-                    cursor: "pointer",
+                    cursor: 'pointer',
                     padding: 0,
-                    width: "32px",
-                    height: "32px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: "4px",
-                    transition: "all 0.2s",
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '4px',
+                    transition: 'all 0.2s',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = adminColors.errorBg;
                     e.currentTarget.style.color = adminColors.error;
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "none";
+                    e.currentTarget.style.background = 'none';
                     e.currentTarget.style.color = adminColors.textTertiary;
                   }}
                 >
@@ -560,18 +560,18 @@ export default function AdminDashboard() {
               {isEditMode && (
                 <div
                   style={{
-                    display: "flex",
+                    display: 'flex',
                     gap: adminSizes.spacing.lg,
                     marginBottom: adminSizes.spacing.md,
                   }}
                 >
                   <label
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      cursor: "pointer",
-                      fontSize: "14px",
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer',
+                      fontSize: '14px',
                     }}
                   >
                     <input
@@ -580,17 +580,17 @@ export default function AdminDashboard() {
                       onChange={(e) =>
                         setEditData({ ...editData, isPinned: e.target.checked })
                       }
-                      style={{ width: "16px", height: "16px" }}
+                      style={{ width: '16px', height: '16px' }}
                     />
                     📌 상단 고정
                   </label>
                   <label
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      cursor: "pointer",
-                      fontSize: "14px",
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer',
+                      fontSize: '14px',
                     }}
                   >
                     <input
@@ -599,7 +599,7 @@ export default function AdminDashboard() {
                       onChange={(e) =>
                         setEditData({ ...editData, isNew: e.target.checked })
                       }
-                      style={{ width: "16px", height: "16px" }}
+                      style={{ width: '16px', height: '16px' }}
                     />
                     🆕 NEW 배지
                   </label>
@@ -610,7 +610,7 @@ export default function AdminDashboard() {
               {!isEditMode && (
                 <div
                   style={{
-                    display: "flex",
+                    display: 'flex',
                     gap: adminSizes.spacing.sm,
                     marginBottom: adminSizes.spacing.md,
                   }}
@@ -641,22 +641,22 @@ export default function AdminDashboard() {
               {/* 메타 정보 */}
               <div
                 style={{
-                  display: "flex",
+                  display: 'flex',
                   gap: adminSizes.spacing.lg,
-                  fontSize: "14px",
+                  fontSize: '14px',
                   color: adminColors.textTertiary,
                 }}
               >
                 <div>
-                  <span style={{ fontWeight: 600 }}>작성자:</span>{" "}
+                  <span style={{ fontWeight: 600 }}>작성자:</span>{' '}
                   {selectedNotice.author}
                 </div>
                 <div>
-                  <span style={{ fontWeight: 600 }}>등록일:</span>{" "}
+                  <span style={{ fontWeight: 600 }}>등록일:</span>{' '}
                   {selectedNotice.date}
                 </div>
                 <div>
-                  <span style={{ fontWeight: 600 }}>조회수:</span>{" "}
+                  <span style={{ fontWeight: 600 }}>조회수:</span>{' '}
                   {selectedNotice.views.toLocaleString()}
                 </div>
               </div>
@@ -666,7 +666,7 @@ export default function AdminDashboard() {
             <div
               style={{
                 padding: `${adminSizes.spacing.xxl} ${adminSizes.spacing.xl}`,
-                minHeight: "200px",
+                minHeight: '200px',
               }}
             >
               {isEditMode ? (
@@ -678,21 +678,21 @@ export default function AdminDashboard() {
                   rows={15}
                   style={{
                     ...adminStyles.form.input,
-                    width: "100%",
-                    fontSize: "16px",
-                    lineHeight: "1.8",
-                    fontFamily: "inherit",
-                    resize: "vertical",
+                    width: '100%',
+                    fontSize: '16px',
+                    lineHeight: '1.8',
+                    fontFamily: 'inherit',
+                    resize: 'vertical',
                   }}
                   placeholder="내용을 입력하세요"
                 />
               ) : (
                 <div
                   style={{
-                    fontSize: "16px",
-                    lineHeight: "1.8",
+                    fontSize: '16px',
+                    lineHeight: '1.8',
                     color: adminColors.textSecondary,
-                    whiteSpace: "pre-wrap",
+                    whiteSpace: 'pre-wrap',
                   }}
                 >
                   {selectedNotice.content}
@@ -705,8 +705,8 @@ export default function AdminDashboard() {
               style={{
                 padding: adminSizes.spacing.xl,
                 borderTop: `1px solid ${adminColors.border}`,
-                display: "flex",
-                justifyContent: "space-between",
+                display: 'flex',
+                justifyContent: 'space-between',
                 gap: adminSizes.spacing.md,
                 background: adminColors.bgHover,
               }}
@@ -720,7 +720,7 @@ export default function AdminDashboard() {
               >
                 삭제
               </button>
-              <div style={{ display: "flex", gap: adminSizes.spacing.md }}>
+              <div style={{ display: 'flex', gap: adminSizes.spacing.md }}>
                 {isEditMode ? (
                   <>
                     <button

@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko">
       <AuthProvider>
-        <body style={{ margin: '0' }}>
+        <body style={{ margin: '0' }} suppressHydrationWarning>
           {!isAdminPage && <Header />}
           {children}
           {!isAdminPage && <Footer />}
