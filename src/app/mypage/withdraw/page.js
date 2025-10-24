@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/auth/AuthContext';
 
 // 탈퇴 사유 목록
 const REASONS = [
@@ -12,19 +13,32 @@ const REASONS = [
 
 export default function WithdrawPage() {
     const router = useRouter();
-    const [user, setUser] = useState();
+    const { user, updateUser } = useAuth();
+    // const [user, setUser] = useState();
 
-    useEffect(() => {
-        const data = JSON.parse(localStorage.getItem("loggedInUser"));
-        console.log(data)
-        setUser(data)
-    }, [])
+    // useEffect(() => {
+    //     const data = JSON.parse(localStorage.getItem("loggedInUser"));
+    //     console.log(data)
+    //     setUser(data)
+    // }, [])
 
     // 1. 상태 관리
     const [selectedReasons, setSelectedReasons] = useState([]);
     const [otherReason, setOtherReason] = useState('');
     const [password, setPassword] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
+    const [members, setMembers] = useState([]);
+
+    useEffect(() => {
+        const storedMembers = localStorage.getItem('members');
+        if (storedMembers) {
+            setMembers(JSON.parse(storedMembers));
+        } else {
+            // 초기 데이터로 초기화
+            localStorage.setItem('members', JSON.stringify(initialMembers));
+            setMembers(initialMembers);
+        }
+    }, []);
 
     // 2. 유효성 검사 (버튼 활성화)
     useEffect(() => {
@@ -47,6 +61,31 @@ export default function WithdrawPage() {
         );
     };
 
+    const handleDelete = (id) => {
+
+        if (confirm('탈퇴하시겠습니까?')) {
+            try {
+                const updatedMembers = members.filter((member) => member.id !== id);
+                setMembers(updatedMembers);
+                localStorage.setItem('members', JSON.stringify(updatedMembers));
+                localStorage.removeItem('loggedInUser');
+
+
+            } catch (err) {
+                console.error('Logout error:', err);
+                router.push('/');
+            } finally {
+                alert('탈퇴되었습니다');
+                window.history.replaceState(null, '', '/');
+                router.push('/');
+            }
+        }
+        
+        
+    };
+
+
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -63,6 +102,8 @@ export default function WithdrawPage() {
         // 💡 실제 회원 탈퇴 API 호출 로직
         console.log("Withdrawal initiated. Reasons:", finalReasons, "Password entered.");
         alert("회원 탈퇴가 완료되었습니다. 이용해주셔서 감사합니다.");
+
+
 
         // 탈퇴 후 메인/로그인 페이지로 이동
         router.push('/');
@@ -132,7 +173,7 @@ export default function WithdrawPage() {
                             type="button"
                             style={isFormValid ? styles.buttonPrimary : styles.buttonDisabled}
                             disabled={!isFormValid}
-                            onClick={handleSubmit}
+                            onClick={handleDelete}
                         >
                             탈퇴하기
                         </button>

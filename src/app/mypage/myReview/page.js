@@ -453,19 +453,6 @@ export default function MyReviewsPage() {
     loadReviews();
   }, [loadReviews]);
 
-  //const handleEdit = (review) => {
-  //  if (typeof window !== 'undefined') {
-  //    const url = `/review/edit?movieId=${review.movieId}&movieTitle=${
-  //      review.movieTitle
-  //    }&reviewId=${review.id}&content=${encodeURIComponent(review.content)}`;
-  //    console.log(`[EDIT] Navigating to: ${url}`);
-  //    setModalMessage(
-  //      `리뷰 수정 페이지로 이동을 시뮬레이션합니다.\n\n편집 URL 쿼리:\n${url}`
-  //    );
-  //    setIsConfirmModal(false);
-  //    setIsModalOpen(true);
-  //  }
-  //};
 
   const handleDelete = (reviewId) => {
     const deleteAction = () => {

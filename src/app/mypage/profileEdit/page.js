@@ -41,11 +41,6 @@ export default function ProfileEditPage() {
     const {user,updateUser} = useAuth();
     const [name, setName] = useState(user?.name);
 
-    // useEffect(() => {
-    //     const data = JSON.parse(localStorage.getItem("loggedInUser"));
-    //     console.log(data)
-    //     setName(data?.name)
-    // }, [])
     const router = useRouter();
 
     // 🚀 실제 useGenreStore Hook 사용

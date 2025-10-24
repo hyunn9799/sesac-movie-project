@@ -51,14 +51,14 @@ export default function ChangePwdPage() {
 
         // 실시간 에러 메시지 업데이트
 
-        // 기존 비밀번호 에러 메시지
+        
         if (currentPwd?.length > 0 && currentPwd?.length < MIN_PASSWORD_LENGTH) {
             setCurrentPwdError(`${MIN_PASSWORD_LENGTH}자리 이상의 비밀번호를 입력해주세요.`);
         } else {
             setCurrentPwdError('');
         }
         
-        // 새 비밀번호 에러 메시지
+        
         if (newPwd.length > 0 && newPwd.length < MIN_PASSWORD_LENGTH) {
             setNewPwdError(`${MIN_PASSWORD_LENGTH}자리 이상의 비밀번호를 입력해주세요.`);
         } else if (newPwd === currentPwd && newPwd.length > 0) {
@@ -88,10 +88,10 @@ export default function ChangePwdPage() {
         }
 
         if (currentPwd !== realPwd) {
-        setCurrentPwdError('비밀번호가 틀립니다.'); // 기존 비밀번호 필드 아래 에러 메시지 표시
-        setMessage("기존 비밀번호가 올바르지 않습니다."); // 상단 알림 메시지 표시
+        setCurrentPwdError('비밀번호가 틀립니다.'); 
+        setMessage("기존 비밀번호가 올바르지 않습니다."); 
         setMessageType('error');
-        return; // 비밀번호 변경 중단
+        return; 
     }
 
         // 💡 실제 비밀번호 변경 API 호출 로직 (시뮬레이션)
